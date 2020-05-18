@@ -9,13 +9,12 @@ import hashlib
 
 BASE_URL = "https://api.mopinion.com"
 
-session = requests.Session()
-
 def get_signature_token(public_key, private_key):
+    session = requests.Session()
     # The authorization method is public_key:private_key encoded as b64 string
     auth_header = b64encode(f"{public_key}:{private_key}".encode()).decode()
-    headers = {"Authorization": auth_header}
+    headers = {"Authorization": "Basic " + auth_header}
     r = session.get(BASE_URL + "/token", headers=headers)
-    r.raise_for_status()
-
+    # r.raise_for_status()
+    print(r.status_code)
     return r.json()
