@@ -24,6 +24,8 @@ Contents
 
    installation
    quickstart
+   license
+   help
 
 
 Indices and tables

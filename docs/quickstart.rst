@@ -4,7 +4,7 @@ Quickstart
 Making a request
 -------------------
 
-A dask-geomodeling view can be constructed by creating a Block instance:
+To access do... to be done...:
 
 .. code:: python
 
