@@ -1,23 +1,102 @@
-import mopinion_api.client as APIClient
+from mopinion_api.client import MopinionClient
 import unittest
-import json
+from mock import patch, call
+from requests.exceptions import RequestException
+
+
+class MockedResponse:
+    def __init__(self, json_data: dict, status_code: int, raise_error: bool):
+        self.json_data = json_data
+        self.status_code = status_code
+        self.raise_error = raise_error
+
+    def json(self) -> dict:
+        return self.json_data
+
+    def ok(self) -> bool:
+        return str(self.status_code).startswith("2")
+
+    def raise_for_status(self):
+        if self.raise_error:
+            raise RequestException
 
 
 class APITest(unittest.TestCase):
-
     def setUp(self) -> None:
-        with open("creds.json") as file:
-            creds = json.load(file)
-        self.public_key = creds["private-key"]
-        self.private_key = creds["public-key"]
+        self.public_key = "PUBLIC_KEY"
+        self.private_key = "PRIVATE_KEY"
 
     def tearDown(self) -> None:
         pass
 
-    def test_api_request(self):
-        client = APIClient.Client(self.public_key, self.private_key)
-        response, xtoken = client.api_request()
-        assert response.json()["_meta"]["code"] == 200
+    @patch("requests.request")
+    def test_get_signature_token(self, mocked_response):
+        mocked_response.return_value = MockedResponse(
+            {"token": "xxx-Token-xxx"}, 200, raise_error=False
+        )
+        client = MopinionClient(self.public_key, self.private_key)
+        self.assertEqual(client.credentials.public_key, self.public_key)
+        self.assertEqual(client.credentials.private_key, self.private_key)
+        self.assertEqual(
+            client.signature_token, mocked_response.return_value.json()["token"]
+        )
+        mocked_response.assert_called_once_with(
+            method="GET",
+            url="https://api.mopinion.com/token",
+            headers={"Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="},
+        )
+
+    @patch("requests.request")
+    def test_get_signature_token_raise(self, mocked_response):
+        mocked_response.return_value = MockedResponse(
+            {"token": "xxx-Token-xxx"}, 200, raise_error=True
+        )
+        with self.assertRaises(RequestException) as cm:
+            MopinionClient(self.public_key, self.private_key)
+        self.assertIsInstance(cm.exception, RequestException)
+
+
+    @patch("requests.request")
+    def test_api_request(self, mocked_response):
+        mocked_response.side_effect = [
+            MockedResponse({"token": "xxx-Token-xxx"}, 200, raise_error=False),
+            MockedResponse({"key": "value"}, 200, raise_error=False),
+        ]
+        client = MopinionClient(self.public_key, self.private_key)
+        response = client.api_request()
+        self.assertTrue(response.ok)
+        mocked_response.assert_has_calls(
+            [
+                call(
+                    method="GET",
+                    url="https://api.mopinion.com/token",
+                    headers={"Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="},
+                ),
+                call(
+                    method="GET",
+                    url="https://api.mopinion.com/account",
+                    data=None,
+                    headers={
+                        "X-Auth-Token": b"UFVCTElDX0tFWTo2ZDgyMGM4YWQ4NDI2NGU4NWM3Y2Q0YTViMWQ4ODVlYThhYjU3NGEwYzkzNTUyMTNkOWRjYTQ3MjMwZDcyMzky",
+                        "version": "1.18.14",
+                        "verbosity": "full",
+                    },
+                    params="",
+                ),
+            ]
+        )
+        self.assertEqual(2, mocked_response.call_count)
+
+    @patch("requests.request")
+    def test_request_raise(self, mocked_response):
+        mocked_response.side_effect = [
+            MockedResponse({"token": "xxx-Token-xxx"}, 200, raise_error=False),
+            MockedResponse({"key": "value"}, 200, raise_error=True),
+        ]
+        client = MopinionClient(self.public_key, self.private_key)
+        with self.assertRaises(RequestException) as cm:
+            client.api_request()
+        self.assertIsInstance(cm.exception, RequestException)
 
 
 if __name__ == "__main__":
