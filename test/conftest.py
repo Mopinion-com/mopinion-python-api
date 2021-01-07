@@ -1,4 +1,4 @@
-from mopinion_api.client import Credentials
+from mopinion_api.dataclasses import Credentials
 import pytest
 
 

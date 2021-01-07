@@ -76,8 +76,8 @@ class APITest(unittest.TestCase):
                     url="https://api.mopinion.com/account",
                     headers={
                         "X-Auth-Token": b"UFVCTElDX0tFWToxZDllMTE3Y2NmYTUzNGMx"
-                                        b"ZjM4ZDMyN2JiMGZhMWQ1MTY2ZDgwNWIyYWRl"
-                                        b"MGQyM2JmY2M2ZmRkNGYwYjA3ZTI2",
+                        b"ZjM4ZDMyN2JiMGZhMWQ1MTY2ZDgwNWIyYWRl"
+                        b"MGQyM2JmY2M2ZmRkNGYwYjA3ZTI2",
                         "version": "1.18.14",
                         "verbosity": "full",
                     },

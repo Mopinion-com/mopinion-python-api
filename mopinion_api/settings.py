@@ -3,3 +3,7 @@ TOKEN_PATH = "/token"
 VERSION = "1.18.14"
 VERBOSITY = "full"
 MAX_RETRIES = 3
+VERBOSITY_lEVELS = ["quiet", "normal", "full"]
+ALLOWED_METHODS = ["get", "post", "put", "delete", "options"]
+VERSIONS = ["1.18.14"]
+CONTENT_NEGOTIATIONS = ["application/json", "application/x-yaml"]
