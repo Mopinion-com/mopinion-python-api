@@ -39,7 +39,7 @@ class Verbosity:
     name: str = settings.VERBOSITY
 
     def __post_init__(self):
-        if self.name not in settings.VERBOSITY_lEVELS:
+        if self.name.lower() not in settings.VERBOSITY_lEVELS:
             raise ValueError(
                 f"'{self.name}' is not a valid verbosity level. Please consider one of: "
                 f"'{', '.join(settings.VERBOSITY_lEVELS)}'"

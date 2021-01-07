@@ -123,3 +123,25 @@ class MopinionClient(AbstractClient):
         response = self.session.request(**params)
         response.raise_for_status()
         return response
+
+    def get_resource(self, scope, product, resource, resource_id=None, iterate=False):
+        """Retrieves resources of the specified type
+        :param scope: A `string` that specifies the resource scope
+        :param product: A `string` that specifies the product type
+        :param resource: A `string` that specifies the resource type
+        :param resource_id: A `string` that specifies the resource id
+        :param iterate: A `boolean` that specifies whether the you want to use an iterator
+        :type scope: str
+        :type product: str
+        :type resource: str
+        :type resource_id: str
+        :type iterate: bool
+        :returns: A `generator` that yields the requested data or a single resource
+        :rtype: generator or single resource
+        """
+        url = self.handle_id(self.check_resource_validity(scope, product, resource), resource_id)
+
+        if iterate:
+            return self.item_iterator(url)
+        else:
+            return self.send_signed_request(url)
