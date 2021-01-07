@@ -29,7 +29,7 @@ class APITest(unittest.TestCase):
     def tearDown(self) -> None:
         pass
 
-    @patch("requests.request")
+    @patch("requests.sessions.Session.request")
     def test_get_signature_token(self, mocked_response):
         mocked_response.return_value = MockedResponse(
             {"token": "xxx-Token-xxx"}, 200, raise_error=False
@@ -46,7 +46,7 @@ class APITest(unittest.TestCase):
             headers={"Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="},
         )
 
-    @patch("requests.request")
+    @patch("requests.sessions.Session.request")
     def test_get_signature_token_raise(self, mocked_response):
         mocked_response.return_value = MockedResponse(
             {"token": "xxx-Token-xxx"}, 200, raise_error=True
@@ -55,11 +55,10 @@ class APITest(unittest.TestCase):
             MopinionClient(self.public_key, self.private_key)
         self.assertIsInstance(cm.exception, RequestException)
 
-
-    @patch("requests.request")
+    @patch("requests.sessions.Session.request")
     def test_api_request(self, mocked_response):
         mocked_response.side_effect = [
-            MockedResponse({"token": "xxx-Token-xxx"}, 200, raise_error=False),
+            MockedResponse({"token": "token"}, 200, raise_error=False),
             MockedResponse({"key": "value"}, 200, raise_error=False),
         ]
         client = MopinionClient(self.public_key, self.private_key)
@@ -75,22 +74,22 @@ class APITest(unittest.TestCase):
                 call(
                     method="GET",
                     url="https://api.mopinion.com/account",
-                    data=None,
                     headers={
-                        "X-Auth-Token": b"UFVCTElDX0tFWTo2ZDgyMGM4YWQ4NDI2NGU4NWM3Y2Q0YTViMWQ4ODVlYThhYjU3NGEwYzkzNTUyMTNkOWRjYTQ3MjMwZDcyMzky",
+                        "X-Auth-Token": b"UFVCTElDX0tFWToxZDllMTE3Y2NmYTUzNGMx"
+                                        b"ZjM4ZDMyN2JiMGZhMWQ1MTY2ZDgwNWIyYWRl"
+                                        b"MGQyM2JmY2M2ZmRkNGYwYjA3ZTI2",
                         "version": "1.18.14",
                         "verbosity": "full",
                     },
-                    params="",
                 ),
             ]
         )
         self.assertEqual(2, mocked_response.call_count)
 
-    @patch("requests.request")
+    @patch("requests.sessions.Session.request")
     def test_request_raise(self, mocked_response):
         mocked_response.side_effect = [
-            MockedResponse({"token": "xxx-Token-xxx"}, 200, raise_error=False),
+            MockedResponse({"token": "token"}, 200, raise_error=False),
             MockedResponse({"key": "value"}, 200, raise_error=True),
         ]
         client = MopinionClient(self.public_key, self.private_key)
