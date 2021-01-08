@@ -16,44 +16,12 @@ class Credentials(Argument):
 
 
 @dataclass(frozen=True)
-class ApiRequestArguments(Argument):
-    endpoint: str
-    version: str = settings.VERSION
-    content_negotiation: str = "application/json"
-    verbosity: str = settings.VERBOSITY
-    method: str = "GET"
+class Endpoint(Argument):
+    path: str
 
     def __post_init__(self):
-        # versions
-        if self.version not in settings.VERSIONS:
-            raise ValueError(
-                f"'{self.version}' is not a valid version. Please consider one of: "
-                f"'{''.join(settings.VERSIONS)}'"
-            )
-
-        # content negotiation
-        if self.content_negotiation not in settings.CONTENT_NEGOTIATIONS:
-            raise ValueError(
-                f"'{self.content_negotiation}' is not a valid content negotiation. "
-                f"Please consider one of: '{', '.join(settings.CONTENT_NEGOTIATIONS)}'"
-            )
-
-        # verbosity levels
-        if self.verbosity.lower() not in settings.VERBOSITY_lEVELS:
-            raise ValueError(
-                f"'{self.verbosity}' is not a valid verbosity level. Please consider one of: "
-                f"'{', '.join(settings.VERBOSITY_lEVELS)}'"
-            )
-
-        # methods
-        if self.method.lower() not in settings.ALLOWED_METHODS:
-            raise ValueError(
-                f"'{self.method}' is not a valid choice. Please consider one of: "
-                f"'{', '.join(settings.ALLOWED_METHODS)}'"
-            )
-
         # endpoint must start with '/'
-        if not self.endpoint.startswith("/"):
+        if not self.path.startswith("/"):
             raise ValueError("Endpoint must start with '/'")
 
         # endpoint must be one of these
@@ -73,8 +41,47 @@ class ApiRequestArguments(Argument):
             r"/reports$",
         ]
         regexp = re.compile("|".join(regexps), re.IGNORECASE)
-        if not regexp.search(self.endpoint):
-            raise ValueError(f"Resource '{self.endpoint}' is not supported.")
+        if not regexp.search(self.path):
+            raise ValueError(f"Resource '{self.path}' is not supported.")
+
+
+@dataclass(frozen=True)
+class ApiRequestArguments(Argument):
+    endpoint: Endpoint
+    version: str = settings.VERSION
+    content_negotiation: str = "application/json"
+    verbosity: str = settings.VERBOSITY
+    method: str = "GET"
+
+    def __post_init__(self):
+
+        # verbosity levels
+        if self.verbosity.lower() not in settings.VERBOSITY_lEVELS:
+            raise ValueError(
+                f"'{self.verbosity}' is not a valid verbosity level. Please consider one of: "
+                f"'{', '.join(settings.VERBOSITY_lEVELS)}'"
+            )
+
+        # methods
+        if self.method.lower() not in settings.ALLOWED_METHODS:
+            raise ValueError(
+                f"'{self.method}' is not a valid choice. Please consider one of: "
+                f"'{', '.join(settings.ALLOWED_METHODS)}'"
+            )
+
+        # content negotiation
+        if self.content_negotiation not in settings.CONTENT_NEGOTIATIONS:
+            raise ValueError(
+                f"'{self.content_negotiation}' is not a valid content negotiation. "
+                f"Please consider one of: '{', '.join(settings.CONTENT_NEGOTIATIONS)}'"
+            )
+
+        # version
+        if self.version not in settings.VERSIONS:
+            raise ValueError(
+                f"'{self.version}' is not a valid version. Please consider one of: "
+                f"'{''.join(settings.VERSIONS)}'"
+            )
 
 
 @dataclass
@@ -105,7 +112,10 @@ class ResourceVerbosity(Argument):
 
     def __post_init__(self):
         # if we want to iterate we need metadata, verbosity higher or equal than normal
-        if self.iterate and self.verbosity.lower() not in settings.ITERATE_VERBOSITY_lEVELS:
+        if (
+            self.iterate
+            and self.verbosity.lower() not in settings.ITERATE_VERBOSITY_lEVELS
+        ):
             raise ValueError(
                 f"'{self.verbosity}' is not a valid verbosity level. Please consider one of: "
                 f"'{', '.join(settings.ITERATE_VERBOSITY_lEVELS)}'"

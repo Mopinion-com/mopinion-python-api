@@ -56,7 +56,7 @@ class APITest(unittest.TestCase):
         self.assertIsInstance(cm.exception, RequestException)
 
     @patch("requests.sessions.Session.request")
-    def test_api_request(self, mocked_response):
+    def test_api_request_default_args(self, mocked_response):
         mocked_response.side_effect = [
             MockedResponse({"token": "token"}, 200, raise_error=False),
             MockedResponse({"key": "value"}, 200, raise_error=False),
@@ -75,12 +75,54 @@ class APITest(unittest.TestCase):
                     method="GET",
                     url="https://api.mopinion.com/account",
                     headers={
-                        "X-Auth-Token": b"UFVCTElDX0tFWToxZDllMTE3Y2NmYTUzNGMx"
-                        b"ZjM4ZDMyN2JiMGZhMWQ1MTY2ZDgwNWIyYWRl"
-                        b"MGQyM2JmY2M2ZmRkNGYwYjA3ZTI2",
+                        "X-Auth-Token": b"UFVCTElDX0tFWToxZDllMTE3Y2NmYTUzNGMxZjM4ZDMyN"
+                        b"2JiMGZhMWQ1MTY2ZDgwNWIyYWRlMGQyM2JmY2M2ZmRkNG"
+                        b"YwYjA3ZTI2",
                         "version": "1.18.14",
-                        "verbosity": "full",
+                        "verbosity": "normal",
+                        "Accept": "application/json",
                     },
+                ),
+            ]
+        )
+        self.assertEqual(2, mocked_response.call_count)
+
+    @patch("requests.sessions.Session.request")
+    def test_api_request(self, mocked_response):
+        mocked_response.side_effect = [
+            MockedResponse({"token": "token"}, 200, raise_error=False),
+            MockedResponse({"key": "value"}, 200, raise_error=False),
+        ]
+        client = MopinionClient(self.public_key, self.private_key)
+        response = client.api_request(
+            method="DELETE",
+            endpoint="/reports",
+            version="2.0.0",
+            verbosity="full",
+            query_params={"key": "value"},
+            body={"key": "value"},
+        )
+        self.assertTrue(response.ok)
+        mocked_response.assert_has_calls(
+            [
+                call(
+                    method="GET",
+                    url="https://api.mopinion.com/token",
+                    headers={"Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="},
+                ),
+                call(
+                    method="DELETE",
+                    url="https://api.mopinion.com/reports",
+                    headers={
+                        "X-Auth-Token": b"UFVCTElDX0tFWTpjNDVmMGQ0ZGI3MTE2MjZ"
+                                        b"mYTRkYTk5ZDgzMGI2NzQ2NzRkZWZlNmVkNDY"
+                                        b"3N2U5ZTMxN2FiYzU0OTYxYTJhNjVh",
+                        "version": "2.0.0",
+                        "verbosity": "full",
+                        "Accept": "application/json",
+                    },
+                    json={"key": "value"},
+                    params={"key": "value"},
                 ),
             ]
         )
@@ -96,6 +138,87 @@ class APITest(unittest.TestCase):
         with self.assertRaises(RequestException) as cm:
             client.api_request()
         self.assertIsInstance(cm.exception, RequestException)
+
+    @patch("requests.sessions.Session.request")
+    def test_api_resource_request(self, mocked_response):
+        mocked_response.side_effect = [
+            MockedResponse({"token": "token"}, 200, raise_error=False),
+            MockedResponse({"key": "value"}, 200, raise_error=False),
+        ]
+        client = MopinionClient(self.public_key, self.private_key)
+        client.get_resource(
+            resource_name='reports',
+            resource_id=1,
+            sub_resource_name='feedback',
+            sub_resource_id='sht46',
+            version="2.0.0",
+            verbosity="full",
+            query_params={"key": "value"},
+        )
+        mocked_response.assert_has_calls(
+            [
+                call(
+                    method="GET",
+                    url="https://api.mopinion.com/token",
+                    headers={"Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="},
+                ),
+                call(
+                    method="GET",
+                    url="https://api.mopinion.com/reports/1/feedback/sht46",
+                    headers={
+                        "X-Auth-Token": b"UFVCTElDX0tFWTpjNDVmMGQ0ZGI3MTE2MjZ"
+                                        b"mYTRkYTk5ZDgzMGI2NzQ2NzRkZWZlNmVkNDY"
+                                        b"3N2U5ZTMxN2FiYzU0OTYxYTJhNjVh",
+                        "version": "2.0.0",
+                        "verbosity": "full",
+                        "Accept": "application/json",
+                    },
+                    params={"key": "value"},
+                ),
+            ]
+        )
+        self.assertEqual(2, mocked_response.call_count)
+
+    # @patch("requests.sessions.Session.request")
+    # def test_api_resource_iterate_request(self, mocked_response):
+    #     mocked_response.side_effect = [
+    #         MockedResponse({"token": "token"}, 200, raise_error=False),
+    #         MockedResponse({"key": "value"}, 200, raise_error=False),
+    #     ]
+    #     client = MopinionClient(self.public_key, self.private_key)
+    #     response = client.get_resource(
+    #         resource_name='reports',
+    #         resource_id=1,
+    #         sub_resource_name='feedback',
+    #         sub_resource_id='sht46',
+    #         version="2.0.0",
+    #         verbosity="full",
+    #         query_params={"key": "value"},
+    #         iterate=True,
+    #     )
+    #     mocked_response.assert_has_calls(
+    #         [
+    #             call(
+    #                 method="GET",
+    #                 url="https://api.mopinion.com/token",
+    #                 headers={"Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="},
+    #             ),
+    #             call(
+    #                 method="DELETE",
+    #                 url="https://api.mopinion.com/reports/1/feedback/sht46",
+    #                 headers={
+    #                     "X-Auth-Token": b"UFVCTElDX0tFWTpjNDVmMGQ0ZGI3MTE2MjZ"
+    #                                     b"mYTRkYTk5ZDgzMGI2NzQ2NzRkZWZlNmVkNDY"
+    #                                     b"3N2U5ZTMxN2FiYzU0OTYxYTJhNjVh",
+    #                     "version": "2.0.0",
+    #                     "verbosity": "full",
+    #                     "Accept": "application/json",
+    #                 },
+    #                 params={"key": "value"},
+    #             ),
+    #         ]
+    #     )
+    #     self.assertEqual(2, mocked_response.call_count)
 
 
 if __name__ == "__main__":
