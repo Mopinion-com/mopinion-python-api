@@ -1,17 +1,25 @@
 import re
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from mopinion_api import settings
 
 
+class Argument:
+    pass
+
+
+class ResourceArgument:
+    pass
+
+
 @dataclass(frozen=True)
-class Credentials:
+class Credentials(Argument):
     public_key: str
     private_key: str
 
 
 @dataclass(frozen=True)
-class Version:
+class Version(Argument):
     name: str = settings.VERSION
 
     def __post_init__(self):
@@ -23,7 +31,7 @@ class Version:
 
 
 @dataclass(frozen=True)
-class ContentNegotiation:
+class ContentNegotiation(Argument):
     name: str = "application/json"
 
     def __post_init__(self):
@@ -35,7 +43,7 @@ class ContentNegotiation:
 
 
 @dataclass(frozen=True)
-class Verbosity:
+class Verbosity(Argument):
     name: str = settings.VERBOSITY
 
     def __post_init__(self):
@@ -47,8 +55,8 @@ class Verbosity:
 
 
 @dataclass(frozen=True)
-class Method:
-    name: str = "/accounts"
+class Method(Argument):
+    name: str = "GET"
 
     def __post_init__(self):
         if self.name.lower() not in settings.ALLOWED_METHODS:
@@ -59,7 +67,7 @@ class Method:
 
 
 @dataclass(frozen=True)
-class EndPoint:
+class EndPoint(Argument):
     name: str
 
     def __post_init__(self):
@@ -81,6 +89,39 @@ class EndPoint:
             r"/reports/[-+]?[0-9]+$",
             r"/reports$",
         ]
-        regexp = re.compile('|'.join(regexps), re.IGNORECASE)
+        regexp = re.compile("|".join(regexps), re.IGNORECASE)
         if not regexp.search(self.name):
             raise ValueError(f"Resource '{self.name}' is not supported.")
+
+
+@dataclass(frozen=True)
+class ResourceVerbosity(ResourceArgument):
+    name: str = settings.VERBOSITY
+    iterate: bool = False
+
+    def __post_init__(self):
+        # if we want to iterate we need metadata, verbosity higher or equal than normal
+        if self.iterate and self.name.lower() not in settings.ITERATE_VERBOSITY_lEVELS:
+            raise ValueError(
+                f"'{self.name}' is not a valid verbosity level. Please consider one of: "
+                f"'{', '.join(settings.ITERATE_VERBOSITY_lEVELS)}'"
+            )
+
+
+@dataclass
+class ResourceUri(ResourceArgument):
+    name: str = field(init=False)
+    resource_name: str
+    resource_id: str
+    sub_resource_name: str
+    sub_resource_id: str
+
+    def __post_init__(self):
+        uri = self.resource_name
+        if self.resource_id:
+            uri += f"/{self.resource_id}"
+            if self.sub_resource_name:
+                uri += f"/{self.sub_resource_name}"
+                if self.sub_resource_id:
+                    uri += f"/{self.sub_resource_id}"
+        self.name = uri

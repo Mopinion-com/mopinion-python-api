@@ -12,6 +12,8 @@ from mopinion_api.dataclasses import Verbosity
 from mopinion_api.dataclasses import Method
 from mopinion_api.dataclasses import EndPoint
 from mopinion_api.dataclasses import ContentNegotiation
+from mopinion_api.dataclasses import ResourceVerbosity
+from mopinion_api.dataclasses import ResourceUri
 
 from base64 import b64encode
 import requests
@@ -39,12 +41,11 @@ class AbstractClient(abc.ABC):
         content_negotiation: str,
         body: dict,
         query_params: dict,
-        headers: dict,
     ) -> Response:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_token(self, endpoint: EndPoint.name, body: dict = None) -> b64encode:
+    def get_token(self, endpoint: EndPoint, body: dict = None) -> b64encode:
         raise NotImplementedError
 
 
@@ -89,12 +90,12 @@ class MopinionClient(AbstractClient):
         endpoint: str = "/account",
         method: str = "GET",
         version: str = "1.18.14",
-        verbosity: str = "full",
+        verbosity: str = "normal",
         content_negotiation: str = "application/json",
         body: dict = None,
         query_params: dict = None,
-        headers: dict = None,
     ) -> Response:
+        """Generic API Request"""
 
         method = Method(method)
         version = Version(version)
@@ -124,24 +125,36 @@ class MopinionClient(AbstractClient):
         response.raise_for_status()
         return response
 
-    def get_resource(self, scope, product, resource, resource_id=None, iterate=False):
-        """Retrieves resources of the specified type
-        :param scope: A `string` that specifies the resource scope
-        :param product: A `string` that specifies the product type
-        :param resource: A `string` that specifies the resource type
-        :param resource_id: A `string` that specifies the resource id
-        :param iterate: A `boolean` that specifies whether the you want to use an iterator
-        :type scope: str
-        :type product: str
-        :type resource: str
-        :type resource_id: str
-        :type iterate: bool
-        :returns: A `generator` that yields the requested data or a single resource
-        :rtype: generator or single resource
-        """
-        url = self.handle_id(self.check_resource_validity(scope, product, resource), resource_id)
+    def get_resource(
+        self,
+        resource_name: str,
+        resource_id: str = None,
+        sub_resource_name: str = None,
+        sub_resource_id: str = None,
+        version: str = "1.18.14",
+        verbosity: str = "normal",
+        query_params: dict = None,
+        iterate: bool = False,
+    ):
+
+        uri = ResourceUri(
+            resource_name, resource_id, sub_resource_name, sub_resource_id
+        )
+        params = {
+            "method": "GET",
+            "verbosity": ResourceVerbosity(verbosity, iterate).name,
+            "endpoint": uri.name,
+            "version": version,
+            "query_params": query_params,
+            "content_negotiation": "application/json",
+        }
 
         if iterate:
-            return self.item_iterator(url)
+            has_more = True
+            while has_more:
+                response = self.api_request(endpoint=uri.name, **params).json()
+                has_more = response.json()["_meta"]["has_more"]
+                yield response
+                uri = response.json()["_meta"]["next"]
         else:
-            return self.send_signed_request(url)
+            return self.api_request(endpoint=uri.name, **params).json()
