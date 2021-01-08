@@ -4,16 +4,12 @@ For more information, see: https://developer.mopinion.com/api/
 """
 
 from requests.models import Response
-from mopinion_api import settings
 from requests.adapters import HTTPAdapter
+from mopinion_api import settings
 from mopinion_api.dataclasses import Credentials
-from mopinion_api.dataclasses import Version
-from mopinion_api.dataclasses import Verbosity
-from mopinion_api.dataclasses import Method
-from mopinion_api.dataclasses import EndPoint
-from mopinion_api.dataclasses import ContentNegotiation
-from mopinion_api.dataclasses import ResourceVerbosity
+from mopinion_api.dataclasses import ApiRequestArguments
 from mopinion_api.dataclasses import ResourceUri
+from mopinion_api.dataclasses import ResourceVerbosity
 
 from base64 import b64encode
 import requests
@@ -45,7 +41,7 @@ class AbstractClient(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_token(self, endpoint: EndPoint, body: dict = None) -> b64encode:
+    def get_token(self, endpoint: ApiRequestArguments.endpoint, body: dict = None) -> b64encode:
         raise NotImplementedError
 
 
@@ -55,9 +51,9 @@ class MopinionClient(AbstractClient):
         adapter = HTTPAdapter(max_retries=settings.MAX_RETRIES)
         self.session = requests.Session()
         self.session.mount(settings.BASE_URL, adapter=adapter)
-        self.signature_token = self.get_signature_token(self.credentials)
+        self.signature_token = self._get_signature_token(self.credentials)
 
-    def get_signature_token(self, credentials: Credentials) -> str:
+    def _get_signature_token(self, credentials: Credentials) -> str:
         # The authorization method is public_key:private_key encoded as b64 string
         auth_method = f"{credentials.public_key}:{credentials.private_key}"
         auth_header = b64encode(auth_method.encode("utf-8"))
@@ -72,8 +68,8 @@ class MopinionClient(AbstractClient):
         response.raise_for_status()
         return response.json()["token"]
 
-    def get_token(self, endpoint: EndPoint, body: dict = None):
-        uri_and_body = f"{endpoint.name}|{json.dumps(body or '')}".encode("utf-8")
+    def get_token(self, endpoint: ApiRequestArguments.endpoint, body: dict = None) -> b64encode:
+        uri_and_body = f"{endpoint}|{json.dumps(body or '')}".encode("utf-8")
         uri_and_body_hmac_sha256 = hmac.new(
             self.signature_token.encode("utf-8"),
             msg=uri_and_body,
@@ -97,24 +93,27 @@ class MopinionClient(AbstractClient):
     ) -> Response:
         """Generic API Request"""
 
-        method = Method(method)
-        version = Version(version)
-        verbosity = Verbosity(verbosity)
-        endpoint = EndPoint(endpoint)
-        content_negotiation = ContentNegotiation(content_negotiation)
+        # validate arguments
+        arguments = ApiRequestArguments(
+            method=method,
+            version=version,
+            verbosity=verbosity,
+            endpoint=endpoint,
+            content_negotiation=content_negotiation
+        )
 
         # create token - token depends on endpoint
-        xtoken = self.get_token(endpoint=endpoint, body=body)
+        xtoken = self.get_token(endpoint=arguments.endpoint, body=body)
 
-        # prepare parameters
+        # prepare params dict (url, method, headers, body, query_params)
+        url = f"{settings.BASE_URL}{arguments.endpoint}"
         headers = {
             "X-Auth-Token": xtoken,
-            "version": version.name,
-            "verbosity": verbosity.name,
-            "Accept": content_negotiation.name,
+            "version": arguments.version,
+            "verbosity": arguments.verbosity,
+            "Accept": arguments.content_negotiation,
         }
-        url = f"{settings.BASE_URL}{endpoint}"
-        params = {"method": method.name, "url": url, "headers": headers}
+        params = {"method": arguments.method, "url": url, "headers": headers}
         if body:
             params["json"] = body  # add content type 'Application-json'
         if query_params:
@@ -136,25 +135,38 @@ class MopinionClient(AbstractClient):
         query_params: dict = None,
         iterate: bool = False,
     ):
-
-        uri = ResourceUri(
-            resource_name, resource_id, sub_resource_name, sub_resource_id
+        # build uri from arguments
+        resource_uri = ResourceUri(
+            resource_name=resource_name,
+            resource_id=resource_id,
+            sub_resource_name=sub_resource_name,
+            sub_resource_id=sub_resource_id,
         )
+        # validate verbosity for Protocol Implementation Generator
+        # never allow quiet for iterate == True
+        resource_verbosity = ResourceVerbosity(
+            iterate=iterate,
+            verbosity=verbosity
+        )
+
+        # prepare parameters
         params = {
             "method": "GET",
-            "verbosity": ResourceVerbosity(verbosity, iterate).name,
-            "endpoint": uri.name,
+            "verbosity": resource_verbosity.verbosity,
+            "endpoint": resource_uri.endpoint,
             "version": version,
             "query_params": query_params,
             "content_negotiation": "application/json",
         }
 
+        # if iterate, yield messages till has_more == False
         if iterate:
             has_more = True
+            uri = resource_uri.endpoint
             while has_more:
-                response = self.api_request(endpoint=uri.name, **params).json()
+                response = self.api_request(endpoint=uri, **params).json()
                 has_more = response.json()["_meta"]["has_more"]
                 yield response
                 uri = response.json()["_meta"]["next"]
         else:
-            return self.api_request(endpoint=uri.name, **params).json()
+            return self.api_request(endpoint=resource_uri.endpoint, **params).json()
