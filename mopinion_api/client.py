@@ -133,6 +133,7 @@ class MopinionClient(AbstractClient):
         sub_resource_name: str = None,
         sub_resource_id: Union[str, int] = None,
         version: str = "1.18.14",
+        content_negotiation: str = 'application/json',
         verbosity: str = "normal",
         query_params: dict = None,
         iterate: bool = False,
@@ -152,10 +153,9 @@ class MopinionClient(AbstractClient):
         params = {
             "method": "GET",
             "verbosity": resource_verbosity.verbosity,
-            "endpoint": resource_uri.endpoint,
             "version": version,
             "query_params": query_params,
-            "content_negotiation": "application/json",
+            "content_negotiation": content_negotiation,
         }
 
         # if iterate, yield messages till has_more == False
@@ -163,9 +163,9 @@ class MopinionClient(AbstractClient):
             has_more = True
             uri = resource_uri.endpoint
             while has_more:
-                response = self.api_request(endpoint=uri, **params).json()
+                response = self.api_request(endpoint=uri, **params)
                 has_more = response.json()["_meta"]["has_more"]
                 yield response
                 uri = response.json()["_meta"]["next"]
         else:
-            return self.api_request(endpoint=resource_uri.endpoint, **params).json()
+            return self.api_request(endpoint=resource_uri.endpoint, **params)
