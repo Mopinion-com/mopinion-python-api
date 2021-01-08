@@ -3,7 +3,7 @@ API Client library for the Mopinion Data API.
 For more information, see: https://developer.mopinion.com/api/
 """
 
-from typing import Union
+from typing import Union, Optional
 from requests.models import Response
 from requests.adapters import HTTPAdapter
 from mopinion_api import settings
@@ -43,7 +43,7 @@ class AbstractClient(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_token(self, endpoint: Endpoint, body: dict = None) -> b64encode:
+    def get_token(self, endpoint: Endpoint, body: Optional[dict]) -> b64encode:
         raise NotImplementedError
 
 
@@ -70,7 +70,7 @@ class MopinionClient(AbstractClient):
         response.raise_for_status()
         return response.json()["token"]
 
-    def get_token(self, endpoint: Endpoint, body: dict = None) -> b64encode:
+    def get_token(self, endpoint: Endpoint, body: Optional[dict]) -> b64encode:
         uri_and_body = f"{endpoint.path}|{json.dumps(body or '')}".encode("utf-8")
         uri_and_body_hmac_sha256 = hmac.new(
             self.signature_token.encode("utf-8"),
@@ -132,12 +132,15 @@ class MopinionClient(AbstractClient):
         resource_id: Union[str, int] = None,
         sub_resource_name: str = None,
         sub_resource_id: Union[str, int] = None,
+        method: str = "GET",
         version: str = "1.18.14",
-        content_negotiation: str = 'application/json',
+        content_negotiation: str = "application/json",
         verbosity: str = "normal",
         query_params: dict = None,
+        body: dict = None,
         iterate: bool = False,
     ):
+
         # build uri from arguments
         resource_uri = ResourceUri(
             resource_name=resource_name,
@@ -151,21 +154,25 @@ class MopinionClient(AbstractClient):
 
         # prepare parameters
         params = {
-            "method": "GET",
+            "method": method,
             "verbosity": resource_verbosity.verbosity,
             "version": version,
+            "body": body,
             "query_params": query_params,
             "content_negotiation": content_negotiation,
         }
 
         # if iterate, yield messages till has_more == False
         if iterate:
-            has_more = True
-            uri = resource_uri.endpoint
-            while has_more:
-                response = self.api_request(endpoint=uri, **params)
-                has_more = response.json()["_meta"]["has_more"]
-                yield response
-                uri = response.json()["_meta"]["next"]
+            return self.get_iterator(resource_uri, params)
         else:
             return self.api_request(endpoint=resource_uri.endpoint, **params)
+
+    def get_iterator(self, resource_uri: ResourceUri, params: dict):
+        has_more = True
+        uri = resource_uri.endpoint
+        while has_more:
+            response = self.api_request(endpoint=uri, **params)
+            has_more = response.json()["_meta"]["has_more"]
+            yield response
+            uri = response.json()["_meta"]["next"]

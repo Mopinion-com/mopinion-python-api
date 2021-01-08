@@ -1,8 +1,8 @@
-from mopinion_api.client import MopinionClient
 import unittest
 import types
 from mock import patch, call
 from requests.exceptions import RequestException
+from mopinion_api.client import MopinionClient
 
 
 class MockedResponse:
@@ -141,10 +141,13 @@ class APITest(unittest.TestCase):
         self.assertIsInstance(cm.exception, RequestException)
 
     @patch("requests.sessions.Session.request")
-    def test_api_resource_request(self, mocked_response):
+    def test_api_resource_request_iterate(self, mocked_response):
         mocked_response.side_effect = [
             MockedResponse({"token": "token"}, 200, raise_error=False),
-            MockedResponse({"_meta": {'has_more': True, 'next': '/account'}}, 200, False),
+            MockedResponse(
+                {"_meta": {"has_more": True, "next": "/account"}}, 200, False
+            ),
+            MockedResponse({"_meta": {"has_more": False}}, 200, False),
         ]
         client = MopinionClient(self.public_key, self.private_key)
         gen = client.get_resource(
@@ -169,6 +172,28 @@ class APITest(unittest.TestCase):
         )
         self.assertEqual(1, mocked_response.call_count)
         next(gen)
+        self.assertEqual(2, mocked_response.call_count)
+        next(gen)
+        self.assertEqual(3, mocked_response.call_count)
+
+    @patch("requests.sessions.Session.request")
+    def test_api_resource_request(self, mocked_response):
+        mocked_response.side_effect = [
+            MockedResponse({"token": "token"}, 200, raise_error=False),
+            MockedResponse({"_meta": {"message": "Hello World"}}, 200, False),
+        ]
+        client = MopinionClient(self.public_key, self.private_key)
+        gen = client.get_resource(
+            resource_name="reports",
+            resource_id=1,
+            sub_resource_name="feedback",
+            sub_resource_id="sht46",
+            version="2.0.0",
+            verbosity="full",
+            query_params={"key": "value"},
+            iterate=False,
+        )
+        self.assertIsInstance(gen, MockedResponse)
         self.assertEqual(2, mocked_response.call_count)
 
 
