@@ -33,35 +33,25 @@ class APITest(unittest.TestCase):
 
     @patch("requests.sessions.Session.request")
     def test_constructor(self, mocked_response):
-        mocked_response.return_value = MockedResponse({"token": "token"}, 200)
+        mocked_response.return_value = MockedResponse({"token": "token"})
         client = MopinionClient(self.public_key, self.private_key)
         self.assertIsInstance(client.session, Session)
         self.assertEqual(client.credentials.public_key, self.public_key)
-        self.assertEqual(client.credentials.private_key, self.private_key)
         self.assertEqual(len(client.session.adapters), 3)
         self.assertEqual(client.signature_token, "token")
 
     @patch("requests.sessions.Session.request")
     def test_get_signature_token(self, mocked_response):
-        mocked_response.return_value = MockedResponse(
-            {"token": "xxx-Token-xxx"}, 200, raise_error=False
-        )
+        mocked_response.return_value = MockedResponse({"token": "my-token"})
         client = MopinionClient(self.public_key, self.private_key)
         self.assertEqual(client.credentials.public_key, self.public_key)
-        self.assertEqual(client.credentials.private_key, self.private_key)
-        self.assertEqual(
-            client.signature_token, mocked_response.return_value.json()["token"]
-        )
-        mocked_response.assert_called_once_with(
-            method="GET",
-            url="https://api.mopinion.com/token",
-            headers={"Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="},
-        )
+        token = client._get_signature_token(client.credentials)
+        self.assertEqual(token, "my-token")
 
     @patch("requests.sessions.Session.request")
     def test_get_signature_token_raise(self, mocked_response):
         mocked_response.return_value = MockedResponse(
-            {"token": "xxx-Token-xxx"}, 200, raise_error=True
+            {"token": "my-token"}, raise_error=True
         )
         with self.assertRaises(RequestException) as cm:
             MopinionClient(self.public_key, self.private_key)
@@ -72,30 +62,32 @@ class APITest(unittest.TestCase):
         endpoint = EndPoint(path="/account")
         mocked_response.return_value = MockedResponse({"token": "token"})
         client = MopinionClient(self.public_key, self.private_key)
-        result = client.get_token(endpoint=endpoint, body={"key": "value"})
+        xtoken = client.get_token(endpoint=endpoint, body={"key": "value"})
         self.assertEqual(
-            result,
+            xtoken,
             b"UFVCTElDX0tFWTplMzJkYTE0M2MzMWNjMGE0NWU"
             b"1MGIwOGMwOWVmMDRjMWVhZmYwZTU5MTExOGMzMj"
             b"ViOGQxMzc1OGY3NDQ3ODZl",
         )
-        result = client.get_token(endpoint=endpoint, body=None)
+        self.assertIsInstance(xtoken, bytes)
+        xtoken = client.get_token(endpoint=endpoint, body=None)
         self.assertEqual(
-            result,
-            b'UFVCTElDX0tFWToxZDllMTE3Y2NmYTUzNGMxZjM4'
-            b'ZDMyN2JiMGZhMWQ1MTY2ZDgwNWIyYWRlMGQyM2Jm'
-            b'Y2M2ZmRkNGYwYjA3ZTI2',
+            xtoken,
+            b"UFVCTElDX0tFWToxZDllMTE3Y2NmYTUzNGMxZjM4"
+            b"ZDMyN2JiMGZhMWQ1MTY2ZDgwNWIyYWRlMGQyM2Jm"
+            b"Y2M2ZmRkNGYwYjA3ZTI2",
         )
 
     @patch("requests.sessions.Session.request")
     def test_api_request_default_args(self, mocked_response):
         mocked_response.side_effect = [
-            MockedResponse({"token": "token"}, 200, raise_error=False),
-            MockedResponse({"_meta": {"code": 200}}, 200, raise_error=False),
+            MockedResponse({"token": "my-token"}),
+            MockedResponse({"_meta": {"code": 200}}),
         ]
         client = MopinionClient(self.public_key, self.private_key)
         response = client.api_request()
         self.assertEqual(response.json()["_meta"]["code"], 200)
+        self.assertEqual(2, mocked_response.call_count)
         mocked_response.assert_has_calls(
             [
                 call(
@@ -107,9 +99,9 @@ class APITest(unittest.TestCase):
                     method="GET",
                     url="https://api.mopinion.com/account",
                     headers={
-                        "X-Auth-Token": b"UFVCTElDX0tFWToxZDllMTE3Y2NmYTUzNGMxZjM4ZDMyN"
-                        b"2JiMGZhMWQ1MTY2ZDgwNWIyYWRlMGQyM2JmY2M2ZmRkNG"
-                        b"YwYjA3ZTI2",
+                        "X-Auth-Token": b"UFVCTElDX0tFWTo1MGNkOTRmYTVmOWExYjVlNGFi"
+                        b"ZmRmOWIxNGJmNjA2YzdhOGI0ZjBhMDFjNjJkOTZm"
+                        b"MjVlNWQ4YjUxMTQwZTNm",
                         "version": "1.18.14",
                         "verbosity": "normal",
                         "Accept": "application/json",
@@ -117,13 +109,12 @@ class APITest(unittest.TestCase):
                 ),
             ]
         )
-        self.assertEqual(2, mocked_response.call_count)
 
     @patch("requests.sessions.Session.request")
     def test_api_request(self, mocked_response):
         mocked_response.side_effect = [
-            MockedResponse({"token": "token"}, 200, raise_error=False),
-            MockedResponse({"_meta": {"code": 200}}, 200, raise_error=False),
+            MockedResponse({"token": "token"}),
+            MockedResponse({"_meta": {"code": 200}}),
         ]
         client = MopinionClient(self.public_key, self.private_key)
         response = client.api_request(
@@ -135,6 +126,7 @@ class APITest(unittest.TestCase):
             body={"key": "value"},
         )
         self.assertEqual(response.json()["_meta"]["code"], 200)
+        self.assertEqual(2, mocked_response.call_count)
         mocked_response.assert_has_calls(
             [
                 call(
@@ -158,13 +150,27 @@ class APITest(unittest.TestCase):
                 ),
             ]
         )
+
+    @patch("requests.sessions.Session.request")
+    def test_api_request_2(self, mocked_response):
+        mocked_response.side_effect = [
+            MockedResponse({"token": "token"}),
+            MockedResponse({"_meta": {"code": 200}}),
+        ]
+        client = MopinionClient(self.public_key, self.private_key)
+        response = client.api_request(
+            endpoint="/reports",
+            query_params={"key": "value"},
+            content_negotiation="application/x-yaml",
+        )
+        self.assertEqual(response.json()["_meta"]["code"], 200)
         self.assertEqual(2, mocked_response.call_count)
 
     @patch("requests.sessions.Session.request")
     def test_request_raise(self, mocked_response):
         mocked_response.side_effect = [
-            MockedResponse({"token": "token"}, 200, raise_error=False),
-            MockedResponse({}, 200, raise_error=True),
+            MockedResponse({"token": "token"}),
+            MockedResponse({}, raise_error=True),
         ]
         client = MopinionClient(self.public_key, self.private_key)
         with self.assertRaises(RequestException) as cm:
@@ -174,57 +180,46 @@ class APITest(unittest.TestCase):
     @patch("requests.sessions.Session.request")
     def test_api_resource_request_iterate(self, mocked_response):
         mocked_response.side_effect = [
-            MockedResponse({"token": "token"}, 200, raise_error=False),
-            MockedResponse(
-                {"_meta": {"has_more": True, "next": "/account"}}, 200, False
-            ),
-            MockedResponse({"_meta": {"has_more": False}}, 200, False),
+            MockedResponse({"token": "token"}, raise_error=False),
+            MockedResponse({"_meta": {"has_more": True, "next": "/account"}}),
+            MockedResponse({"_meta": {"has_more": False}}),
         ]
         client = MopinionClient(self.public_key, self.private_key)
-        gen = client.get_resource(
+        generator = client.get_resource(
             resource_name="reports",
             resource_id=1,
             sub_resource_name="feedback",
-            sub_resource_id="sht46",
+            sub_resource_id="string_id",
             version="2.0.0",
             verbosity="full",
             query_params={"key": "value"},
             iterate=True,
         )
-        self.assertIsInstance(gen, types.GeneratorType)
-        mocked_response.assert_has_calls(
-            [
-                call(
-                    method="GET",
-                    url="https://api.mopinion.com/token",
-                    headers={"Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="},
-                )
-            ]
-        )
+        self.assertIsInstance(generator, types.GeneratorType)
         self.assertEqual(1, mocked_response.call_count)
-        next(gen)
+        next(generator)
         self.assertEqual(2, mocked_response.call_count)
-        next(gen)
+        next(generator)
         self.assertEqual(3, mocked_response.call_count)
 
     @patch("requests.sessions.Session.request")
-    def test_api_resource_request(self, mocked_response):
+    def test_api_resource_request_calls(self, mocked_response):
         mocked_response.side_effect = [
             MockedResponse({"token": "token"}, 200, raise_error=False),
             MockedResponse({"_meta": {"message": "Hello World"}}, 200, False),
         ]
         client = MopinionClient(self.public_key, self.private_key)
-        gen = client.get_resource(
+        result = client.get_resource(
             resource_name="reports",
             resource_id=1,
             sub_resource_name="feedback",
-            sub_resource_id="sht46",
+            sub_resource_id="string_id",
             version="2.0.0",
             verbosity="full",
             query_params={"key": "value"},
             iterate=False,
         )
-        self.assertIsInstance(gen, MockedResponse)
+        self.assertEqual(result.json()["_meta"]["message"], "Hello World")
         self.assertEqual(2, mocked_response.call_count)
 
 

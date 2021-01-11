@@ -1,7 +1,7 @@
 import re
 
 from typing import Optional, Union
-from pydantic import BaseModel, ValidationError, validator, root_validator
+from pydantic import BaseModel, validator, root_validator
 from mopinion_api import settings
 
 
@@ -69,7 +69,7 @@ class ApiRequestArguments(BaseModel):
         return v
 
     @validator("method")
-    def validate_mehtod(cls, v):
+    def validate_method(cls, v):
         if v.lower() not in settings.ALLOWED_METHODS:
             raise ValueError(
                 f"'{v}' is not a valid choice. Please consider one of: "

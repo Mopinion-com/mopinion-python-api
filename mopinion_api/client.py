@@ -30,7 +30,7 @@ class AbstractClient(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_token(self, endpoint: EndPoint, body: Optional[dict]) -> b64encode:
+    def get_token(self, endpoint: EndPoint, body: Optional[dict]) -> bytes:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -90,7 +90,7 @@ class MopinionClient(AbstractClient):
         response.raise_for_status()
         return response.json()["token"]
 
-    def get_token(self, endpoint: EndPoint, body: Optional[dict]) -> b64encode:
+    def get_token(self, endpoint: EndPoint, body: Optional[dict]) -> bytes:
         uri_and_body = f"{endpoint.path}|{json.dumps(body or '')}".encode("utf-8")
         uri_and_body_hmac_sha256 = hmac.new(
             self.signature_token.encode("utf-8"),
