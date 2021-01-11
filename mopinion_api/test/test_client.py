@@ -18,9 +18,6 @@ class MockedResponse:
     def json(self) -> dict:
         return self.json_data
 
-    def ok(self) -> bool:
-        return str(self.status_code).startswith("2")
-
     def raise_for_status(self):
         if self.raise_error:
             raise RequestException
@@ -39,6 +36,8 @@ class APITest(unittest.TestCase):
         mocked_response.return_value = MockedResponse({"token": "token"}, 200)
         client = MopinionClient(self.public_key, self.private_key)
         self.assertIsInstance(client.session, Session)
+        self.assertEqual(client.credentials.public_key, self.public_key)
+        self.assertEqual(client.credentials.private_key, self.private_key)
         self.assertEqual(len(client.session.adapters), 3)
         self.assertEqual(client.signature_token, "token")
 
@@ -80,6 +79,13 @@ class APITest(unittest.TestCase):
             b"1MGIwOGMwOWVmMDRjMWVhZmYwZTU5MTExOGMzMj"
             b"ViOGQxMzc1OGY3NDQ3ODZl",
         )
+        result = client.get_token(endpoint=endpoint, body=None)
+        self.assertEqual(
+            result,
+            b'UFVCTElDX0tFWToxZDllMTE3Y2NmYTUzNGMxZjM4'
+            b'ZDMyN2JiMGZhMWQ1MTY2ZDgwNWIyYWRlMGQyM2Jm'
+            b'Y2M2ZmRkNGYwYjA3ZTI2',
+        )
 
     @patch("requests.sessions.Session.request")
     def test_api_request_default_args(self, mocked_response):
@@ -89,7 +95,6 @@ class APITest(unittest.TestCase):
         ]
         client = MopinionClient(self.public_key, self.private_key)
         response = client.api_request()
-        self.assertTrue(response.ok)
         self.assertEqual(response.json()["_meta"]["code"], 200)
         mocked_response.assert_has_calls(
             [
@@ -129,7 +134,6 @@ class APITest(unittest.TestCase):
             query_params={"key": "value"},
             body={"key": "value"},
         )
-        self.assertTrue(response.ok)
         self.assertEqual(response.json()["_meta"]["code"], 200)
         mocked_response.assert_has_calls(
             [

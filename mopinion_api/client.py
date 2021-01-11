@@ -33,35 +33,35 @@ class AbstractClient(abc.ABC):
     def get_token(self, endpoint: EndPoint, body: Optional[dict]) -> b64encode:
         raise NotImplementedError
 
-    # @abc.abstractmethod
-    # def api_request(
-    #     self,
-    #     endpoint: str,
-    #     method: str,
-    #     version: str,
-    #     verbosity: str,
-    #     content_negotiation: str,
-    #     body: dict,
-    #     query_params: dict,
-    # ) -> Response:
-    #     raise NotImplementedError
+    @abc.abstractmethod
+    def api_request(
+        self,
+        endpoint: str,
+        method: str,
+        version: str,
+        verbosity: str,
+        content_negotiation: str,
+        body: dict,
+        query_params: dict,
+    ) -> Response:
+        raise NotImplementedError
 
-    # @abc.abstractmethod
-    # def get_resource(
-    #     self,
-    #     resource_name: str,
-    #     resource_id: Union[str, int],
-    #     sub_resource_name: str,
-    #     sub_resource_id: Union[str, int],
-    #     method: str,
-    #     version: str,
-    #     content_negotiation: str,
-    #     verbosity: str,
-    #     query_params: dict,
-    #     body: dict,
-    #     iterate: bool,
-    # ):
-    #     raise NotImplementedError
+    @abc.abstractmethod
+    def get_resource(
+        self,
+        resource_name: str,
+        resource_id: Union[str, int],
+        sub_resource_name: str,
+        sub_resource_id: Union[str, int],
+        method: str,
+        version: str,
+        content_negotiation: str,
+        verbosity: str,
+        query_params: dict,
+        body: dict,
+        iterate: bool,
+    ):
+        raise NotImplementedError
 
 
 class MopinionClient(AbstractClient):
