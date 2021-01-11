@@ -7,11 +7,11 @@ from typing import Union, Optional
 from requests.models import Response
 from requests.adapters import HTTPAdapter
 from mopinion_api import settings
-from mopinion_api.dataclasses import Credentials
-from mopinion_api.dataclasses import Endpoint
-from mopinion_api.dataclasses import ApiRequestArguments
-from mopinion_api.dataclasses import ResourceUri
-from mopinion_api.dataclasses import ResourceVerbosity
+from mopinion_api.models import Credentials
+from mopinion_api.models import EndPoint
+from mopinion_api.models import ApiRequestArguments
+from mopinion_api.models import ResourceUri
+from mopinion_api.models import ResourceVerbosity
 
 from base64 import b64encode
 import requests
@@ -30,30 +30,50 @@ class AbstractClient(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def api_request(
-        self,
-        endpoint: str,
-        method: str,
-        version: str,
-        verbosity: str,
-        content_negotiation: str,
-        body: dict,
-        query_params: dict,
-    ) -> Response:
+    def get_token(self, endpoint: EndPoint, body: Optional[dict]) -> b64encode:
         raise NotImplementedError
 
-    @abc.abstractmethod
-    def get_token(self, endpoint: Endpoint, body: Optional[dict]) -> b64encode:
-        raise NotImplementedError
+    # @abc.abstractmethod
+    # def api_request(
+    #     self,
+    #     endpoint: str,
+    #     method: str,
+    #     version: str,
+    #     verbosity: str,
+    #     content_negotiation: str,
+    #     body: dict,
+    #     query_params: dict,
+    # ) -> Response:
+    #     raise NotImplementedError
+
+    # @abc.abstractmethod
+    # def get_resource(
+    #     self,
+    #     resource_name: str,
+    #     resource_id: Union[str, int],
+    #     sub_resource_name: str,
+    #     sub_resource_id: Union[str, int],
+    #     method: str,
+    #     version: str,
+    #     content_negotiation: str,
+    #     verbosity: str,
+    #     query_params: dict,
+    #     body: dict,
+    #     iterate: bool,
+    # ):
+    #     raise NotImplementedError
 
 
 class MopinionClient(AbstractClient):
     def __init__(self, public_key: str, private_key: str) -> None:
-        self.credentials = Credentials(public_key, private_key)
+        self.credentials = Credentials(public_key=public_key, private_key=private_key)
         adapter = HTTPAdapter(max_retries=settings.MAX_RETRIES)
         self.session = requests.Session()
         self.session.mount(settings.BASE_URL, adapter=adapter)
         self.signature_token = self._get_signature_token(self.credentials)
+
+    def __del__(self):
+        self.session.close()
 
     def _get_signature_token(self, credentials: Credentials) -> str:
         # The authorization method is public_key:private_key encoded as b64 string
@@ -70,7 +90,7 @@ class MopinionClient(AbstractClient):
         response.raise_for_status()
         return response.json()["token"]
 
-    def get_token(self, endpoint: Endpoint, body: Optional[dict]) -> b64encode:
+    def get_token(self, endpoint: EndPoint, body: Optional[dict]) -> b64encode:
         uri_and_body = f"{endpoint.path}|{json.dumps(body or '')}".encode("utf-8")
         uri_and_body_hmac_sha256 = hmac.new(
             self.signature_token.encode("utf-8"),
@@ -100,7 +120,7 @@ class MopinionClient(AbstractClient):
             method=method,
             version=version,
             verbosity=verbosity,
-            endpoint=Endpoint(endpoint),
+            endpoint=EndPoint(path=endpoint),
             content_negotiation=content_negotiation,
         )
 
@@ -164,11 +184,11 @@ class MopinionClient(AbstractClient):
 
         # if iterate, yield messages till has_more == False
         if iterate:
-            return self.get_iterator(resource_uri, params)
+            return self._get_iterator(resource_uri, params)
         else:
             return self.api_request(endpoint=resource_uri.endpoint, **params)
 
-    def get_iterator(self, resource_uri: ResourceUri, params: dict):
+    def _get_iterator(self, resource_uri: ResourceUri, params: dict):
         has_more = True
         uri = resource_uri.endpoint
         while has_more:

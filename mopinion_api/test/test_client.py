@@ -1,12 +1,16 @@
 import unittest
 import types
 from mock import patch, call
+from requests import Session
 from requests.exceptions import RequestException
 from mopinion_api.client import MopinionClient
+from mopinion_api.models import EndPoint
 
 
 class MockedResponse:
-    def __init__(self, json_data: dict, status_code: int, raise_error: bool):
+    def __init__(
+        self, json_data: dict, status_code: int = 200, raise_error: bool = False
+    ):
         self.json_data = json_data
         self.status_code = status_code
         self.raise_error = raise_error
@@ -29,6 +33,14 @@ class APITest(unittest.TestCase):
 
     def tearDown(self) -> None:
         pass
+
+    @patch("requests.sessions.Session.request")
+    def test_constructor(self, mocked_response):
+        mocked_response.return_value = MockedResponse({"token": "token"}, 200)
+        client = MopinionClient(self.public_key, self.private_key)
+        self.assertIsInstance(client.session, Session)
+        self.assertEqual(len(client.session.adapters), 3)
+        self.assertEqual(client.signature_token, "token")
 
     @patch("requests.sessions.Session.request")
     def test_get_signature_token(self, mocked_response):
@@ -57,14 +69,28 @@ class APITest(unittest.TestCase):
         self.assertIsInstance(cm.exception, RequestException)
 
     @patch("requests.sessions.Session.request")
+    def test_get_token(self, mocked_response):
+        endpoint = EndPoint(path="/account")
+        mocked_response.return_value = MockedResponse({"token": "token"})
+        client = MopinionClient(self.public_key, self.private_key)
+        result = client.get_token(endpoint=endpoint, body={"key": "value"})
+        self.assertEqual(
+            result,
+            b"UFVCTElDX0tFWTplMzJkYTE0M2MzMWNjMGE0NWU"
+            b"1MGIwOGMwOWVmMDRjMWVhZmYwZTU5MTExOGMzMj"
+            b"ViOGQxMzc1OGY3NDQ3ODZl",
+        )
+
+    @patch("requests.sessions.Session.request")
     def test_api_request_default_args(self, mocked_response):
         mocked_response.side_effect = [
             MockedResponse({"token": "token"}, 200, raise_error=False),
-            MockedResponse({"key": "value"}, 200, raise_error=False),
+            MockedResponse({"_meta": {"code": 200}}, 200, raise_error=False),
         ]
         client = MopinionClient(self.public_key, self.private_key)
         response = client.api_request()
         self.assertTrue(response.ok)
+        self.assertEqual(response.json()["_meta"]["code"], 200)
         mocked_response.assert_has_calls(
             [
                 call(
@@ -92,7 +118,7 @@ class APITest(unittest.TestCase):
     def test_api_request(self, mocked_response):
         mocked_response.side_effect = [
             MockedResponse({"token": "token"}, 200, raise_error=False),
-            MockedResponse({"key": "value"}, 200, raise_error=False),
+            MockedResponse({"_meta": {"code": 200}}, 200, raise_error=False),
         ]
         client = MopinionClient(self.public_key, self.private_key)
         response = client.api_request(
@@ -104,6 +130,7 @@ class APITest(unittest.TestCase):
             body={"key": "value"},
         )
         self.assertTrue(response.ok)
+        self.assertEqual(response.json()["_meta"]["code"], 200)
         mocked_response.assert_has_calls(
             [
                 call(
@@ -133,7 +160,7 @@ class APITest(unittest.TestCase):
     def test_request_raise(self, mocked_response):
         mocked_response.side_effect = [
             MockedResponse({"token": "token"}, 200, raise_error=False),
-            MockedResponse({"key": "value"}, 200, raise_error=True),
+            MockedResponse({}, 200, raise_error=True),
         ]
         client = MopinionClient(self.public_key, self.private_key)
         with self.assertRaises(RequestException) as cm:
