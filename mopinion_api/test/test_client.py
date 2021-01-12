@@ -178,7 +178,7 @@ class APITest(unittest.TestCase):
         self.assertIsInstance(cm.exception, RequestException)
 
     @patch("requests.sessions.Session.request")
-    def test_api_resource_request_iterate(self, mocked_response):
+    def test_api_resource_request_generator(self, mocked_response):
         mocked_response.side_effect = [
             MockedResponse({"token": "token"}, raise_error=False),
             MockedResponse({"_meta": {"has_more": True, "next": "/account"}}),
@@ -193,7 +193,7 @@ class APITest(unittest.TestCase):
             version="2.0.0",
             verbosity="full",
             query_params={"key": "value"},
-            iterate=True,
+            generator=True,
         )
         self.assertIsInstance(generator, types.GeneratorType)
         self.assertEqual(1, mocked_response.call_count)
@@ -217,7 +217,7 @@ class APITest(unittest.TestCase):
             version="2.0.0",
             verbosity="full",
             query_params={"key": "value"},
-            iterate=False,
+            generator=False,
         )
         self.assertEqual(result.json()["_meta"]["message"], "Hello World")
         self.assertEqual(2, mocked_response.call_count)

@@ -66,7 +66,7 @@ class ArgumentValidationTest(unittest.TestCase):
 
     def test_resource_verbosity_wrong(self):
         with self.assertRaises(ValidationError):
-            ResourceVerbosity(verbosity="quiet", iterate=True)
+            ResourceVerbosity(verbosity="quiet", generator=True)
 
     def test_resource_uri(self):
         uri = ResourceUri(
