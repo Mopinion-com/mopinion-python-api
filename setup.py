@@ -3,11 +3,11 @@ import os
 
 version = "1.0.0"
 
-long_description = "\n\n".join([open("README.rst").read(), open("CHANGES.rst").read()])
+long_description = "\n\n".join([open("README.md").read(), open("CHANGES.md").read()])
 
 install_requires = [
-    "requests",
-    "pydantic"
+    "requests>=2.0.0",
+    "pydantic>=1.7.0"
 ]
 
 # emulate "--no-deps" on the readthedocs build (there is no way to specify this
@@ -40,7 +40,7 @@ setup(
     zip_safe=False,
     install_requires=install_requires,
     tests_require=tests_require,
-    python_requires=">=3.7",
+    python_requires=">=3.6",
     extras_require={"test": tests_require, "cityhash": ["cityhash"]},
     entry_points={"console_scripts": []},
 )

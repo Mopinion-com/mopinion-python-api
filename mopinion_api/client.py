@@ -158,7 +158,7 @@ class MopinionClient(AbstractClient):
         verbosity: str = "normal",
         query_params: dict = None,
         body: dict = None,
-        iterate: bool = False,
+        generator: bool = False,
     ):
 
         # build uri from arguments
@@ -170,7 +170,7 @@ class MopinionClient(AbstractClient):
         )
         # validate verbosity for Protocol Implementation Generator
         # never allow quiet for iterate == True
-        resource_verbosity = ResourceVerbosity(iterate=iterate, verbosity=verbosity)
+        resource_verbosity = ResourceVerbosity(generator=generator, verbosity=verbosity)
 
         # prepare parameters
         params = {
@@ -183,12 +183,12 @@ class MopinionClient(AbstractClient):
         }
 
         # if iterate, yield messages till has_more == False
-        if iterate:
-            return self._get_iterator(resource_uri, params)
+        if generator:
+            return self._get_generator(resource_uri, params)
         else:
             return self.api_request(endpoint=resource_uri.endpoint, **params)
 
-    def _get_iterator(self, resource_uri: ResourceUri, params: dict):
+    def _get_generator(self, resource_uri: ResourceUri, params: dict):
         has_more = True
         uri = resource_uri.endpoint
         while has_more:

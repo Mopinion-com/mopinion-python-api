@@ -118,13 +118,13 @@ class ResourceUri(BaseModel):
 
 class ResourceVerbosity(BaseModel):
     verbosity: str = settings.VERBOSITY
-    iterate: bool = False
+    generator: bool = False
 
     @root_validator
     def validate_verbosity(cls, values):
         # if we want to iterate we need metadata, verbosity higher or equal than normal
         if (
-            values["iterate"]
+            values["generator"]
             and values["verbosity"].lower() not in settings.ITERATE_VERBOSITY_lEVELS
         ):
             raise ValueError(

@@ -1,5 +1,8 @@
 # From https://github.com/github/gitignore/blob/master/Python.gitignore
 
+# env vars
+.env
+
 # Pyc/pyo files.
 *.py[co]
 
