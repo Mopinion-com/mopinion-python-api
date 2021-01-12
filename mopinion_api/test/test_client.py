@@ -4,7 +4,7 @@ from mock import patch, call
 from requests import Session
 from requests.exceptions import RequestException
 from mopinion_api.client import MopinionClient
-from mopinion_api.models import EndPoint
+from mopinion_api.dataclasses import EndPoint
 
 
 class MockedResponse:
@@ -185,7 +185,7 @@ class APITest(unittest.TestCase):
             MockedResponse({"_meta": {"has_more": False}}),
         ]
         client = MopinionClient(self.public_key, self.private_key)
-        generator = client.get_resource(
+        generator = client.request_resource(
             resource_name="reports",
             resource_id=1,
             sub_resource_name="feedback",
@@ -209,7 +209,7 @@ class APITest(unittest.TestCase):
             MockedResponse({"_meta": {"message": "Hello World"}}, 200, False),
         ]
         client = MopinionClient(self.public_key, self.private_key)
-        result = client.get_resource(
+        result = client.request_resource(
             resource_name="reports",
             resource_id=1,
             sub_resource_name="feedback",

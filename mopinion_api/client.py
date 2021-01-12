@@ -7,11 +7,11 @@ from typing import Union, Optional
 from requests.models import Response
 from requests.adapters import HTTPAdapter
 from mopinion_api import settings
-from mopinion_api.models import Credentials
-from mopinion_api.models import EndPoint
-from mopinion_api.models import ApiRequestArguments
-from mopinion_api.models import ResourceUri
-from mopinion_api.models import ResourceVerbosity
+from mopinion_api.dataclasses import Credentials
+from mopinion_api.dataclasses import EndPoint
+from mopinion_api.dataclasses import ApiRequestArguments
+from mopinion_api.dataclasses import ResourceUri
+from mopinion_api.dataclasses import ResourceVerbosity
 
 from base64 import b64encode
 import requests
@@ -47,7 +47,7 @@ class AbstractClient(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_resource(
+    def request_resource(
         self,
         resource_name: str,
         resource_id: Union[str, int],
@@ -59,12 +59,28 @@ class AbstractClient(abc.ABC):
         verbosity: str,
         query_params: dict,
         body: dict,
-        iterate: bool,
+        generator: bool,
     ):
         raise NotImplementedError
 
 
 class MopinionClient(AbstractClient):
+    """Mopinion Client"""
+
+    """ System Constants """
+    TOKEN = 'token'
+    PING = 'ping'
+
+    """ Resource Constants """
+    RESOURCE_ACCOUNT = 'account'
+    RESOURCE_DEPLOYMENTS = 'deployments'
+    RESOURCE_DATASETS = 'datasets'
+    RESOURCE_REPORTS = 'reports'
+
+    """ Sub-Resource Constants """
+    SUBRESOURCE_FIELDS = 'fields'
+    SUBRESOURCE_FEEDBACK = 'feedback'
+
     def __init__(self, public_key: str, private_key: str) -> None:
         self.credentials = Credentials(public_key=public_key, private_key=private_key)
         adapter = HTTPAdapter(max_retries=settings.MAX_RETRIES)
@@ -146,7 +162,7 @@ class MopinionClient(AbstractClient):
         response.raise_for_status()
         return response
 
-    def get_resource(
+    def request_resource(
         self,
         resource_name: str,
         resource_id: Union[str, int] = None,
@@ -169,7 +185,7 @@ class MopinionClient(AbstractClient):
             sub_resource_id=sub_resource_id,
         )
         # validate verbosity for Protocol Implementation Generator
-        # never allow quiet for iterate == True
+        # never allow quiet for generator==True
         resource_verbosity = ResourceVerbosity(generator=generator, verbosity=verbosity)
 
         # prepare parameters
@@ -182,17 +198,15 @@ class MopinionClient(AbstractClient):
             "content_negotiation": content_negotiation,
         }
 
-        # if iterate, yield messages till has_more == False
+        # if generator==True, yield messages till next (uri) == False
         if generator:
             return self._get_generator(resource_uri, params)
         else:
             return self.api_request(endpoint=resource_uri.endpoint, **params)
 
     def _get_generator(self, resource_uri: ResourceUri, params: dict):
-        has_more = True
-        uri = resource_uri.endpoint
-        while has_more:
-            response = self.api_request(endpoint=uri, **params)
-            has_more = response.json()["_meta"]["has_more"]
+        next_uri = resource_uri.endpoint
+        while next_uri:
+            response = self.api_request(endpoint=next_uri, **params)
             yield response
-            uri = response.json()["_meta"]["next"]
+            next_uri = response.json()["_meta"]["next"]

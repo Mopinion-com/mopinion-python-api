@@ -28,6 +28,13 @@ Requires Python 3.6
 pip install mopinion-python-api
 ```
 
+### Tests
+
+Run:
+```bash
+pytest
+```
+
 ### Examples
 
 The example folder contains an  example of the client, which gives an idea how the client can be used and what is possible.

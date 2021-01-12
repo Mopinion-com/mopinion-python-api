@@ -17,4 +17,4 @@ if __name__ == "__main__":
     print(client.api_request('/reports'))
 
     # different content application
-    print(client.api_request('/reports', content_negotiation='application/x-yaml'))
+    print(client.api_request('/feedback', content_negotiation='application/x-yaml'))

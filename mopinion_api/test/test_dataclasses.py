@@ -1,11 +1,11 @@
 import unittest
 
 from mopinion_api import settings
-from mopinion_api.models import ApiRequestArguments
-from mopinion_api.models import EndPoint
-from mopinion_api.models import ResourceUri
-from mopinion_api.models import ResourceVerbosity
-from pydantic import ValidationError
+from mopinion_api.dataclasses import ApiRequestArguments
+from mopinion_api.dataclasses import EndPoint
+from mopinion_api.dataclasses import ResourceUri
+from mopinion_api.dataclasses import ResourceVerbosity
+from mopinion_api.client import MopinionClient as client
 
 
 class ArgumentValidationTest(unittest.TestCase):
@@ -38,39 +38,39 @@ class ArgumentValidationTest(unittest.TestCase):
         self.assertEqual(arguments.endpoint.path, "/reports")
 
     def test_version_wrong(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             ApiRequestArguments(endpoint=EndPoint(path="/account"), version="3.1.0")
 
     def test_verbosity_wrong(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             ApiRequestArguments(endpoint=EndPoint(path="/account"), verbosity="buzz")
 
     def test_method_wrong(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             ApiRequestArguments(endpoint=EndPoint(path="/account"), method="PATCH")
 
     def test_content_negotiation_wrong(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             ApiRequestArguments(
                 endpoint=EndPoint(path="/account"),
                 content_negotiation="application/xml",
             )
 
     def test_endpoint_wrong_start(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             ApiRequestArguments(endpoint=EndPoint(path="account"))
 
     def test_endpoint_wrong_uri(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             ApiRequestArguments(endpoint=EndPoint(path="/buzz"))
 
     def test_resource_verbosity_wrong(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValueError):
             ResourceVerbosity(verbosity="quiet", generator=True)
 
     def test_resource_uri(self):
         uri = ResourceUri(
-            resource_name="account",
+            resource_name=client.RESOURCE_ACCOUNT,
             resource_id=None,
             sub_resource_name=None,
             sub_resource_id=None,
@@ -79,7 +79,7 @@ class ArgumentValidationTest(unittest.TestCase):
 
     def test_resource_uri_2(self):
         uri = ResourceUri(
-            resource_name="deployments",
+            resource_name=client.RESOURCE_DEPLOYMENTS,
             resource_id="string",
             sub_resource_name=None,
             sub_resource_id=None,
@@ -88,21 +88,39 @@ class ArgumentValidationTest(unittest.TestCase):
 
     def test_resource_uri_3(self):
         uri = ResourceUri(
-            resource_name="datasets",
+            resource_name=client.RESOURCE_DATASETS,
             resource_id=1,
-            sub_resource_name="fields",
+            sub_resource_name=client.SUBRESOURCE_FIELDS,
             sub_resource_id=None,
         )
         self.assertEqual(uri.endpoint, "/datasets/1/fields")
 
     def test_resource_uri_4(self):
         uri = ResourceUri(
-            resource_name="reports",
+            resource_name=client.RESOURCE_REPORTS,
             resource_id=1,
-            sub_resource_name="feedback",
+            sub_resource_name=client.SUBRESOURCE_FEEDBACK,
             sub_resource_id="string",
         )
         self.assertEqual(uri.endpoint, "/reports/1/feedback/string")
+
+    def test_wrong_uri(self):
+        with self.assertRaises(ValueError):
+            ResourceUri(
+                resource_name="buzz",
+                resource_id=1,
+                sub_resource_name=client.SUBRESOURCE_FEEDBACK,
+                sub_resource_id="string_id",
+            )
+
+    def test_wrong_uri_2(self):
+        with self.assertRaises(ValueError):
+            ResourceUri(
+                resource_name=client.RESOURCE_REPORTS,
+                resource_id=1,
+                sub_resource_name="buzz",
+                sub_resource_id="string_id",
+            )
 
 
 if __name__ == "__main__":
