@@ -178,6 +178,14 @@ class APITest(unittest.TestCase):
         self.assertIsInstance(cm.exception, RequestException)
 
     @patch("requests.sessions.Session.request")
+    def test_request_wrong_paths(self, mocked_response):
+        client = MopinionClient(self.public_key, self.private_key)
+        weird_paths = ['/accounts', '/']
+        for path in weird_paths:
+            with self.assertRaises(ValueError):
+                client.api_request(endpoint=path)
+
+    @patch("requests.sessions.Session.request")
     def test_api_resource_request_generator(self, mocked_response):
         mocked_response.side_effect = [
             MockedResponse({"token": "token"}, raise_error=False),
@@ -186,9 +194,9 @@ class APITest(unittest.TestCase):
         ]
         client = MopinionClient(self.public_key, self.private_key)
         generator = client.request_resource(
-            resource_name="reports",
+            resource_name=client.RESOURCE_REPORTS,
             resource_id=1,
-            sub_resource_name="feedback",
+            sub_resource_name=client.SUBRESOURCE_FEEDBACK,
             sub_resource_id="string_id",
             version="2.0.0",
             verbosity="full",
@@ -210,9 +218,9 @@ class APITest(unittest.TestCase):
         ]
         client = MopinionClient(self.public_key, self.private_key)
         result = client.request_resource(
-            resource_name="reports",
+            resource_name=client.RESOURCE_REPORTS,
             resource_id=1,
-            sub_resource_name="feedback",
+            sub_resource_name=client.SUBRESOURCE_FEEDBACK,
             sub_resource_id="string_id",
             version="2.0.0",
             verbosity="full",
