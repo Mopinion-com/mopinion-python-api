@@ -180,10 +180,44 @@ class APITest(unittest.TestCase):
     @patch("requests.sessions.Session.request")
     def test_request_wrong_paths(self, mocked_response):
         client = MopinionClient(self.public_key, self.private_key)
-        weird_paths = ['/accounts', '/']
-        for path in weird_paths:
+        weird_paths = [
+            '',
+            '/',
+            '/pings',  # must be singular
+            '/tokens',  # must be singular
+            '/accounts',  # must be singular
+            '/deployment',  # must be plural
+            '/deployment/string',  # must be plural
+            '/dataset',  # must be plural
+            '/report',  # must be plural
+            '/dataset/1/field',  # must be plural
+            '/datasets/1/file',  # must be field
+            '/reports/string_id',  #
+            '/dataset/1/feedback/1',  # must be plural
+            '/datasets/1/feedbacks/string_id',  # feedback is singular
+        ]
+        for weird_path in weird_paths:
             with self.assertRaises(ValueError):
-                client.api_request(endpoint=path)
+                client.api_request(endpoint=weird_path)
+
+    @patch("requests.sessions.Session.request")
+    def test_request_right_paths(self, mocked_response):
+        paths = [
+            '/ping',
+            '/token',
+            '/account',
+            '/deployments',
+            '/deployments/string',
+            '/reports',
+            '/reports/1',
+            '/datasets',
+            '/datasets/1/fields',
+            '/datasets/1/feedback/string_id',
+        ]
+        for path in paths:
+            mocked_response.return_value = MockedResponse({"token": "token"})
+            client = MopinionClient(self.public_key, self.private_key)
+            client.api_request(endpoint=path)
 
     @patch("requests.sessions.Session.request")
     def test_api_resource_request_generator(self, mocked_response):
@@ -229,6 +263,48 @@ class APITest(unittest.TestCase):
         )
         self.assertEqual(result.json()["_meta"]["message"], "Hello World")
         self.assertEqual(2, mocked_response.call_count)
+
+    @patch("requests.sessions.Session.request")
+    def test_request_wrong_resources(self, mocked_response):
+        client = MopinionClient(self.public_key, self.private_key)
+        weird_path_resources = [
+            (MopinionClient.SUBRESOURCE_FIELDS, None, None, None),
+            (MopinionClient.SUBRESOURCE_FEEDBACK, None, None, None),
+            (MopinionClient.RESOURCE_DATASETS, 1, MopinionClient.RESOURCE_DEPLOYMENTS, None),
+            (MopinionClient.RESOURCE_DATASETS, 1, MopinionClient.RESOURCE_REPORTS, 'string_id'),
+        ]
+        for weird_path in weird_path_resources:
+            with self.assertRaises(ValueError):
+                client.request_resource(
+                    resource_name=weird_path[0],
+                    resource_id=weird_path[1],
+                    sub_resource_name=weird_path[2],
+                    sub_resource_id=weird_path[3],
+                )
+
+    @patch("requests.sessions.Session.request")
+    def test_request_right_resources(self, mocked_response):
+        paths_resources = [
+            (MopinionClient.PING, None, None, None),
+            (MopinionClient.TOKEN, None, None, None),
+            (MopinionClient.RESOURCE_ACCOUNT, None, None, None),
+            (MopinionClient.RESOURCE_DEPLOYMENTS, None, None, None),
+            (MopinionClient.RESOURCE_DEPLOYMENTS, 'string_id', None, None),
+            (MopinionClient.RESOURCE_REPORTS, None, None, None),
+            (MopinionClient.RESOURCE_REPORTS, 1, None, None),
+            (MopinionClient.RESOURCE_DATASETS, None, None, None),
+            (MopinionClient.RESOURCE_DATASETS, 1, MopinionClient.SUBRESOURCE_FIELDS, None),
+            (MopinionClient.RESOURCE_DATASETS, 1, MopinionClient.SUBRESOURCE_FEEDBACK, 'string_id'),
+        ]
+        for resources in paths_resources:
+            mocked_response.return_value = MockedResponse({"token": "token"})
+            client = MopinionClient(self.public_key, self.private_key)
+            client.request_resource(
+                resource_name=resources[0],
+                resource_id=resources[1],
+                sub_resource_name=resources[2],
+                sub_resource_id=resources[3],
+            )
 
 
 if __name__ == "__main__":

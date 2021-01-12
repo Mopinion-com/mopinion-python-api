@@ -104,7 +104,9 @@ class ResourceUri(Argument):
             MopinionClient.RESOURCE_ACCOUNT,
             MopinionClient.RESOURCE_DEPLOYMENTS,
             MopinionClient.RESOURCE_DATASETS,
-            MopinionClient.RESOURCE_REPORTS
+            MopinionClient.RESOURCE_REPORTS,
+            MopinionClient.PING,
+            MopinionClient.TOKEN
         ]
         allowed_subresources = [
             MopinionClient.SUBRESOURCE_FEEDBACK,
@@ -112,7 +114,7 @@ class ResourceUri(Argument):
         ]
 
         if self.resource_name and self.resource_name not in allowed_resources:
-            raise ValueError(f"Subresource name {self.sub_resource_name} must be one of {allowed_resources}")
+            raise ValueError(f"Resource name {self.resource_name} must be one of {allowed_resources}")
 
         if self.sub_resource_name and self.sub_resource_name not in allowed_subresources:
             raise ValueError(f"Subresource name {self.sub_resource_name} must be one of {allowed_subresources}")
