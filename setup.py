@@ -5,10 +5,7 @@ version = "1.0.0"
 
 long_description = "\n\n".join([open("README.md").read(), open("CHANGES.md").read()])
 
-install_requires = [
-    "requests>=2.0.0",
-    "pydantic>=1.7.0"
-]
+install_requires = ["requests>=2.0.0"]
 
 # emulate "--no-deps" on the readthedocs build (there is no way to specify this
 # behaviour in the .readthedocs.yml)

@@ -68,18 +68,18 @@ class MopinionClient(AbstractClient):
     """Mopinion Client"""
 
     """ System Constants """
-    TOKEN = 'token'
-    PING = 'ping'
+    TOKEN = "token"
+    PING = "ping"
 
     """ Resource Constants """
-    RESOURCE_ACCOUNT = 'account'
-    RESOURCE_DEPLOYMENTS = 'deployments'
-    RESOURCE_DATASETS = 'datasets'
-    RESOURCE_REPORTS = 'reports'
+    RESOURCE_ACCOUNT = "account"
+    RESOURCE_DEPLOYMENTS = "deployments"
+    RESOURCE_DATASETS = "datasets"
+    RESOURCE_REPORTS = "reports"
 
     """ Sub-Resource Constants """
-    SUBRESOURCE_FIELDS = 'fields'
-    SUBRESOURCE_FEEDBACK = 'feedback'
+    SUBRESOURCE_FIELDS = "fields"
+    SUBRESOURCE_FEEDBACK = "feedback"
 
     def __init__(self, public_key: str, private_key: str) -> None:
         self.credentials = Credentials(public_key=public_key, private_key=private_key)
@@ -176,6 +176,8 @@ class MopinionClient(AbstractClient):
         body: dict = None,
         generator: bool = False,
     ):
+        """Higher abstraction of api_requests. It enables generator
+        protocol when requesting large resources"""
 
         # build uri from arguments
         resource_uri = ResourceUri(

@@ -181,20 +181,22 @@ class APITest(unittest.TestCase):
     def test_request_wrong_paths(self, mocked_response):
         client = MopinionClient(self.public_key, self.private_key)
         weird_paths = [
-            '',
-            '/',
-            '/pings',  # must be singular
-            '/tokens',  # must be singular
-            '/accounts',  # must be singular
-            '/deployment',  # must be plural
-            '/deployment/string',  # must be plural
-            '/dataset',  # must be plural
-            '/report',  # must be plural
-            '/dataset/1/field',  # must be plural
-            '/datasets/1/file',  # must be field
-            '/reports/string_id',  #
-            '/dataset/1/feedback/1',  # must be plural
-            '/datasets/1/feedbacks/string_id',  # feedback is singular
+            "",
+            "/",
+            "/pings",  # must be singular
+            "/tokens",  # must be singular
+            "/accounts",  # must be singular
+            "/deployment",  # must be plural
+            "/deployment/string",  # must be plural
+            "/dataset",  # must be plural
+            "/report",  # must be plural
+            "/dataset/1/field",  # must be plural
+            "/datasets/1/file",  # must be field
+            "/datasets/string/field",  # must be integer
+            "/reports/string_id",  #
+            "/dataset/1/feedback/1",  # must be plural
+            "/datasets/string/feedback/string_id",  # must be integer
+            "/datasets/1/feedbacks/string_id",  # feedback is singular
         ]
         for weird_path in weird_paths:
             with self.assertRaises(ValueError):
@@ -203,16 +205,16 @@ class APITest(unittest.TestCase):
     @patch("requests.sessions.Session.request")
     def test_request_right_paths(self, mocked_response):
         paths = [
-            '/ping',
-            '/token',
-            '/account',
-            '/deployments',
-            '/deployments/string',
-            '/reports',
-            '/reports/1',
-            '/datasets',
-            '/datasets/1/fields',
-            '/datasets/1/feedback/string_id',
+            "/ping",
+            "/token",
+            "/account",
+            "/deployments",
+            "/deployments/string",
+            "/reports",
+            "/reports/1",
+            "/datasets",
+            "/datasets/1/fields",
+            "/datasets/1/feedback/string_id",
         ]
         for path in paths:
             mocked_response.return_value = MockedResponse({"token": "token"})
@@ -270,8 +272,18 @@ class APITest(unittest.TestCase):
         weird_path_resources = [
             (MopinionClient.SUBRESOURCE_FIELDS, None, None, None),
             (MopinionClient.SUBRESOURCE_FEEDBACK, None, None, None),
-            (MopinionClient.RESOURCE_DATASETS, 1, MopinionClient.RESOURCE_DEPLOYMENTS, None),
-            (MopinionClient.RESOURCE_DATASETS, 1, MopinionClient.RESOURCE_REPORTS, 'string_id'),
+            (
+                MopinionClient.RESOURCE_DATASETS,
+                1,
+                MopinionClient.RESOURCE_DEPLOYMENTS,
+                None,
+            ),
+            (
+                MopinionClient.RESOURCE_DATASETS,
+                1,
+                MopinionClient.RESOURCE_REPORTS,
+                "string_id",
+            ),
         ]
         for weird_path in weird_path_resources:
             with self.assertRaises(ValueError):
@@ -289,12 +301,22 @@ class APITest(unittest.TestCase):
             (MopinionClient.TOKEN, None, None, None),
             (MopinionClient.RESOURCE_ACCOUNT, None, None, None),
             (MopinionClient.RESOURCE_DEPLOYMENTS, None, None, None),
-            (MopinionClient.RESOURCE_DEPLOYMENTS, 'string_id', None, None),
+            (MopinionClient.RESOURCE_DEPLOYMENTS, "string_id", None, None),
             (MopinionClient.RESOURCE_REPORTS, None, None, None),
             (MopinionClient.RESOURCE_REPORTS, 1, None, None),
             (MopinionClient.RESOURCE_DATASETS, None, None, None),
-            (MopinionClient.RESOURCE_DATASETS, 1, MopinionClient.SUBRESOURCE_FIELDS, None),
-            (MopinionClient.RESOURCE_DATASETS, 1, MopinionClient.SUBRESOURCE_FEEDBACK, 'string_id'),
+            (
+                MopinionClient.RESOURCE_DATASETS,
+                1,
+                MopinionClient.SUBRESOURCE_FIELDS,
+                None,
+            ),
+            (
+                MopinionClient.RESOURCE_DATASETS,
+                1,
+                MopinionClient.SUBRESOURCE_FEEDBACK,
+                "string_id",
+            ),
         ]
         for resources in paths_resources:
             mocked_response.return_value = MockedResponse({"token": "token"})
