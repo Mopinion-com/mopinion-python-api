@@ -1,8 +1,8 @@
-BASE_URL = "https://api-test.mopinion.com"
+# Client settings
+BASE_URL = "https://api.mopinion.com"
 TOKEN_PATH = "/token"
-VERSION = "1.18.14"
-VERBOSITY = "normal"
-MAX_RETRIES = 3
+
+# Some settings for dataclasses
 VERBOSITY_lEVELS = ["quiet", "normal", "full"]
 ITERATE_VERBOSITY_lEVELS = ["normal", "full"]
 ALLOWED_METHODS = ["get", "post", "put", "delete", "options"]

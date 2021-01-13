@@ -13,7 +13,7 @@ assert SIGNATURE_TOKEN == client.signature_token
 
 # -- PING -- #
 # get
-response = client.request_resource(resource_name=client.PING)
+response = client.api_request('/ping')
 assert response.json()['code'] == 200
 print(response.json())
 "{'code': 200, 'response': 'pong', 'version': '1.18.14'}"
@@ -26,6 +26,23 @@ assert response.json()['_meta']['code'] == 200
 print(response.json())
 "{'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ..."
 
+# get with content negotiation yaml
+import yaml
+
+response = client.request_resource(
+    resource_name=client.RESOURCE_ACCOUNT,
+    content_negotiation='application/x-yaml'
+)
+try:
+    r = yaml.safe_load(response.text)
+    assert r['_meta']['code'] == 200
+except yaml.YAMLError as exc:
+    pass
+
+# get with verbosity quiet
+response = client.request_resource(resource_name=client.RESOURCE_ACCOUNT, verbosity='quiet')
+assert '_meta' not in response.json()
+
 
 # -- DEPLOYMENTS -- #
 # get
@@ -35,7 +52,7 @@ print(response.json())
 "{'0': {'key': 'defusvnns6mkl2vd3wc0wgcjh159uh3j', 'name': 'Web Feedback Deployment'}, '_meta':..."
 
 # post
-deployment_key = "0pt10n4lK3y"
+deployment_key = "my-deployment-key"
 response = client.request_resource(
     resource_name=client.RESOURCE_DEPLOYMENTS,
     method='POST',
@@ -43,17 +60,18 @@ response = client.request_resource(
 )
 assert response.json()['_meta']['code'] == 201
 print(response.json())
-"{'key': '0pt10n4lK3y', 'name': 'My Test Deployment', '_meta': {'co..."
+"{'key': 'my-deployment-key', 'name': 'My Test Deployment', '_meta': {'co..."
 
 # delete
 response = client.request_resource(
     resource_name=client.RESOURCE_DEPLOYMENTS,
-    resource_id=deployment_key,
+    resource_id="defusvnns6mkl2vd3wc0wgcjh159uh3j",
     method='DELETE',
-    query_params={'dry-run': True}
+    query_params={'dry-run': True}  # we do not want to delete anything in this examples
 )
 assert response.json()['_meta']['code'] == 200
 print(response.json())
+"{'executed': False, 'resources_affected': {'deployments': ['defusvnns6mkl2vd3wc0wgcjh159uh..."
 
 
 # -- REPORTS -- #
@@ -98,6 +116,7 @@ response = client.request_resource(
     resource_name=client.RESOURCE_REPORTS,
     resource_id=identifier,
     method='DELETE',
+    query_params={'dry-run': True}
 )
 assert response.json()['_meta']['code'] == 200
 print(response.json())
@@ -145,6 +164,7 @@ response = client.request_resource(
     resource_name=client.RESOURCE_DATASETS,
     resource_id=identifier,
     method='DELETE',
+    query_params={'dry-run': True}
 )
 assert response.json()['_meta']['code'] == 200
 print(response.json())
@@ -190,35 +210,35 @@ assert response.json()['_meta']['code'] == 200
 print(response.json())
 
 
-# -- USING GENERATOR -- #
-# get
-generator = client.request_resource(
+# -- USING ITERATOR -- #
+# get datasets
+iterator = client.request_resource(
     resource_name=client.RESOURCE_DATASETS,
     resource_id=1234,
     sub_resource_name=client.SUBRESOURCE_FEEDBACK,
-    generator=True,
+    iterator=True,
 )
 try:
     while True:
-        response = next(generator)
+        response = next(iterator)
         assert response.json()['_meta']['code'] == 200
 except StopIteration:
     pass
 finally:
-    del generator
+    del iterator
 
-# get
-generator = client.request_resource(
+# get reports
+iterator = client.request_resource(
     resource_name=client.RESOURCE_REPORTS,
     resource_id=1234,
     sub_resource_name=client.SUBRESOURCE_FEEDBACK,
-    generator=True,
+    iterator=True,
 )
 try:
     while True:
-        response = next(generator)
+        response = next(iterator)
         assert response.json()['_meta']['code'] == 200
 except StopIteration:
     pass
 finally:
-    del generator
+    del iterator

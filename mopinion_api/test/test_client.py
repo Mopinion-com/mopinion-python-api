@@ -65,17 +65,13 @@ class APITest(unittest.TestCase):
         xtoken = client.get_token(endpoint=endpoint, body={"key": "value"})
         self.assertEqual(
             xtoken,
-            b"UFVCTElDX0tFWTplMzJkYTE0M2MzMWNjMGE0NWU"
-            b"1MGIwOGMwOWVmMDRjMWVhZmYwZTU5MTExOGMzMj"
-            b"ViOGQxMzc1OGY3NDQ3ODZl",
+            b"UFVCTElDX0tFWTplMzJkYTE0M2MzMWNjMGE0NWU1MGIwOGMwOWVmMDRjMWVhZmYwZTU5MTExOGMzMjViOGQxMzc1OGY3NDQ3ODZl",
         )
         self.assertIsInstance(xtoken, bytes)
         xtoken = client.get_token(endpoint=endpoint, body=None)
         self.assertEqual(
             xtoken,
-            b"UFVCTElDX0tFWToxZDllMTE3Y2NmYTUzNGMxZjM4"
-            b"ZDMyN2JiMGZhMWQ1MTY2ZDgwNWIyYWRlMGQyM2Jm"
-            b"Y2M2ZmRkNGYwYjA3ZTI2",
+            b"UFVCTElDX0tFWTo0ZWVkZGYzNzljNDIyNDU3ZmVhOThmYzc0NGNkYTkwMGVhYmM3NmViNjM4ZjU1OTRkNGJmYmJiMGIwMWYzM2Nh",
         )
 
     @patch("requests.sessions.Session.request")
@@ -99,10 +95,10 @@ class APITest(unittest.TestCase):
                     method="GET",
                     url="https://api.mopinion.com/account",
                     headers={
-                        "X-Auth-Token": b"UFVCTElDX0tFWTo1MGNkOTRmYTVmOWExYjVlNGFi"
-                        b"ZmRmOWIxNGJmNjA2YzdhOGI0ZjBhMDFjNjJkOTZm"
-                        b"MjVlNWQ4YjUxMTQwZTNm",
-                        "version": "1.18.14",
+                        "X-Auth-Token": b"UFVCTElDX0tFWTpiMWIzY2Q0YWI2NGJmYjJhN"
+                        b"mRhMDM2NDgyN2UwOGQyNmE1NjI0YzlhNzNjMG"
+                        b"RjOWIwNTQ5ZmQ3NDQxNDAxMGNj",
+                        "version": "2.0.0",
                         "verbosity": "normal",
                         "Accept": "application/json",
                     },
@@ -121,7 +117,7 @@ class APITest(unittest.TestCase):
             method="DELETE",
             endpoint="/reports",
             version="2.0.0",
-            verbosity="full",
+            verbosity=client.VERBOSITY_FULL,
             query_params={"key": "value"},
             body={"key": "value"},
         )
@@ -161,7 +157,7 @@ class APITest(unittest.TestCase):
         response = client.api_request(
             endpoint="/reports",
             query_params={"key": "value"},
-            content_negotiation="application/x-yaml",
+            content_negotiation=client.CONTENT_YAML,
         )
         self.assertEqual(response.json()["_meta"]["code"], 200)
         self.assertEqual(2, mocked_response.call_count)
@@ -235,9 +231,9 @@ class APITest(unittest.TestCase):
             sub_resource_name=client.SUBRESOURCE_FEEDBACK,
             sub_resource_id="string_id",
             version="2.0.0",
-            verbosity="full",
+            verbosity=client.VERBOSITY_FULL,
             query_params={"key": "value"},
-            generator=True,
+            iterator=True,
         )
         self.assertIsInstance(generator, types.GeneratorType)
         self.assertEqual(1, mocked_response.call_count)
@@ -259,9 +255,9 @@ class APITest(unittest.TestCase):
             sub_resource_name=client.SUBRESOURCE_FEEDBACK,
             sub_resource_id="string_id",
             version="2.0.0",
-            verbosity="full",
+            verbosity=client.VERBOSITY_FULL,
             query_params={"key": "value"},
-            generator=False,
+            iterator=False,
         )
         self.assertEqual(result.json()["_meta"]["message"], "Hello World")
         self.assertEqual(2, mocked_response.call_count)
@@ -297,7 +293,6 @@ class APITest(unittest.TestCase):
     @patch("requests.sessions.Session.request")
     def test_request_right_resources(self, mocked_response):
         paths_resources = [
-            (MopinionClient.PING, None, None, None),
             (MopinionClient.RESOURCE_ACCOUNT, None, None, None),
             (MopinionClient.RESOURCE_DEPLOYMENTS, None, None, None),
             (MopinionClient.RESOURCE_DEPLOYMENTS, "string_id", None, None),

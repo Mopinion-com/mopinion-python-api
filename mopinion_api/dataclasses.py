@@ -57,10 +57,10 @@ class EndPoint(Argument):
 @dataclass(frozen=True)
 class ApiRequestArguments(Argument):
     endpoint: EndPoint
-    version: str = settings.VERSION
-    content_negotiation: str = "application/json"
-    verbosity: str = settings.VERBOSITY
-    method: str = "GET"
+    version: str
+    content_negotiation: str
+    verbosity: str
+    method: str
 
     def __post_init__(self):
         # verbosity levels
@@ -105,7 +105,6 @@ class ResourceUri(Argument):
             MopinionClient.RESOURCE_DEPLOYMENTS,
             MopinionClient.RESOURCE_DATASETS,
             MopinionClient.RESOURCE_REPORTS,
-            MopinionClient.PING,
         ]
         allowed_subresources = [
             MopinionClient.SUBRESOURCE_FEEDBACK,
@@ -137,13 +136,13 @@ class ResourceUri(Argument):
 
 @dataclass(frozen=True)
 class ResourceVerbosity(Argument):
-    verbosity: str = settings.VERBOSITY
-    generator: bool = False
+    verbosity: str
+    iterator: bool
 
     def __post_init__(self):
         # if we want to iterate we need metadata, verbosity higher or equal than normal
         if (
-            self.generator
+            self.iterator
             and self.verbosity.lower() not in settings.ITERATE_VERBOSITY_lEVELS
         ):
             raise ValueError(

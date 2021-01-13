@@ -30,7 +30,7 @@ class AbstractClient(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_token(self, endpoint: EndPoint, body: Optional[dict]) -> bytes:
+    def get_token(self, endpoint: EndPoint, body: Optional[dict]) -> str:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -59,16 +59,13 @@ class AbstractClient(abc.ABC):
         verbosity: str,
         query_params: dict,
         body: dict,
-        generator: bool,
+        iterator: bool,
     ):
         raise NotImplementedError
 
 
 class MopinionClient(AbstractClient):
     """Mopinion Client"""
-
-    """ System Constants """
-    PING = "ping"
 
     """ Resource Constants """
     RESOURCE_ACCOUNT = "account"
@@ -80,9 +77,18 @@ class MopinionClient(AbstractClient):
     SUBRESOURCE_FIELDS = "fields"
     SUBRESOURCE_FEEDBACK = "feedback"
 
-    def __init__(self, public_key: str, private_key: str) -> None:
+    """ Verbosity """
+    VERBOSITY_QUIET = "quiet"
+    VERBOSITY_NORMAL = "normal"
+    VERBOSITY_FULL = "full"
+
+    """ Content Negotiation """
+    CONTENT_JSON = "application/json"
+    CONTENT_YAML = "application/x-yaml"
+
+    def __init__(self, public_key: str, private_key: str, max_retries: int = 3) -> None:
         self.credentials = Credentials(public_key=public_key, private_key=private_key)
-        adapter = HTTPAdapter(max_retries=settings.MAX_RETRIES)
+        adapter = HTTPAdapter(max_retries=max_retries)
         self.session = requests.Session()
         self.session.mount(settings.BASE_URL, adapter=adapter)
         self.signature_token = self._get_signature_token(self.credentials)
@@ -105,7 +111,7 @@ class MopinionClient(AbstractClient):
         response.raise_for_status()
         return response.json()["token"]
 
-    def get_token(self, endpoint: EndPoint, body: Optional[dict]) -> bytes:
+    def get_token(self, endpoint: EndPoint, body: Optional[dict]) -> str:
         uri_and_body = f"{endpoint.path}|"
         if body:
             uri_and_body += json.dumps(body)
@@ -125,9 +131,9 @@ class MopinionClient(AbstractClient):
         self,
         endpoint: str = "/account",
         method: str = "GET",
-        version: str = "1.18.14",
-        verbosity: str = "normal",
-        content_negotiation: str = "application/json",
+        version: str = "2.0.0",
+        verbosity: str = VERBOSITY_NORMAL,
+        content_negotiation: str = CONTENT_JSON,
         body: dict = None,
         query_params: dict = None,
     ) -> Response:
@@ -171,14 +177,14 @@ class MopinionClient(AbstractClient):
         sub_resource_name: str = None,
         sub_resource_id: Union[str, int] = None,
         method: str = "GET",
-        version: str = "1.18.14",
-        content_negotiation: str = "application/json",
-        verbosity: str = "normal",
+        version: str = "2.0.0",
+        verbosity: str = VERBOSITY_NORMAL,
+        content_negotiation: str = CONTENT_JSON,
         query_params: dict = None,
         body: dict = None,
-        generator: bool = False,
+        iterator: bool = False,
     ):
-        """Higher abstraction of api_requests. It enables generator
+        """Higher abstraction of api_requests. It enables iterator
         protocol when requesting large resources"""
 
         # build uri from arguments
@@ -188,9 +194,9 @@ class MopinionClient(AbstractClient):
             sub_resource_name=sub_resource_name,
             sub_resource_id=sub_resource_id,
         )
-        # validate verbosity for Protocol Implementation Generator
-        # never allow quiet for generator==True
-        resource_verbosity = ResourceVerbosity(generator=generator, verbosity=verbosity)
+        # validate verbosity for Protocol Implementation iterator
+        # never allow quiet for iterator==True
+        resource_verbosity = ResourceVerbosity(iterator=iterator, verbosity=verbosity)
 
         # prepare parameters
         params = {
@@ -202,13 +208,13 @@ class MopinionClient(AbstractClient):
             "content_negotiation": content_negotiation,
         }
 
-        # if generator==True, yield messages till next (uri) == False
-        if generator:
-            return self._get_generator(resource_uri, params)
+        # if iterator==True, yield messages till next (uri) == False
+        if iterator:
+            return self._get_iterator(resource_uri, params)
         else:
             return self.api_request(endpoint=resource_uri.endpoint, **params)
 
-    def _get_generator(self, resource_uri: ResourceUri, params: dict):
+    def _get_iterator(self, resource_uri: ResourceUri, params: dict):
         next_uri = resource_uri.endpoint
         while next_uri:
             response = self.api_request(endpoint=next_uri, **params)

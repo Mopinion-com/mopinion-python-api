@@ -15,14 +15,6 @@ class ArgumentValidationTest(unittest.TestCase):
     def tearDown(self) -> None:
         pass
 
-    def test_api_default_arguments(self):
-        arguments = ApiRequestArguments(endpoint=EndPoint(path="/account"))
-        self.assertEqual(arguments.version, settings.VERSION)
-        self.assertEqual(arguments.verbosity, settings.VERBOSITY)
-        self.assertEqual(arguments.method.lower(), "get")
-        self.assertEqual(arguments.content_negotiation, "application/json")
-        self.assertEqual(arguments.endpoint.path, "/account")
-
     def test_api_arguments(self):
         arguments = ApiRequestArguments(
             endpoint=EndPoint(path="/reports"),
@@ -39,26 +31,53 @@ class ArgumentValidationTest(unittest.TestCase):
 
     def test_version_wrong(self):
         with self.assertRaises(ValueError):
-            ApiRequestArguments(endpoint=EndPoint(path="/account"), version="3.1.0")
+            ApiRequestArguments(
+                endpoint=EndPoint(path="/account"),
+                version="3.1.0",  # to high, maybe in the future...
+                method="GET",
+                content_negotiation="application/json",
+                verbosity="normal",
+            )
 
     def test_verbosity_wrong(self):
         with self.assertRaises(ValueError):
-            ApiRequestArguments(endpoint=EndPoint(path="/account"), verbosity="buzz")
+            ApiRequestArguments(
+                endpoint=EndPoint(path="/account"),
+                verbosity="buzz",  # does not exists
+                method="GET",
+                content_negotiation="application/json",
+                version="2.0.0",
+            )
 
     def test_method_wrong(self):
         with self.assertRaises(ValueError):
-            ApiRequestArguments(endpoint=EndPoint(path="/account"), method="PATCH")
+            ApiRequestArguments(
+                endpoint=EndPoint(path="/account"),
+                method="PATCH",  # patch it is not allowed
+                content_negotiation="application/json",
+                version="2.0.0",
+                verbosity="normal",
+            )
 
     def test_content_negotiation_wrong(self):
         with self.assertRaises(ValueError):
             ApiRequestArguments(
                 endpoint=EndPoint(path="/account"),
-                content_negotiation="application/xml",
+                content_negotiation="application/weird",
+                version="2.0.0",
+                verbosity="normal",
+                method="GET",
             )
 
     def test_endpoint_wrong_start(self):
         with self.assertRaises(ValueError):
-            ApiRequestArguments(endpoint=EndPoint(path="account"))
+            ApiRequestArguments(
+                endpoint=EndPoint(path="account"),  # need '/' at the beginning
+                content_negotiation="application/json",
+                version="2.0.0",
+                verbosity="normal",
+                method="GET",
+            )
 
     def test_endpoint_wrong_uri(self):
         with self.assertRaises(ValueError):
@@ -66,7 +85,7 @@ class ArgumentValidationTest(unittest.TestCase):
 
     def test_resource_verbosity_wrong(self):
         with self.assertRaises(ValueError):
-            ResourceVerbosity(verbosity="quiet", generator=True)
+            ResourceVerbosity(verbosity="quiet", iterator=True)
 
     def test_resource_uri(self):
         uri = ResourceUri(
