@@ -298,7 +298,6 @@ class APITest(unittest.TestCase):
     def test_request_right_resources(self, mocked_response):
         paths_resources = [
             (MopinionClient.PING, None, None, None),
-            (MopinionClient.TOKEN, None, None, None),
             (MopinionClient.RESOURCE_ACCOUNT, None, None, None),
             (MopinionClient.RESOURCE_DEPLOYMENTS, None, None, None),
             (MopinionClient.RESOURCE_DEPLOYMENTS, "string_id", None, None),

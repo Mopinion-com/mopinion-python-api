@@ -1,4 +1,4 @@
-BASE_URL = "https://api.mopinion.com"
+BASE_URL = "https://api-test.mopinion.com"
 TOKEN_PATH = "/token"
 VERSION = "1.18.14"
 VERBOSITY = "normal"

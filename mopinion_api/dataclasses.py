@@ -106,7 +106,6 @@ class ResourceUri(Argument):
             MopinionClient.RESOURCE_DATASETS,
             MopinionClient.RESOURCE_REPORTS,
             MopinionClient.PING,
-            MopinionClient.TOKEN,
         ]
         allowed_subresources = [
             MopinionClient.SUBRESOURCE_FEEDBACK,

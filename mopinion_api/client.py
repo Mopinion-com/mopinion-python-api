@@ -68,7 +68,6 @@ class MopinionClient(AbstractClient):
     """Mopinion Client"""
 
     """ System Constants """
-    TOKEN = "token"
     PING = "ping"
 
     """ Resource Constants """
@@ -107,10 +106,13 @@ class MopinionClient(AbstractClient):
         return response.json()["token"]
 
     def get_token(self, endpoint: EndPoint, body: Optional[dict]) -> bytes:
-        uri_and_body = f"{endpoint.path}|{json.dumps(body or '')}".encode("utf-8")
+        uri_and_body = f"{endpoint.path}|"
+        if body:
+            uri_and_body += json.dumps(body)
+
         uri_and_body_hmac_sha256 = hmac.new(
             self.signature_token.encode("utf-8"),
-            msg=uri_and_body,
+            msg=uri_and_body.encode("utf-8"),
             digestmod=hashlib.sha256,
         ).hexdigest()
         # create token
