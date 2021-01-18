@@ -22,6 +22,10 @@ class MockedResponse:
         if self.raise_error:
             raise RequestException
 
+    @property
+    def ok(self):
+        return str(self.status_code).startswith("2")
+
 
 class APITest(unittest.TestCase):
     def setUp(self) -> None:
@@ -81,7 +85,7 @@ class APITest(unittest.TestCase):
             MockedResponse({"_meta": {"code": 200}}),
         ]
         client = MopinionClient(self.public_key, self.private_key)
-        response = client.api_request()
+        response = client.request()
         self.assertEqual(response.json()["_meta"]["code"], 200)
         self.assertEqual(2, mocked_response.call_count)
         mocked_response.assert_has_calls(
@@ -113,7 +117,7 @@ class APITest(unittest.TestCase):
             MockedResponse({"_meta": {"code": 200}}),
         ]
         client = MopinionClient(self.public_key, self.private_key)
-        response = client.api_request(
+        response = client.request(
             method="DELETE",
             endpoint="/reports",
             version="2.0.0",
@@ -154,13 +158,26 @@ class APITest(unittest.TestCase):
             MockedResponse({"_meta": {"code": 200}}),
         ]
         client = MopinionClient(self.public_key, self.private_key)
-        response = client.api_request(
+        response = client.request(
             endpoint="/reports",
             query_params={"key": "value"},
             content_negotiation=client.CONTENT_YAML,
         )
         self.assertEqual(response.json()["_meta"]["code"], 200)
         self.assertEqual(2, mocked_response.call_count)
+
+    @patch("requests.sessions.Session.request")
+    def test_api_request_availability(self, mocked_response):
+        mocked_response.side_effect = [
+            MockedResponse({"token": "token"}),
+            MockedResponse({"code": 200, "response": "pong", "version": "1.18.14"}),
+            MockedResponse({"code": 200, "response": "pong", "version": "1.18.14"}),
+        ]
+        client = MopinionClient(self.public_key, self.private_key)
+        is_available = client.is_available()
+        self.assertTrue(is_available)
+        json_response = client.is_available(verbose=True)
+        self.assertEqual(json_response["code"], 200)
 
     @patch("requests.sessions.Session.request")
     def test_request_raise(self, mocked_response):
@@ -170,7 +187,7 @@ class APITest(unittest.TestCase):
         ]
         client = MopinionClient(self.public_key, self.private_key)
         with self.assertRaises(RequestException) as cm:
-            client.api_request()
+            client.request()
         self.assertIsInstance(cm.exception, RequestException)
 
     @patch("requests.sessions.Session.request")
@@ -196,7 +213,7 @@ class APITest(unittest.TestCase):
         ]
         for weird_path in weird_paths:
             with self.assertRaises(ValueError):
-                client.api_request(endpoint=weird_path)
+                client.request(endpoint=weird_path)
 
     @patch("requests.sessions.Session.request")
     def test_request_right_paths(self, mocked_response):
@@ -206,16 +223,20 @@ class APITest(unittest.TestCase):
             "/account",
             "/deployments",
             "/deployments/string",
+            "/deployments/my_string",
+            "/deployments/76pg3seur7occo1hogv88eltdtmxoxxl81vj"
             "/reports",
             "/reports/1",
+            "/reports/19475758",
             "/datasets",
             "/datasets/1/fields",
-            "/datasets/1/feedback/string_id",
+            "/datasets/119475758/feedback/gv88eltdtmxoxxl8_7jjtu89",
+            "/datasets/119475758/feedback/76pg3seur7occo1hogv88eltdtmxoxxl81vj",
         ]
         for path in paths:
             mocked_response.return_value = MockedResponse({"token": "token"})
             client = MopinionClient(self.public_key, self.private_key)
-            client.api_request(endpoint=path)
+            client.request(endpoint=path)
 
     @patch("requests.sessions.Session.request")
     def test_api_resource_request_generator(self, mocked_response):
@@ -225,7 +246,7 @@ class APITest(unittest.TestCase):
             MockedResponse({"_meta": {"has_more": False}}),
         ]
         client = MopinionClient(self.public_key, self.private_key)
-        generator = client.request_resource(
+        generator = client.resource(
             resource_name=client.RESOURCE_REPORTS,
             resource_id=1,
             sub_resource_name=client.SUBRESOURCE_FEEDBACK,
@@ -249,7 +270,7 @@ class APITest(unittest.TestCase):
             MockedResponse({"_meta": {"message": "Hello World"}}, 200, False),
         ]
         client = MopinionClient(self.public_key, self.private_key)
-        result = client.request_resource(
+        result = client.resource(
             resource_name=client.RESOURCE_REPORTS,
             resource_id=1,
             sub_resource_name=client.SUBRESOURCE_FEEDBACK,
@@ -283,7 +304,7 @@ class APITest(unittest.TestCase):
         ]
         for weird_path in weird_path_resources:
             with self.assertRaises(ValueError):
-                client.request_resource(
+                client.resource(
                     resource_name=weird_path[0],
                     resource_id=weird_path[1],
                     sub_resource_name=weird_path[2],
@@ -315,7 +336,7 @@ class APITest(unittest.TestCase):
         for resources in paths_resources:
             mocked_response.return_value = MockedResponse({"token": "token"})
             client = MopinionClient(self.public_key, self.private_key)
-            client.request_resource(
+            client.resource(
                 resource_name=resources[0],
                 resource_id=resources[1],
                 sub_resource_name=resources[2],

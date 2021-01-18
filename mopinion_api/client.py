@@ -34,7 +34,7 @@ class AbstractClient(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def api_request(
+    def request(
         self,
         endpoint: str,
         method: str,
@@ -47,7 +47,7 @@ class AbstractClient(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def request_resource(
+    def resource(
         self,
         resource_name: str,
         resource_id: Union[str, int],
@@ -127,7 +127,13 @@ class MopinionClient(AbstractClient):
         )
         return xtoken
 
-    def api_request(
+    def is_available(self, verbose: bool = False) -> Union[dict, bool]:
+        response = self.request(endpoint="/ping")
+        if not verbose:
+            return response.json()["code"] == 200 if response.ok else False
+        return response.json()
+
+    def request(
         self,
         endpoint: str = "/account",
         method: str = "GET",
@@ -170,7 +176,7 @@ class MopinionClient(AbstractClient):
         response.raise_for_status()
         return response
 
-    def request_resource(
+    def resource(
         self,
         resource_name: str,
         resource_id: Union[str, int] = None,
@@ -212,11 +218,11 @@ class MopinionClient(AbstractClient):
         if iterator:
             return self._get_iterator(resource_uri, params)
         else:
-            return self.api_request(endpoint=resource_uri.endpoint, **params)
+            return self.request(endpoint=resource_uri.endpoint, **params)
 
     def _get_iterator(self, resource_uri: ResourceUri, params: dict):
         next_uri = resource_uri.endpoint
         while next_uri:
-            response = self.api_request(endpoint=next_uri, **params)
+            response = self.request(endpoint=next_uri, **params)
             yield response
             next_uri = response.json()["_meta"]["next"]

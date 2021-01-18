@@ -41,12 +41,12 @@ class EndPoint(Argument):
             r"/deployments$",
             r"/deployments/\w+$",
             r"/datasets$",
-            r"/datasets/[-+]?[0-9]+$",
-            r"/datasets/[-+]?[0-9]+/fields$",
-            r"/reports/[-+]?[0-9]+/fields$",
-            r"/datasets/[-+]?[0-9]+/feedback/\w+$",
-            r"/reports/[-+]?[0-9]+/feedback/\w+$",
-            r"/reports/[-+]?[0-9]+$",
+            r"/datasets/\d+$",
+            r"/datasets/\d+/fields$",
+            r"/reports/\d+/fields$",
+            r"/datasets/\d+/feedback/\w+$",
+            r"/reports/\d+/feedback/\w+$",
+            r"/reports/\d+$",
             r"/reports$",
         ]
         regexp = re.compile("|".join(regexps), re.IGNORECASE)
