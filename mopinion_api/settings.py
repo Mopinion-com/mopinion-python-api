@@ -1,6 +1,7 @@
 # Client settings
 BASE_URL = "https://api.mopinion.com"
 TOKEN_PATH = "/token"
+LATEST_VERSION = "2.0.0"
 
 # Some settings for dataclasses
 VERBOSITY_lEVELS = ["quiet", "normal", "full"]

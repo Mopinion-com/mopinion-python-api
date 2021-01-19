@@ -13,13 +13,16 @@ Windows (pip)
 The following recipe is still a work in progress:
 
 1. `Install Python 3.* (stable) <https://www.python.org/downloads/windows/>`_
-4. Start the command prompt
-5. ``pip install requests``
+2. Start the command prompt
+3. Install mopinion-python-api::
+
+    pip install mopinion-python-api
+
 
 .. note::
 
    You might need to setup your C++ compiler according to
-   `this <https://wiki.python.org/moin/WindowsCompilers>`_
+   `this <https://wiki.python.org/moin/WindowsCompilers>`_.
 
 
 Advanced: local setup with system Python (Ubuntu)
@@ -32,10 +35,6 @@ These instructions make use of the system-wide Python 3 interpreter::
 Install mopinion-python-api::
 
     $ pip install --user mopinion-python-api
-
-Run the tests::
-
-    $ pytest
 
 
 Advanced: local setup for development (Ubuntu)
@@ -53,10 +52,6 @@ Create and activate a virtualenv::
     $ cd mopinion-python-api
     $ virtualenv --python=python3 .venv
     $ source .venv/bin/activate
-
-Install mopinion-python-api::
-
-    (.venv) $ pip install -e .[test,cityhash]
 
 Run the tests::
 

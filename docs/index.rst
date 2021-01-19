@@ -7,12 +7,12 @@ Welcome to mopinion-python-api's documentation!
 ===============================================
 
 mopinion-python-api is API client library for
-the [Mopinion Data API](https://developer.mopinion.com/api/)
+the `Mopinion Data API <https://developer.mopinion.com/api/>`_.
 
 About
 -----
 
-This package was developed by Mopinion to facilitate end users
+This package was developed by Mopinion to facilitate end-users
 interacting with the API.
 
 Contents
@@ -24,6 +24,7 @@ Contents
 
    installation
    quickstart
+   client
    license
    help
 

@@ -14,7 +14,7 @@ assert SIGNATURE_TOKEN == client.signature_token
 
 # -- PING -- #
 # get
-response = client.request(method="/ping")
+response = client.request(endpoint="/ping")
 assert response.json()["code"] == 200
 print(response.json())
 "{'code': 200, 'response': 'pong', 'version': '1.18.14'}"
@@ -22,7 +22,7 @@ print(response.json())
 
 # -- ACCOUNT -- #
 # get
-response = client.request(method="/account")
+response = client.request(endpoint="/account")
 assert response.json()["_meta"]["code"] == 200
 print(response.json())
 "{'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ..."
@@ -50,7 +50,7 @@ print(response.json())
 "{'0': {'key': 'defusvnns6mkl2vd3wc0wgcjh159uh3j', 'name': 'Web Feedback Deployment'}, '_meta':..."
 
 # post
-deployment_key = "my-deployment-key"
+deployment_key = "mydeploymentkey2"
 response = client.request(
     endpoint="/deployments",
     method="POST",
@@ -58,17 +58,17 @@ response = client.request(
 )
 assert response.json()["_meta"]["code"] == 201
 print(response.json())
-"{'key': 'my-deployment-key', 'name': 'My Test Deployment', '_meta': {'co..."
+"{'key': 'mydeploymentkey2', 'name': 'My Test Deployment', '_meta': {'co..."
 
 # delete
 response = client.request(
-    endpoint="/deployments/defusvnns6mkl2vd3wc0wgcjh159uh3j",
+    endpoint="/deployments/{}".format(deployment_key),
     method="DELETE",
-    query_params={"dry-run": True},
+    # query_params={"dry-run": True},
 )
 assert response.json()["_meta"]["code"] == 200
 print(response.json())
-"{'executed': False, 'resources_affected': {'deployments': ['defusvnns6mkl2vd3wc0wgcjh159uh..."
+"{'executed': True, 'resources_affected': {'deployments': ['mydeployment..."
 
 
 # -- REPORTS -- #

@@ -10,12 +10,11 @@ PRIVATE_KEY = os.environ.get("PRIVATE_KEY")
 SIGNATURE_TOKEN = os.environ.get("SIGNATURE_TOKEN")
 
 client = MopinionClient(public_key=PUBLIC_KEY, private_key=PRIVATE_KEY)
-assert SIGNATURE_TOKEN == client.signature_token  # client creates the signature token
+assert SIGNATURE_TOKEN == client.signature_token  # client requests the signature token
 
 # -- PING -- #
 # get
-is_available = client.is_available()
-assert is_available
+assert client.is_available()
 r = client.is_available(verbose=True)
 assert r["code"] == 200 and r["response"] == "pong" and r["version"] == "2.0.0"
 
@@ -52,7 +51,7 @@ print(response.json())
 "{'0': {'key': 'defusvnns6mkl2vd3wc0wgcjh159uh3j', 'name': 'Web Feedback Deployment'}, '_meta':..."
 
 # post
-deployment_key = "mydeploymentkey"
+deployment_key = "mydeploymentkey3"
 response = client.resource(
     resource_name=client.RESOURCE_DEPLOYMENTS,
     method="POST",
@@ -60,24 +59,24 @@ response = client.resource(
 )
 assert response.json()["_meta"]["code"] == 201
 print(response.json())
-"{'key': 'mydeploymentkey', 'name': 'My Test Deployment', '_meta': {'co..."
+"{'key': 'mydeploymentkey3', 'name': 'My Test Deployment', '_meta': {'co..."
 
 # delete
 response = client.resource(
     resource_name=client.RESOURCE_DEPLOYMENTS,
-    resource_id="mydeploymentkey",
+    resource_id=deployment_key,
     method="DELETE",
     # query_params={"dry-run": True},
 )
 assert response.json()["_meta"]["code"] == 200
 print(response.json())
-"{'executed': False, 'resources_affected': {'deployments': ['defusvnns6mkl2vd3wc0wgcjh159uh..."
+"{'executed': True, 'resources_affected': {'deployments': ['mydeploymentk..."
 
 # -- REPORTS -- #
 # get
 response = client.resource(
     resource_name=client.RESOURCE_REPORTS,
-    resource_id=1234,
+    resource_id=987,
 )
 assert response.json()["_meta"]["code"] == 200
 print(response.json())

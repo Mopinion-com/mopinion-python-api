@@ -22,24 +22,18 @@ It makes use of the API to request the following resources:
 
 ### Installation:
 
-Requires Python 3.6
-
+Requires Python 3.7.
 ```bash
-pip install mopinion-python-api
-```
-
-### Tests
-
-Run:
-```bash
-pytest
+pip install --user mopinion-python-api
 ```
 
 ### Examples
 
-The example folder contains an  example of the client, which gives an idea how the client can be used and what is possible.
+The example folder contains request examples, which gives an idea how the client can be used and what is possible.
 
 ### Iterators
+
+When working with larges list of elements is possible to obtain a generator which traverses these elements for you.
 
 When working with the API there is a limit of elements retrieved. The <code>limit</code> parameters defaults to **10**. 
 You can increase the limit, or you can request resources using the flag <code>generator=True</code>. 
@@ -51,3 +45,5 @@ and yields each result in the current page before retrieving the next page.
 The Mopinion Python Client API is maintained by Mopinion Development Team. 
 Everyone is encouraged to file bug reports, feature requests, and pull requests through GitHub. 
 For more information please email our Support Team at support@mopinion.com.
+
+[Read the docs](https://mopinion-python-api.readthedocs.org/) for further information.

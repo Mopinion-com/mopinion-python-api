@@ -6,4 +6,6 @@ Changelog of mopinion-python-api
 ----------------
 
 - Initial project structure created.
-
+- Client implemented.
+- Tests.
+- Examples.
