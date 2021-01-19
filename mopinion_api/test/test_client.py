@@ -224,8 +224,7 @@ class APITest(unittest.TestCase):
             "/deployments",
             "/deployments/string",
             "/deployments/my_string",
-            "/deployments/76pg3seur7occo1hogv88eltdtmxoxxl81vj"
-            "/reports",
+            "/deployments/76pg3seur7occo1hogv88eltdtmxoxxl81vj" "/reports",
             "/reports/1",
             "/reports/19475758",
             "/datasets",

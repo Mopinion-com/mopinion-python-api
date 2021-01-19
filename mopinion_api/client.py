@@ -66,9 +66,27 @@ class AbstractClient(abc.ABC):
 
 
 class MopinionClient(AbstractClient):
-    """ Client to interact with Mopinion API.
+    """Client to interact with Mopinion API.
 
+    Provides functionality for authentication, authorization and requesting resources.
+    Steps during instantiation:
 
+      1. Credential validations.
+      2. Instantiation of a session object from ``requests.Session`` that will be used in each request.
+      3. Retrieval of ``signature_token`` from the API for an specific ``private_key`` and ``public_key``.
+
+    When instantiating, a signature token is retrieved from the API  and stored
+    in the ``signature_token`` attribute using your ``private_key`` and ``public_key``.
+    The ``signature_token`` will be used in each request.
+
+    In each request, a HMAC signature will be created using SHA256-hashing, and encrypted with your ``signature_token``.
+    This HMAC signature is encode together with the ``public_key``.
+    After this encryption, the xtoken is set into the headers under the ``X-Auth-Token`` key.
+
+    Args:
+      public_key (str):
+      private_key (str):
+      max_retries (int): Defaults to 3.
 
     """
 
@@ -93,7 +111,7 @@ class MopinionClient(AbstractClient):
 
     def __init__(self, public_key: str, private_key: str, max_retries: int = 3) -> None:
         """
-
+        Constructor
         :param public_key:
         :param private_key:
         :param max_retries: int
@@ -147,10 +165,9 @@ class MopinionClient(AbstractClient):
         flag ``verbose=True``:
           >>> from mopinion_api import MopinionClient
           >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
-          >>> client.is_available()
-          True
-          >>> client.is_available(verbose=True)
-          {'code': 200, 'response': 'pong', 'version': '2.0.0'}
+          >>> assert client.is_available()
+          >>> r = client.is_available(verbose=True)
+          >>> assert r["code"] == 200 and r["response"] == "pong" and r["version"] == "2.0.0"
         """
         response = self.request(endpoint="/ping")
         if not verbose:
@@ -172,7 +189,7 @@ class MopinionClient(AbstractClient):
         Wrapper on top of ``requests.Session.request`` method adding token encryption
         on headers.
         Everytime we call `request` five steps are applied:
-          1. Validation arguments.
+          1. Validation of arguments.
           2. Token creation - token depends on `endpoint` argument and `signature_token`.
           3. Preparation of parameter dictionary. Add token to headers.
           4. Make request.
@@ -193,29 +210,15 @@ class MopinionClient(AbstractClient):
         Examples:
           >>> from mopinion_api import MopinionClient
           >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
-          >>> response = client.request(endpoint="/account")
-          >>> response.json()
-          {'name': 'Mopinion', 'package': 'Growth', 'enddate': ..."
-          >>> response = client.request(endpoint="/deployments")
-          >>> response.json()
-          {'0': {'key': 'defusvnns6mkl2vd3wc0wgcjh159uh3j', 'name': 'Web...}
+          >>> response = client.request("/account")
           >>> assert response.json()["_meta"]["code"] == 200
-          >>> response = client.resource(
-            resource_name=client.RESOURCE_DEPLOYMENTS,
-            method="POST",
-            body={"key": "mydeploymentkey3", "name": "My Test Deployment"},
-          )
-          >>> response.json()
-          {'key': 'mydeploymentkey3', 'name': 'My Test Deploym...
+          >>> response = client.request(endpoint="/deployments")
+          >>> assert response.json()["_meta"]["code"] == 200
+          >>> body = {"key": "mydeploymentkey3", "name": "My Test Deployment"},
+          >>> response = client.request(endpoint="/deployments", method="POST", body=body)
           >>> assert response.json()["_meta"]["code"] == 201
-          >>> response = client.resource(
-            resource_name=client.RESOURCE_DEPLOYMENTS,
-            resource_id=deployment_key,
-            method="DELETE",
-            # query_params={"dry-run": True},
-          )
-          >>> response.json()
-          {'executed': True, 'resources_affected': {'deployments': ['mydeploymentk...
+          >>> endpoint = "/deployments/{}".format(body["key"])
+          >>> response = client.request(endpoint, method="DELETE")
           >>> assert response.json()["_meta"]["code"] == 200
         """
 
@@ -286,27 +289,34 @@ class MopinionClient(AbstractClient):
         Returns:
           response (requests.models.Response) or iterator (collections.abc.Iterator)
 
-        The endpoint is built from ``mopinion_api.dataclasses.ResourceUri``. It requires
-        ``resource_name``, ``resource_id``, ``subresource_name`` and ``subresource_id``.
+        The endpoint is built from ``mopinion_api.dataclasses.ResourceUri`` and the parameters are:
+          -  resource_name (str) Required
+          -  resource_id (int/str) Optional
+          -  subresource_name (str) Optional
+          -  subresource_id (str) Optional
+
+        Resources and sub-resources options:
+          -  The ``resource_name`` options are: "account", "deployments", "datasets", "reports".
+          -  The ``subresource_name`` options are: "fields", "feedback".
+
+        You can also use the constants defined in the ``mopinion_api.MopinionClient`` class.
+          -  The ``resource_name`` options are: ``RESOURCE_ACCOUNT``, ``RESOURCE_DEPLOYMENTS``, ``RESOURCE_DATASETS``, ``RESOURCE_REPORTS``.
+          -  The ``subresource_name`` options are: ``SUBRESOURCE_FIELDS``, ``SUBRESOURCE_FEEDBACK``.
 
         Examples:
           >>> from mopinion_api import MopinionClient
           >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
-          >>> response = client.resource("accounts")
+          >>> response = client.resource("account")
           >>> assert response.json()["_meta"]["code"] == 200
           >>> response = client.resource(resource_name=client.RESOURCE_ACCOUNT)  # same as above
           >>> assert response.json()["_meta"]["code"] == 200
-          >>> response = client.resource("deployments")
-          >>> assert response.json()["_meta"]["code"] == 200
-          >>> response = client.resource(resource_name=client.RESOURCE_DEPLOYMENTS)  # same as above
-          >>> assert response.json()["_meta"]["code"] == 200
 
-        By adding ``iterator=True`` a generator is created.
+        By adding ``iterator=True`` to the arguments an iterator is returned.
 
         Examples:
           >>> from mopinion_api import MopinionClient
           >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
-          >>> iterator = client.resource("accounts", iterator=True)
+          >>> iterator = client.resource("account", iterator=True)
           >>> response = next(iterator)
           >>> assert response.json()["_meta"]["code"] == 200
 
@@ -316,43 +326,14 @@ class MopinionClient(AbstractClient):
           >>> from mopinion_api import MopinionClient
           >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
           >>> response = client.request(endpoint="/account")
-          >>> response.json()
-          {'name': 'Mopinion', 'package': 'Growth', 'enddate': ..."
+          >>> assert response.json()["_meta"]["code"] == 200
           >>> response = client.request(endpoint="/deployments")
-          >>> response.json()
-          {'0': {'key': 'defusvnns6mkl2vd3wc0wgcjh159uh3j', 'name': 'Web...}
           >>> assert response.json()["_meta"]["code"] == 200
-          >>> response = client.resource(
-            resource_name=client.RESOURCE_DEPLOYMENTS,
-            method="POST",
-            body={"key": "mydeploymentkey3", "name": "My Test Deployment"},
-          )
-          >>> response.json()
-          {'key': 'mydeploymentkey3', 'name': 'My Test Deploym...
+          >>> body={"key": "mydeploymentkey3", "name": "My Test Deployment"},
+          >>> response = client.resource("deployments", method="POST", body=body)
           >>> assert response.json()["_meta"]["code"] == 201
-          >>> response = client.resource(
-            resource_name=client.RESOURCE_DEPLOYMENTS,
-            resource_id=deployment_key,
-            method="DELETE",
-            # query_params={"dry-run": True},
-          )
-          >>> response.json()
-          {'executed': True, 'resources_affected': {'deployments': ['mydeploymentk...
+          >>> response = client.resource("deployments", resource_id=body["key"], method="DELETE")
           >>> assert response.json()["_meta"]["code"] == 200
-          >>>iterator = client.resource(
-                resource_name=client.RESOURCE_DATASETS,
-                resource_id=1234,
-                sub_resource_name=client.SUBRESOURCE_FEEDBACK,
-                iterator=True,
-            )
-          >>>try:
-                while True:
-                    response = next(iterator)
-                    assert response.json()["_meta"]["code"] == 200
-            except StopIteration:
-                pass
-            finally:
-                del iterator
         """
 
         # build uri from arguments
@@ -376,7 +357,6 @@ class MopinionClient(AbstractClient):
             "content_negotiation": content_negotiation,
         }
 
-        # if iterator==True, yield messages till next (uri) == False
         if iterator:
             return self._get_iterator(resource_uri, params)
         else:
@@ -384,6 +364,7 @@ class MopinionClient(AbstractClient):
 
     def _get_iterator(self, resource_uri: ResourceUri, params: dict):
         next_uri = resource_uri.endpoint
+        # yield messages till next (uri) == False
         while next_uri:
             response = self.request(endpoint=next_uri, **params)
             yield response
