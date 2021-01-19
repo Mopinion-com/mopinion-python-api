@@ -1,7 +1,7 @@
 Quickstart
 ==========
 
-This is a quick introduction, for a complete guide please go to mopinion client or resources.
+This is a quick introduction, for a complete guide please go to :doc:`client` or :doc:`examples`.
 
 Instantiating the MopinionCLient
 --------------------------------
@@ -24,8 +24,6 @@ Checking for availability
 
 .. code:: python
 
-   >>> from mopinion_api import MopinionClient
-   >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
    >>> assert client.is_available()
 
 
@@ -36,14 +34,14 @@ Request your account.
 
 .. code:: python
 
-   >>> response = client.request()
+   >>> response = client.resource("account")
    >>> assert response.json()["_meta"]["code"] == 200
 
 Or request deployments.
 
 .. code:: python
 
-   >>> response = client.request("/deployments")
+   >>> response = client.resource("deployments")
    >>> assert response.json()["_meta"]["code"] == 200
 
-If you need further examples about requesting resources please go to mopinion client or resources.
+If you need further examples about requesting resources please go to :doc:`client` or :doc:`examples`.

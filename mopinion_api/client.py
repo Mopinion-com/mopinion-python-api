@@ -176,7 +176,7 @@ class MopinionClient(AbstractClient):
 
     def request(
         self,
-        endpoint: str = "/account",
+        endpoint: str,
         method: str = "GET",
         version: str = settings.LATEST_VERSION,
         verbosity: str = VERBOSITY_NORMAL,
@@ -311,7 +311,10 @@ class MopinionClient(AbstractClient):
           >>> response = client.resource(resource_name=client.RESOURCE_ACCOUNT)  # same as above
           >>> assert response.json()["_meta"]["code"] == 200
 
-        By adding ``iterator=True`` to the arguments an iterator is returned.
+        When working with the API there is a limit of elements retrieved. The ``limit`` parameters defaults to *10*.
+        You can increase the limit, or you can request resources using the flag ``generator=True``.
+        This returns a `Generator <https://wiki.python.org/moin/Generators>`_ which traverses these pages for you
+        and yields each result in the current page before retrieving the next page.
 
         Examples:
           >>> from mopinion_api import MopinionClient
@@ -325,9 +328,9 @@ class MopinionClient(AbstractClient):
         Examples:
           >>> from mopinion_api import MopinionClient
           >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
-          >>> response = client.request(endpoint="/account")
+          >>> response = client.resource("account")
           >>> assert response.json()["_meta"]["code"] == 200
-          >>> response = client.request(endpoint="/deployments")
+          >>> response = client.resource("deployments")
           >>> assert response.json()["_meta"]["code"] == 200
           >>> body={"key": "mydeploymentkey3", "name": "My Test Deployment"},
           >>> response = client.resource("deployments", method="POST", body=body)

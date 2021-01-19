@@ -85,7 +85,7 @@ class APITest(unittest.TestCase):
             MockedResponse({"_meta": {"code": 200}}),
         ]
         client = MopinionClient(self.public_key, self.private_key)
-        response = client.request()
+        response = client.request("/account")
         self.assertEqual(response.json()["_meta"]["code"], 200)
         self.assertEqual(2, mocked_response.call_count)
         mocked_response.assert_has_calls(
@@ -187,7 +187,7 @@ class APITest(unittest.TestCase):
         ]
         client = MopinionClient(self.public_key, self.private_key)
         with self.assertRaises(RequestException) as cm:
-            client.request()
+            client.request("/account")
         self.assertIsInstance(cm.exception, RequestException)
 
     @patch("requests.sessions.Session.request")

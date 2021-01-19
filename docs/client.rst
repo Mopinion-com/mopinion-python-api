@@ -1,3 +1,5 @@
+.. _client:
+
 Mopinion Client
 ========================
 

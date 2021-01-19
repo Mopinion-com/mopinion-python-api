@@ -25,7 +25,7 @@ Contents
    installation
    quickstart
    client
-   resources
+   examples
    license
    help
 
