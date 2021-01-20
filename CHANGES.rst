@@ -9,9 +9,11 @@ Changelog of mopinion-python-api
 0.0.2 (2021-01-20)
 -------------------
 
-- Fix in documentation.
+- Fixed in documentation.
 
-- Remove travis. Keep GitHub actions.
+- Removed travis ci. Integrated GitHub Actions.
+
+- Added coverage into GitHub actions.
 
 0.0.1 (2021-01-20)
 -------------------
