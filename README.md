@@ -8,7 +8,7 @@
 
 API client library for the [Mopinion Data API](https://developer.mopinion.com/api/). 
 
-Provides functionality for authentication, authorization and requesting resources.
-It makes an easy, beautiful and elegant way of interacting with our API.
+mopinion-python-api provides functionality for authentication, authorization and requesting resources.
+It comes with an easy, beautiful and elegant way of interacting with our API.
 
 [Read the docs](https://mopinion-python-api.readthedocs.org/) for further information.

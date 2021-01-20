@@ -214,10 +214,10 @@ class MopinionClient(AbstractClient):
           >>> assert response.json()["_meta"]["code"] == 200
           >>> response = client.request(endpoint="/deployments")
           >>> assert response.json()["_meta"]["code"] == 200
-          >>> body = {"key": "mydeploymentkey3", "name": "My Test Deployment"},
+          >>> body = {"key": "key", "name": "My Test Deployment"},
           >>> response = client.request(endpoint="/deployments", method="POST", body=body)
           >>> assert response.json()["_meta"]["code"] == 201
-          >>> endpoint = "/deployments/{}".format(body["key"])
+          >>> endpoint = "/deployments/abt34")
           >>> response = client.request(endpoint, method="DELETE")
           >>> assert response.json()["_meta"]["code"] == 200
         """
@@ -335,7 +335,7 @@ class MopinionClient(AbstractClient):
           >>> body={"key": "mydeploymentkey3", "name": "My Test Deployment"},
           >>> response = client.resource("deployments", method="POST", body=body)
           >>> assert response.json()["_meta"]["code"] == 201
-          >>> response = client.resource("deployments", resource_id=body["key"], method="DELETE")
+          >>> response = client.resource("deployments", resource_id="abt34", method="DELETE")
           >>> assert response.json()["_meta"]["code"] == 200
         """
 
