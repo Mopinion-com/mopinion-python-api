@@ -9,6 +9,7 @@ Mopinion API - Python Client
     :alt: Documentation Status
 
 .. image:: https://github.com/mopinion/mopinion-python-api/workflows/CI/badge.svg?branch=master
+    :alt: GitHub Actions
 
 API client library for the `Mopinion Data API <https://developer.mopinion.com/api/>`_.
 
