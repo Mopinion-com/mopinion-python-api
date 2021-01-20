@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = "mopinion-python-api"
+project = "Mopinion Client"
 copyright = "2021, Mopinion"
 author = "Mopinion"
 

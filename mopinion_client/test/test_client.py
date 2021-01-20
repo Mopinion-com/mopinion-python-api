@@ -3,8 +3,8 @@ import types
 from mock import patch, call
 from requests import Session
 from requests.exceptions import RequestException
-from mopinion_api.client import MopinionClient
-from mopinion_api.dataclasses import EndPoint
+from mopinion_client import MopinionClient
+from mopinion_client.dataclasses import EndPoint
 
 
 class MockedResponse:

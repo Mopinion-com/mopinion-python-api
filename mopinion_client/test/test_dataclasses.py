@@ -1,11 +1,11 @@
 import unittest
 
-from mopinion_api import settings
-from mopinion_api.dataclasses import ApiRequestArguments
-from mopinion_api.dataclasses import EndPoint
-from mopinion_api.dataclasses import ResourceUri
-from mopinion_api.dataclasses import ResourceVerbosity
-from mopinion_api.client import MopinionClient as client
+from mopinion_client import settings
+from mopinion_client.dataclasses import ApiRequestArguments
+from mopinion_client.dataclasses import EndPoint
+from mopinion_client.dataclasses import ResourceUri
+from mopinion_client.dataclasses import ResourceVerbosity
+from mopinion_client.client import MopinionClient as client
 
 
 class ArgumentValidationTest(unittest.TestCase):

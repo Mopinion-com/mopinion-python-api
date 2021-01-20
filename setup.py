@@ -16,7 +16,7 @@ if os.environ.get("READTHEDOCS") == "True":
 tests_require = ["pytest"]
 
 setup(
-    name="mopinion-python-api",
+    name="mopinion",
     version=version,
     description="API client library for the Mopinion Data API.",
     long_description=long_description,
@@ -32,7 +32,7 @@ setup(
     author_email="",
     url="https://github.com/mopinion/mopinion-python-api",
     license="MIT License",
-    packages=["mopinion_api"],
+    packages=["mopinion_client"],
     include_package_data=True,
     zip_safe=False,
     install_requires=install_requires,

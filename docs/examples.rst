@@ -20,7 +20,13 @@ After instalation, open a python terminal and set the ``public_key``, and ``priv
 .. code:: python
 
     >>> import os
-    >>> from mopinion_api import MopinionClient
+    >>> from mopinion_client import MopinionClient
+    >>> PUBLIC_KEY = os.environ.get("PUBLIC_KEY")
+    >>> PRIVATE_KEY = os.environ.get("PRIVATE_KEY")
+    >>> SIGNATURE_TOKEN = os.environ.get("SIGNATURE_TOKEN")
+
+    A token signature is retrieved from the API and set to
+    >>> from mopinion_client import MopinionClient
     >>> PUBLIC_KEY = os.environ.get("PUBLIC_KEY")
     >>> PRIVATE_KEY = os.environ.get("PRIVATE_KEY")
     >>> SIGNATURE_TOKEN = os.environ.get("SIGNATURE_TOKEN")
@@ -41,8 +47,8 @@ To see the availability of the API you can call ``is_available()``.
     >>> assert r["code"] == 200 and r["response"] == "pong" and r["version"] == "2.0.0"
 
 
-Examples with ``mopinion_api.MopinionClient.resource``
-------------------------------------------------------
+Examples with ``mopinion_client.MopinionClient.resource``
+-----------------------------------------------------------
 
 This set of examples use the method ``resource`` from the ``MopinionClient``.
 
@@ -222,8 +228,8 @@ Add a new report to the account.
     >>> assert response.json()["_meta"]["code"] == 201
 
 
-Examples with ``mopinion_api.MopinionClient.request``
-------------------------------------------------------
+Examples with ``mopinion_client.MopinionClient.request``
+---------------------------------------------------------
 
 This set of examples use the method ``request`` from the ``MopinionClient``.
 
@@ -410,7 +416,17 @@ and yields each result in the current page before retrieving the next page.
 
 .. code:: python
 
-    >>> from mopinion_api import MopinionClient
+    >>> from mopinion_client import MopinionClient
+        >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
+        >>> iterator = client.resource("deployments", iterator=True)
+        >>> response = next(iterator)
+        >>> assert response.json()["_meta"]["code"] == 200
+
+    Also, for example, requesting fields for a report.
+
+        >>> iterator = client.resource("datasets", 1234, "fields", iterator=True)
+        >>> response = next(iterator)
+        >>> assert response.json()["_meta"]["code"] == 200
     >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
     >>> iterator = client.resource("deployments", iterator=True)
     >>> response = next(iterator)

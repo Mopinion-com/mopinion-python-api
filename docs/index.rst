@@ -1,12 +1,12 @@
-.. mopinion-python-api documentation master file, created by
+.. mopinion documentation master file, created by
    sphinx-quickstart on Tue Jan  5 09:57:39 2021.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to mopinion-python-api's documentation!
-===============================================
+Welcome to the Mopinion Client's documentation!
+=================================================
 
-mopinion-python-api provides functionality for authentication, authorization and requesting resources.
+mopinion is a python client that provides functionality for authentication, authorization and requesting resources.
 It comes with an easy, beautiful and elegant way of interacting with
 our `Mopinion Data API <https://developer.mopinion.com/api/>`_.
 

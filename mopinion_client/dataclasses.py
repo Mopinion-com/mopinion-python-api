@@ -2,7 +2,7 @@ import re
 
 from typing import Optional, Union
 from dataclasses import dataclass, field
-from mopinion_api import settings
+from mopinion_client import settings
 
 
 __all__ = [
@@ -98,7 +98,7 @@ class ResourceUri(Argument):
     sub_resource_id: Optional[Union[str, int]]
 
     def __post_init__(self):
-        from mopinion_api.client import MopinionClient
+        from mopinion_client.client import MopinionClient
 
         allowed_resources = [
             MopinionClient.RESOURCE_ACCOUNT,

@@ -14,9 +14,9 @@ The following recipe is still a work in progress:
 
 1. `Install Python 3.* (stable) <https://www.python.org/downloads/windows/>`_
 2. Start the command prompt
-3. Install mopinion-python-api::
+3. Install mopinion::
 
-    pip install mopinion-python-api
+    pip install mopinion
 
 
 .. note::
@@ -32,9 +32,9 @@ These instructions make use of the system-wide Python 3 interpreter::
 
     $ sudo apt install python3-pip
 
-Install mopinion-python-api::
+Install mopinion::
 
-    $ pip install --user mopinion-python-api
+    $ pip install --user mopinion
 
 
 Advanced: local setup for development (Ubuntu)
