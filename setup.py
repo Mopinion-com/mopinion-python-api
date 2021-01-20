@@ -1,11 +1,11 @@
 from setuptools import setup
 import os
 
-version = "1.0.0"
+version = "0.0.1"
 
 long_description = "\n\n".join([open("README.md").read(), open("CHANGES.md").read()])
 
-install_requires = ["requests>=2.0.0"]
+install_requires = ["requests"]
 
 # emulate "--no-deps" on the readthedocs build (there is no way to specify this
 # behaviour in the .readthedocs.yml)
@@ -30,7 +30,7 @@ setup(
     keywords=["mopinion"],
     author="Mopinion",
     author_email="",
-    url="https://github.com/mopinion/mopinion-python-api.git",
+    url="https://github.com/mopinion/mopinion-python-api",
     license="MIT License",
     packages=["mopinion_api"],
     include_package_data=True,

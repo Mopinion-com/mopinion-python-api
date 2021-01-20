@@ -5,7 +5,7 @@ Changelog of mopinion-python-api
 0.0.1 (unreleased)
 ----------------
 
-- Initial project structure created.
-- Client implemented.
-- Tests.
-- Examples.
+- Initial project structure.
+- Client implementation.
+- Test suite.
+- Request examples.
