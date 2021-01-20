@@ -417,16 +417,18 @@ and yields each result in the current page before retrieving the next page.
 .. code:: python
 
     >>> from mopinion_client import MopinionClient
-        >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
-        >>> iterator = client.resource("deployments", iterator=True)
-        >>> response = next(iterator)
-        >>> assert response.json()["_meta"]["code"] == 200
+    >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
+    >>> iterator = client.resource("deployments", iterator=True)
+    >>> response = next(iterator)
+    >>> assert response.json()["_meta"]["code"] == 200
 
-    Also, for example, requesting fields for a report.
+Requesting fields for a datasets.
 
-        >>> iterator = client.resource("datasets", 1234, "fields", iterator=True)
-        >>> response = next(iterator)
-        >>> assert response.json()["_meta"]["code"] == 200
+.. code:: python
+
+    >>> iterator = client.resource("datasets", 1234, "fields", iterator=True)
+    >>> response = next(iterator)
+    >>> assert response.json()["_meta"]["code"] == 200
     >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
     >>> iterator = client.resource("deployments", iterator=True)
     >>> response = next(iterator)
@@ -434,6 +436,8 @@ and yields each result in the current page before retrieving the next page.
 
 Also, for example, requesting fields for a report.
 
-    >>> iterator = client.resource("datasets", 1234, "fields", iterator=True)
+.. code:: python
+
+    >>> iterator = client.resource("reports", 1234, "fields", iterator=True)
     >>> response = next(iterator)
     >>> assert response.json()["_meta"]["code"] == 200
