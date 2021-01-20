@@ -8,6 +8,8 @@ Mopinion API - Python Client
     :target: https://mopinion-python-api.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://github.com/mopinion/mopinion-python-api/workflows/CI/badge.svg?branch=master
+
 API client library for the `Mopinion Data API <https://developer.mopinion.com/api/>`_.
 
 mopinion-python-api provides functionality for authentication, authorization and requesting resources.
