@@ -1,10 +1,11 @@
-Changelog of mopinion-python-api
-===================================================
+Changelog
+=========
 
 
-0.0.3 (unreleased)
+0.0.3 (2021-01-20)
 -------------------
 
+- Fixed typing in method `get_token`. Return `bytes` instead of `str`.
 
 0.0.2 (2021-01-20)
 -------------------
