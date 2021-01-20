@@ -27,13 +27,11 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Install venv
-        run: virtualenv --python=python3 .venv
+        run: sudo apt install python3-pip
 
       - name: Activate
-        run: source .venv/bin/activate
+        run: pip install pytest
 
       - name: Run pytest
         run: pytest
 
-      - name: Remove venv
-        run: rmvirtualenv .venv
