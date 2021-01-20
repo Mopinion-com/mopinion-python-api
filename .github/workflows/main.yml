@@ -26,9 +26,6 @@ jobs:
       - uses: actions/checkout@v2
 
       # Runs a single command using the runners shell
-      - name: Move into folder
-        run: cd mopinion-python-api
-
       - name: Install venv
         run: virtualenv --python=python3 .venv
 
