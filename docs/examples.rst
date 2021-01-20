@@ -32,7 +32,7 @@ A token signature is retrieved from the API and set to ``signature_token``.
     >>> client = MopinionClient(public_key=PUBLIC_KEY, private_key=PRIVATE_KEY)
     >>> assert SIGNATURE_TOKEN == client.signature_token  # client requests the signature token
 
-To see the availability of the API you can call ``is_available``.
+To see the availability of the API you can call ``is_available()``.
 
 .. code:: python
 
