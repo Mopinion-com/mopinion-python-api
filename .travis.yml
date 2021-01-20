@@ -7,7 +7,7 @@ python:
   - "nightly"  # nightly build
 # command to install dependencies
 install:
-  - pip install mopinion-python-api
+  - pip install mopinion
 # command to run tests
 script:
   - pytest

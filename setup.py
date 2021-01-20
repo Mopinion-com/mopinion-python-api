@@ -3,7 +3,7 @@ import os
 
 version = "0.0.1"
 
-long_description = "\n\n".join([open("README.md").read(), open("CHANGES.md").read()])
+long_description = "\n\n".join([open("README.rst").read(), open("CHANGES.rst").read()])
 
 install_requires = ["requests"]
 
@@ -18,14 +18,13 @@ tests_require = ["pytest"]
 setup(
     name="mopinion",
     version=version,
-    description="API client library for the Mopinion Data API.",
+    description="Client library for the Mopinion Data API",
     long_description=long_description,
     # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
-        "Development Status :: 1 - Beta",
+        "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3 :: Only",
     ],
     keywords=["mopinion"],
     author="Mopinion",
