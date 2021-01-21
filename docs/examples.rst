@@ -20,8 +20,7 @@ environment vars.
 
 .. code:: python
 
-    >>> import os
-    >>> from mopinion_client import MopinionClient
+    >>> from mopinion import MopinionClient
     >>> PUBLIC_KEY = os.environ.get("PUBLIC_KEY")
     >>> PRIVATE_KEY = os.environ.get("PRIVATE_KEY")
     >>> SIGNATURE_TOKEN = os.environ.get("SIGNATURE_TOKEN")
@@ -411,7 +410,13 @@ and yields each result in the current page before retrieving the next page.
 
 .. code:: python
 
-    >>> from mopinion_client import MopinionClient
+    >>> from mopinion import MopinionClient
+        >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
+        >>> iterator = client.resource("deployments", iterator=True)
+        >>> response = next(iterator)
+        >>> assert response.json()["_meta"]["code"] == 200
+
+    Requesting fields for a datasets.
     >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
     >>> iterator = client.resource("deployments", iterator=True)
     >>> response = next(iterator)

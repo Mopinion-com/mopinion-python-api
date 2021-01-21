@@ -15,9 +15,8 @@ with the steps to get ``private_key`` and ``public_key``
 
 .. code:: python
 
-   >>> from mopinion_api import APIClient
-   >>> client = APIClient(public_key=PUBLIC_KEY, private_key=PRIVATE_KEY)
-
+   >>> from mopinion import MopinionClient
+   >>> client = MopinionClient(public_key=PUBLIC_KEY, private_key=PRIVATE_KEY)
 
 Checking for availability
 -------------------------

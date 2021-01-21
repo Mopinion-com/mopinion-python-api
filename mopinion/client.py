@@ -8,12 +8,12 @@ from base64 import b64encode
 from typing import Union, Optional
 from requests.models import Response
 from requests.adapters import HTTPAdapter
-from mopinion_client import settings
-from mopinion_client.dataclasses import Credentials
-from mopinion_client.dataclasses import EndPoint
-from mopinion_client.dataclasses import ApiRequestArguments
-from mopinion_client.dataclasses import ResourceUri
-from mopinion_client.dataclasses import ResourceVerbosity
+from mopinion import settings
+from mopinion.dataclasses import Credentials
+from mopinion.dataclasses import EndPoint
+from mopinion.dataclasses import ApiRequestArguments
+from mopinion.dataclasses import ResourceUri
+from mopinion.dataclasses import ResourceVerbosity
 
 import requests
 import hashlib
@@ -165,7 +165,7 @@ class MopinionClient(AbstractClient):
         flag ``verbose=True``.
 
         Examples:
-          >>> from mopinion_client import MopinionClient
+          >>> from mopinion import MopinionClient
           >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
           >>> assert client.is_available()
           >>> r = client.is_available(verbose=True)
@@ -210,7 +210,7 @@ class MopinionClient(AbstractClient):
           response (requests.models.Response).
 
         Examples:
-          >>> from mopinion_client import MopinionClient
+          >>> from mopinion import MopinionClient
           >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
           >>> response = client.request("/account")
           >>> assert response.json()["_meta"]["code"] == 200
@@ -306,7 +306,7 @@ class MopinionClient(AbstractClient):
           -  The ``subresource_name`` options are: ``SUBRESOURCE_FIELDS``, ``SUBRESOURCE_FEEDBACK``.
 
         Examples:
-          >>> from mopinion_client import MopinionClient
+          >>> from mopinion import MopinionClient
           >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
           >>> response = client.resource("account")
           >>> assert response.json()["_meta"]["code"] == 200
@@ -319,7 +319,7 @@ class MopinionClient(AbstractClient):
         and yields each result in the current page before retrieving the next page.
 
         Examples:
-          >>> from mopinion_client import MopinionClient
+          >>> from mopinion import MopinionClient
           >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
           >>> iterator = client.resource("account", iterator=True)
           >>> response = next(iterator)
@@ -328,7 +328,7 @@ class MopinionClient(AbstractClient):
         Below some more examples.
 
         Examples:
-          >>> from mopinion_client import MopinionClient
+          >>> from mopinion import MopinionClient
           >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
           >>> response = client.resource("account")
           >>> assert response.json()["_meta"]["code"] == 200

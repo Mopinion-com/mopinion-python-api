@@ -9,6 +9,8 @@ Changelog
 
 - Added examples for `query_params` in the doc examples.
 
+- Updated directory name from `mopinion_client` to `mopinion`
+
 0.0.3 (2021-01-20)
 -------------------
 
