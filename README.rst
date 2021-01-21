@@ -13,7 +13,18 @@ Mopinion API - Python Client
 
 API client library for the `Mopinion Data API <https://developer.mopinion.com/api/>`_.
 
-mopinion-python-api provides functionality for authentication, authorization and requesting resources.
+Our Mopinion Client provides functionality for authentication, authorization and requesting resources.
 It comes with an easy, beautiful and elegant way of interacting with our API.
 
 `Read the docs <https://mopinion-python-api.readthedocs.io/en/latest/>`_ for further information.
+
+
+About Mopinion
+~~~~~~~~~~~~~~~~
+
+`Mopinion <https://mopinion.com/>`_ is a leading all-in-one user feedback platform that helps digital enterprises listen, understand,
+and act across all digital touchpoints (web, mobile, and email). Join some of the most forward-thinking
+digital teams from companies such as T-mobile, eBay, TSB Bank, Walmart, Hotels.com, Decathlon, Ahold,
+Mediacorp Ltd and many more.
+
+Please visit the website for more information about the product: https://mopinion.com

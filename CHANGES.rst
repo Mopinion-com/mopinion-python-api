@@ -11,6 +11,8 @@ Changelog
 
 - Updated directory name from `mopinion_client` to `mopinion`
 
+- Implemented About in Docs and Readme.
+
 0.0.3 (2021-01-20)
 -------------------
 
