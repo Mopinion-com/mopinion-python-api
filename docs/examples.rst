@@ -15,17 +15,12 @@ with the steps to get ``private_key`` and ``public_key``
 General
 --------
 
-After instalation, open a python terminal and set the ``public_key``, and ``private_key``.
+After installation, open a python terminal and set the ``public_key``, and ``private_key``, you can set them as
+environment vars.
 
 .. code:: python
 
     >>> import os
-    >>> from mopinion_client import MopinionClient
-    >>> PUBLIC_KEY = os.environ.get("PUBLIC_KEY")
-    >>> PRIVATE_KEY = os.environ.get("PRIVATE_KEY")
-    >>> SIGNATURE_TOKEN = os.environ.get("SIGNATURE_TOKEN")
-
-    A token signature is retrieved from the API and set to
     >>> from mopinion_client import MopinionClient
     >>> PUBLIC_KEY = os.environ.get("PUBLIC_KEY")
     >>> PRIVATE_KEY = os.environ.get("PRIVATE_KEY")

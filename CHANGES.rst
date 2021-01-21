@@ -2,6 +2,13 @@ Changelog
 =========
 
 
+0.0.4 (unreleased)
+-------------------
+
+- Fixed in documentation
+
+- Added examples for `query_params` in the doc examples.
+
 0.0.3 (2021-01-20)
 -------------------
 
