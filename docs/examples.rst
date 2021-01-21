@@ -410,27 +410,15 @@ and yields each result in the current page before retrieving the next page.
 
 .. code:: python
 
-    >>> from mopinion import MopinionClient
-        >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
-        >>> iterator = client.resource("deployments", iterator=True)
-        >>> response = next(iterator)
-        >>> assert response.json()["_meta"]["code"] == 200
-
-    Requesting fields for a datasets.
-    >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
     >>> iterator = client.resource("deployments", iterator=True)
     >>> response = next(iterator)
     >>> assert response.json()["_meta"]["code"] == 200
 
-Requesting fields for a datasets.
+Requesting fields for a dataset.
 
 .. code:: python
 
     >>> iterator = client.resource("datasets", 1234, "fields", iterator=True)
-    >>> response = next(iterator)
-    >>> assert response.json()["_meta"]["code"] == 200
-    >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
-    >>> iterator = client.resource("deployments", iterator=True)
     >>> response = next(iterator)
     >>> assert response.json()["_meta"]["code"] == 200
 
