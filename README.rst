@@ -23,14 +23,15 @@ It comes with an easy, beautiful, and elegant way of interacting with our API.
 `Read the docs <https://mopinion-python-api.readthedocs.io/en/latest/>`_ for further information.
 
 Installation
-~~~~~~~~~~~~~
+-------------
 
 Install using ``pip``...::
 
     pip install mopinion
 
+
 Example
-~~~~~~~~
+--------
 
 .. code:: python
 
@@ -42,13 +43,15 @@ Example
     >>> response = client.resource("deployments")
     >>> assert response.json()["_meta"]["code"] == 200
 
+
 Documentation
-~~~~~~~~~~~~~~~
+---------------
 
 You can find here at `Read the docs <https://mopinion-python-api.readthedocs.io/en/latest/>`_ the complete documentation.
 
+
 About Mopinion
-~~~~~~~~~~~~~~~~
+---------------
 
 `Mopinion <https://mopinion.com/>`_ is a leading all-in-one user feedback platform that helps digital enterprises listen, understand,
 and act across all digital touchpoints (web, mobile, and email). Join some of the most forward-thinking
