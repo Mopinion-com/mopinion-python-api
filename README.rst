@@ -3,6 +3,7 @@ Mopinion API - Python Client
 
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
     :target: https://github.com/mopinion/mopinion-python-api/blob/master/LICENSE
+    :alt: License-MIT
 
 .. image:: https://readthedocs.org/projects/mopinion-python-api/badge/?version=latest
     :target: https://mopinion-python-api.readthedocs.io/en/latest/?badge=latest
@@ -13,6 +14,7 @@ Mopinion API - Python Client
 
 .. image:: https://badge.fury.io/py/mopinion.svg/
     :target: https://badge.fury.io/py/mopinion/
+    :alt: Badge PyPi
 
 
 A client library for the `Mopinion Data API <https://developer.mopinion.com/api/>`_.
