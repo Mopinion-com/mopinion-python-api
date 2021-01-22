@@ -8,7 +8,7 @@ Welcome to the Mopinion Client's documentation!
 
 `mopinion <https://pypi.org/project/mopinion/>`_ is a python client that provides functionality for authentication, authorization, and requesting resources.
 It comes with an easy, beautiful and elegant way of interacting with
-our `Mopinion Data API <https://developer.mopinion.com/api/>`_. This package was developed by `Mopinion <https://mopinion.com/>`_ to facilitate end-users
+our `Mopinion Data API <https://developer.mopinion.com/api/>`_. This package was developed by Mopinion to facilitate end-users
 interacting with the API.
 
 About Mopinion

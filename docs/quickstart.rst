@@ -16,7 +16,7 @@ with the steps to get ``private_key`` and ``public_key``
 .. code:: python
 
    >>> from mopinion import MopinionClient
-   >>> client = MopinionClient(public_key=PUBLIC_KEY, private_key=PRIVATE_KEY)
+   >>> client = MopinionClient(public_key=YOUR_PUBLIC_KEY, private_key=YOUR_PRIVATE_KEY)
 
 Checking for availability
 -------------------------
