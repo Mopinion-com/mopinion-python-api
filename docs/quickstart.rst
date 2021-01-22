@@ -6,18 +6,17 @@ This is a quick introduction, for a complete guide please go to :doc:`client` or
 Instantiating the MopinionCLient
 --------------------------------
 
-Credentials can be created via the Mopinion Suite at Integrations » Feedback API in classic interface
+Credentials can be created via the Mopinion Suite at Integrations » Feedback API in the classic interface
 or in the Raspberry interface, provided your package includes API access.
 
 You can also take a look at this
 `link <https://mopinion.atlassian.net/wiki/spaces/KB/pages/931921992/Where+to+create+API+credentials>`_
-with the steps to get ``private_key`` and ``public_key``
+with the steps to get ``private_key`` and ``public_key``.
 
 .. code:: python
 
-   >>> from mopinion_api import APIClient
-   >>> client = APIClient(public_key=PUBLIC_KEY, private_key=PRIVATE_KEY)
-
+   >>> from mopinion import MopinionClient
+   >>> client = MopinionClient(public_key=YOUR_PUBLIC_KEY, private_key=YOUR_PRIVATE_KEY)
 
 Checking for availability
 -------------------------

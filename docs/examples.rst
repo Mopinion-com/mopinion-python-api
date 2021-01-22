@@ -5,7 +5,7 @@ Requesting Resources
 
 The next examples follow the order from the `API documentation <https://developer.mopinion.com/api/>`_.
 
-Credentials can be created via the Mopinion Suite at Integrations » Feedback API in classic interface
+Credentials can be created via the Mopinion Suite at Integrations » Feedback API in the classic interface
 or in the Raspberry interface, provided your package includes API access.
 
 You can also take a look at this
@@ -15,23 +15,19 @@ with the steps to get ``private_key`` and ``public_key``
 General
 --------
 
-After instalation, open a python terminal and set the ``public_key``, and ``private_key``.
+API Docs for `General <https://developer.mopinion.com/api/#tag/general>`_.
+
+After installation, open a python terminal and set the ``public_key``, and ``private_key``, you can set them as
+environment vars.
 
 .. code:: python
 
-    >>> import os
-    >>> from mopinion_client import MopinionClient
-    >>> PUBLIC_KEY = os.environ.get("PUBLIC_KEY")
-    >>> PRIVATE_KEY = os.environ.get("PRIVATE_KEY")
-    >>> SIGNATURE_TOKEN = os.environ.get("SIGNATURE_TOKEN")
+    >>> from mopinion import MopinionClient
+    >>> PUBLIC_KEY = os.environ.get("YOUR_PUBLIC_KEY")
+    >>> PRIVATE_KEY = os.environ.get("YOUR_PRIVATE_KEY")
+    >>> SIGNATURE_TOKEN = os.environ.get("YOUR_SIGNATURE_TOKEN")
 
-    A token signature is retrieved from the API and set to
-    >>> from mopinion_client import MopinionClient
-    >>> PUBLIC_KEY = os.environ.get("PUBLIC_KEY")
-    >>> PRIVATE_KEY = os.environ.get("PRIVATE_KEY")
-    >>> SIGNATURE_TOKEN = os.environ.get("SIGNATURE_TOKEN")
-
-A token signature is retrieved from the API and set to ``signature_token``.
+A token signature is retrieved from the API and set to ``signature_token`` attribute.
 
 .. code:: python
 
@@ -52,8 +48,15 @@ Examples with ``mopinion_client.MopinionClient.resource``
 
 This set of examples use the method ``resource`` from the ``MopinionClient``.
 
+.. note::
+    In case that deletion is available for a specific resource there is an option of simulating
+    the request, adding a query parameter ``dry-run`` to the request URL.
+    The response will return the resources that would be affected by the request.
+
 Resource Account
 ~~~~~~~~~~~~~~~~
+
+API Docs for `Account <https://developer.mopinion.com/api/#tag/account>`_.
 
 Get your account.
 
@@ -64,7 +67,7 @@ Get your account.
     >>> print(response.json())
     {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
 
-Get your account in yaml format.
+Get your account in YAML format.
 
 .. code:: python
 
@@ -83,6 +86,8 @@ When requesting with ``verbosity='quiet'`` no ``_meta`` info is returned.
 
 Resource Deployments
 ~~~~~~~~~~~~~~~~~~~~~~
+
+API Docs for `Deployments <https://developer.mopinion.com/api/#tag/deployments>`_.
 
 Getting deployments.
 
@@ -111,9 +116,14 @@ Deleting a deployment.
     >>> assert response.json()["_meta"]["code"] == 200
     >>> response.json()
     {'executed': True, 'resources_affected': {'deployments': ['mydeploymentk...
+    >>> response = client.resource(client.RESOURCE_DEPLOYMENTS, "abt34", method="DELETE", query_params={"dry-run": True})
+    >>> assert not response.json()["executed"]
+    {'executed': False, 'resources_affected': {'deployments': ['mydeploymentk...
 
 Resource Datasets
 ~~~~~~~~~~~~~~~~~~~~~~
+
+API Docs for `Datasets <https://developer.mopinion.com/api/#tag/datasets>`_.
 
 Getting a dataset.
 
@@ -138,6 +148,9 @@ Deleting a dataset.
 
     >>> response = client.resource("datasets", resource_id=1234, method="DELETE")
     >>> assert response.json()["_meta"]["code"] == 200
+    >>> assert response.json()["executed"]
+    >>> response = client.resource("datasets", resource_id=1234, method="DELETE", query_params={"dry-run": True})
+    >>> assert not response.json()["executed"]
 
 
 Add a new dataset to a report.
@@ -160,6 +173,8 @@ Get fields for a dataset.
 Resource Fields
 ~~~~~~~~~~~~~~~~~~~~~~
 
+API Docs for `Fields <https://developer.mopinion.com/api/#tag/fields>`_.
+
 Get fields for a dataset.
 
 .. code:: python
@@ -177,22 +192,37 @@ Get fields for a report.
 Resource Feedback
 ~~~~~~~~~~~~~~~~~
 
+API Docs for `Feedback <https://developer.mopinion.com/api/#tag/feedback>`_.
+
+.. note::
+    There are three query parameters available for this resource.
+
+    - `limit` (int <= 100) Maximum number of results in response/
+
+    - `page` (int) Return result page.
+
+    - `filter` (string) Filter feedback results. Click `here <https://developer.mopinion.com/api/#section/Requests-and-Responses/Filters>`_ for more info about filters.
+
 Get feedback from a dataset.
 
 .. code:: python
 
-    >>> response = client.resource("datasets", 1234, "feedback", "abt34")
+    >>> params = {"page": 1}
+    >>> response = client.resource("datasets", 1234, "feedback", "abt34", query_params=params)
     >>> assert response.json()["_meta"]["code"] == 200
 
 Get feedback for a report.
 
 .. code:: python
 
-    >>> response = client.resource("reports", 1234, "feedback", "abt34")
+    >>> params = {"limit": 50, "filter[ces]": "3"}
+    >>> response = client.resource("reports", 1234, "feedback", "abt34", query_params=params)
     >>> assert response.json()["_meta"]["code"] == 200
 
 Resource Reports
 ~~~~~~~~~~~~~~~~
+
+API Docs for `Reports <https://developer.mopinion.com/api/#tag/reports>`_.
 
 Get some basic info on a report.
 
@@ -211,12 +241,15 @@ Update an existing report.
     >>> assert response.json()["_meta"]["code"] == 200
 
 
-And deleting a dataset.
+And deleting a report.
 
 .. code:: python
 
     >>> response = client.resource("reports", resource_id=1234, method="DELETE")
     >>> assert response.json()["_meta"]["code"] == 200
+    >>> assert response.json()["executed"]
+    >>> response = client.resource("reports", resource_id=1234, method="DELETE", query_params={"dry-run": True})
+    >>> assert not response.json()["executed"]
 
 
 Add a new report to the account.
@@ -233,8 +266,15 @@ Examples with ``mopinion_client.MopinionClient.request``
 
 This set of examples use the method ``request`` from the ``MopinionClient``.
 
+.. note::
+    In case that deletion is available for a specific resource there is an option of simulating
+    the request, adding a query parameter ``dry-run`` to the request URL.
+    The response will return the resources that would be affected by the request.
+
 Resource Account
 ~~~~~~~~~~~~~~~~
+
+API Docs for `Account <https://developer.mopinion.com/api/#tag/account>`_.
 
 Get your account.
 
@@ -245,7 +285,7 @@ Get your account.
     >>> print(response.json())
     {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
 
-Get your account in yaml format.
+Get your account in YAML format.
 
 .. code:: python
 
@@ -264,6 +304,8 @@ When requesting with ``verbosity='quiet'`` no ``_meta`` info is returned.
 
 Resource Deployments
 ~~~~~~~~~~~~~~~~~~~~~~
+
+API Docs for `Deployments <https://developer.mopinion.com/api/#tag/deployments>`_.
 
 Getting deployments.
 
@@ -288,10 +330,14 @@ Deleting a deployment.
 
     >>> response = client.request("/deployments/abt34", method="DELETE")
     >>> assert response.json()["_meta"]["code"] == 200
-    >>> response.json()
+    >>> assert response.json()["executed"]
+    >>> response = client.request("/deployments/abt34", method="DELETE", query_params={"dry-run": True})
+    >>> assert not response.json()["executed"]
 
 Resource Datasets
 ~~~~~~~~~~~~~~~~~~~~~~
+
+API Docs for `Datasets <https://developer.mopinion.com/api/#tag/datasets>`_.
 
 Getting a dataset.
 
@@ -316,6 +362,9 @@ Deleting a dataset.
 
     >>> response = client.request("/datasets/1234", method="DELETE")
     >>> assert response.json()["_meta"]["code"] == 200
+    >>> assert response.json()["executed"]
+    >>> response = client.request("/datasets/1234", method="DELETE", query_params={"dry-run": True})
+    >>> assert not response.json()["executed"]
 
 
 Add a new dataset to a report.
@@ -338,6 +387,8 @@ Get fields for a dataset.
 Resource Fields
 ~~~~~~~~~~~~~~~~~~~~~~
 
+API Docs for `Fields <https://developer.mopinion.com/api/#tag/fields>`_.
+
 Get fields for a dataset.
 
 .. code:: python
@@ -355,22 +406,37 @@ Get fields for a report.
 Resource Feedback
 ~~~~~~~~~~~~~~~~~
 
+API Docs for `Feedback <https://developer.mopinion.com/api/#tag/feedback>`_.
+
+.. note::
+    There are three query parameters available for this resource.
+
+    - `limit` (int <= 100) Maximum number of results in response/
+
+    - `page` (int) Return result page.
+
+    - `filter` (string) Filter feedback results. Click `here <https://developer.mopinion.com/api/#section/Requests-and-Responses/Filters>`_ for more info about filters.
+
 Get feedback from a dataset.
 
 .. code:: python
 
-    >>> response = client.request("datasets/1234/feedback/abt34")
+    >>> params = {"limit": 50, "filter[ces]": "3"}
+    >>> response = client.request("datasets/1234/feedback/abt34", query_params=params)
     >>> assert response.json()["_meta"]["code"] == 200
 
 Get feedback for a report.
 
 .. code:: python
 
-    >>> response = client.request("reports/1234/feedback/abt34")
+    >>> params = {"page": 1}
+    >>> response = client.request("reports/1234/feedback/abt34", query_params=params)
     >>> assert response.json()["_meta"]["code"] == 200
 
 Resource Reports
 ~~~~~~~~~~~~~~~~
+
+API Docs for `Reports <https://developer.mopinion.com/api/#tag/reports>`_.
 
 Get some basic info on a report.
 
@@ -395,6 +461,9 @@ And deleting a dataset.
 
     >>> response = client.resource("reports/1234", method="DELETE")
     >>> assert response.json()["_meta"]["code"] == 200
+    >>> assert response.json()["executed"]
+    >>> response = client.resource("reports/1234", method="DELETE", query_params={"dry-run": True})
+    >>> assert not response.json()["executed"]
 
 
 Add a new report to the account.
@@ -409,28 +478,22 @@ Add a new report to the account.
 Examples with the iterator
 ----------------------------
 
-When working with the API there is a limit of elements retrieved. The ``limit`` parameters defaults to *10*.
+When working with the API there is a limit of elements retrieved. The ``limit`` parameters default to *10*.
 You can increase the limit, or you can request resources using the flag ``generator=True``.
 This returns a `Generator <https://wiki.python.org/moin/Generators>`_ which traverses these pages for you
-and yields each result in the current page before retrieving the next page.
+and yields each result on the current page before retrieving the next page.
 
 .. code:: python
 
-    >>> from mopinion_client import MopinionClient
-    >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
     >>> iterator = client.resource("deployments", iterator=True)
     >>> response = next(iterator)
     >>> assert response.json()["_meta"]["code"] == 200
 
-Requesting fields for a datasets.
+Requesting fields for a dataset.
 
 .. code:: python
 
     >>> iterator = client.resource("datasets", 1234, "fields", iterator=True)
-    >>> response = next(iterator)
-    >>> assert response.json()["_meta"]["code"] == 200
-    >>> client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
-    >>> iterator = client.resource("deployments", iterator=True)
     >>> response = next(iterator)
     >>> assert response.json()["_meta"]["code"] == 200
 

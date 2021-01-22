@@ -12,7 +12,7 @@ Windows (pip)
 
 The following recipe is still a work in progress:
 
-1. `Install Python 3.* (stable) <https://www.python.org/downloads/windows/>`_
+1. `Install Python>=3.7 (stable) <https://www.python.org/downloads/windows/>`_
 2. Start the command prompt
 3. Install mopinion::
 

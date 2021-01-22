@@ -3,15 +3,15 @@
 Mopinion Client
 ========================
 
-The intention of developing a MopinionClient is to make easy,
+The intention of developing a MopinionClient is to make it easy,
 beautiful and elegant when interacting with our API.
 
-Credentials can be created via the Mopinion Suite at Integrations » Feedback API in classic interface
+Credentials can be created via the Mopinion Suite at Integrations » Feedback API in the classic interface
 or in the Raspberry interface, provided your package includes API access.
 
-You can also take a look at this
+Take a look at this
 `link <https://mopinion.atlassian.net/wiki/spaces/KB/pages/931921992/Where+to+create+API+credentials>`_
-with the steps to get ``private_key`` and ``public_key``
+with the steps to get a ``private_key`` and a ``public_key``.
 
 
 MopinionClient Specifications

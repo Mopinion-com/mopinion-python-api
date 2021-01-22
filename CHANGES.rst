@@ -1,6 +1,17 @@
 Changelog
-=========
+========================================================
 
+
+0.0.4 (2021-01-22)
+-------------------
+
+- Fixed in documentation.
+
+- Added examples for `query_params` in the doc examples.
+
+- Updated directory name from `mopinion_client` to `mopinion`.
+
+- Implemented About in Docs and Readme.
 
 0.0.3 (2021-01-20)
 -------------------

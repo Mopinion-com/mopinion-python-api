@@ -1,7 +1,7 @@
 from setuptools import setup
 import os
 
-version = "0.0.3"
+version = "0.0.4"
 
 long_description = "\n\n".join([open("README.rst").read(), open("CHANGES.rst").read()])
 
@@ -18,7 +18,7 @@ tests_require = ["pytest"]
 setup(
     name="mopinion",
     version=version,
-    description="Client library for the Mopinion Data API",
+    description="A client library for the Mopinion Data API",
     long_description=long_description,
     # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
@@ -31,7 +31,7 @@ setup(
     author_email="",
     url="https://github.com/mopinion/mopinion-python-api",
     license="MIT License",
-    packages=["mopinion_client"],
+    packages=["mopinion"],
     include_package_data=True,
     zip_safe=False,
     install_requires=install_requires,
