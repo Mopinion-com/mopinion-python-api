@@ -11,13 +11,44 @@ Mopinion API - Python Client
 .. image:: https://github.com/mopinion/mopinion-python-api/workflows/Test%20Suite/badge.svg/
     :alt: GitHub Actions
 
-API client library for the `Mopinion Data API <https://developer.mopinion.com/api/>`_.
+.. image:: https://badge.fury.io/py/mopinion.svg
+    :target: https://badge.fury.io/py/mopinion
+
+
+A client library for the `Mopinion Data API <https://developer.mopinion.com/api/>`_.
 
 Our Mopinion Client provides functionality for authentication, authorization and requesting resources.
 It comes with an easy, beautiful and elegant way of interacting with our API.
 
 `Read the docs <https://mopinion-python-api.readthedocs.io/en/latest/>`_ for further information.
 
+Installation
+~~~~~~~~~~~~~
+
+Install using ``pip``...::
+
+    pip install mopinion
+
+Example
+~~~~~~~~
+
+.. code:: python
+
+    >>> from mopinion import MopinionClient
+    >>> client = MopinionClient(public_key=YOUR_PUBLIC_KEY, private_key=YOUR_PRIVATE_KEY)
+    >>> client.is_available()
+    True
+    >>> response = client.resource("account")
+    >>> response.json()
+    {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
+    >>> client.resource("deployments")
+    >>> response.json()
+    {'0': {'key': 'defusvnns6mkl2vd3wc0wgcjh159uh3j', 'name': 'Web Feedback Deployment'}, '_meta':..
+
+Documentation
+~~~~~~~~~~~~~~~
+
+You can find here at `Read the docs <https://mopinion-python-api.readthedocs.io/en/latest/>`_ the complete documentation.
 
 About Mopinion
 ~~~~~~~~~~~~~~~~

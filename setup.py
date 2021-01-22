@@ -18,7 +18,7 @@ tests_require = ["pytest"]
 setup(
     name="mopinion",
     version=version,
-    description="Client library for the Mopinion Data API",
+    description="A client library for the Mopinion Data API",
     long_description=long_description,
     # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
