@@ -5,7 +5,7 @@ Requesting Resources
 
 The next examples follow the order from the `API documentation <https://developer.mopinion.com/api/>`_.
 
-Credentials can be created via the Mopinion Suite at Integrations » Feedback API in classic interface
+Credentials can be created via the Mopinion Suite at Integrations » Feedback API in the classic interface
 or in the Raspberry interface, provided your package includes API access.
 
 You can also take a look at this
@@ -58,7 +58,7 @@ Get your account.
     >>> print(response.json())
     {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
 
-Get your account in yaml format.
+Get your account in YAML format.
 
 .. code:: python
 
@@ -239,7 +239,7 @@ Get your account.
     >>> print(response.json())
     {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
 
-Get your account in yaml format.
+Get your account in YAML format.
 
 .. code:: python
 
@@ -403,10 +403,10 @@ Add a new report to the account.
 Examples with the iterator
 ----------------------------
 
-When working with the API there is a limit of elements retrieved. The ``limit`` parameters defaults to *10*.
+When working with the API there is a limit of elements retrieved. The ``limit`` parameters default to *10*.
 You can increase the limit, or you can request resources using the flag ``generator=True``.
 This returns a `Generator <https://wiki.python.org/moin/Generators>`_ which traverses these pages for you
-and yields each result in the current page before retrieving the next page.
+and yields each result on the current page before retrieving the next page.
 
 .. code:: python
 

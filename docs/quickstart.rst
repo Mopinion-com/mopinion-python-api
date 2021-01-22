@@ -6,7 +6,7 @@ This is a quick introduction, for a complete guide please go to :doc:`client` or
 Instantiating the MopinionCLient
 --------------------------------
 
-Credentials can be created via the Mopinion Suite at Integrations » Feedback API in classic interface
+Credentials can be created via the Mopinion Suite at Integrations » Feedback API in the classic interface
 or in the Raspberry interface, provided your package includes API access.
 
 You can also take a look at this

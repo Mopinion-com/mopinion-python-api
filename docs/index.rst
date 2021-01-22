@@ -6,9 +6,9 @@
 Welcome to the Mopinion Client's documentation!
 =================================================
 
-`mopinion <https://pypi.org/project/mopinion/>`_ is a python client that provides functionality for authentication, authorization and requesting resources.
+`mopinion <https://pypi.org/project/mopinion/>`_ is a python client that provides functionality for authentication, authorization, and requesting resources.
 It comes with an easy, beautiful and elegant way of interacting with
-our `Mopinion Data API <https://developer.mopinion.com/api/>`_. This package was developed by Mopinion to facilitate end-users
+our `Mopinion Data API <https://developer.mopinion.com/api/>`_. This package was developed by `Mopinion <https://mopinion.com/>`_ to facilitate end-users
 interacting with the API.
 
 About Mopinion
@@ -17,7 +17,7 @@ About Mopinion
 `Mopinion <https://mopinion.com/>`_ is a leading all-in-one user feedback platform that helps digital enterprises listen, understand,
 and act across all digital touchpoints (web, mobile, and email). Join some of the most forward-thinking
 digital teams from companies such as T-mobile, eBay, TSB Bank, Walmart, Hotels.com, Decathlon, Ahold,
-Mediacorp Ltd and many more.
+Mediacorp Ltd, and many more.
 
 Please visit the website for more information about the product: https://mopinion.com
 

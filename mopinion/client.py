@@ -68,20 +68,20 @@ class AbstractClient(abc.ABC):
 class MopinionClient(AbstractClient):
     """Client to interact with Mopinion API.
 
-    Provides functionality for authentication, authorization and requesting resources.
+    Provides functionality for authentication, authorization, and requesting resources.
     Steps during instantiation:
 
       1. Credential validations.
       2. Instantiation of a session object from ``requests.Session`` that will be used in each request.
-      3. Retrieval of ``signature_token`` from the API for an specific ``private_key`` and ``public_key``.
+      3. Retrieval of ``signature_token`` from the API for a specific ``private_key`` and ``public_key``.
 
     When instantiating, a signature token is retrieved from the API  and stored
     in the ``signature_token`` attribute using your ``private_key`` and ``public_key``.
     The ``signature_token`` will be used in each request.
 
-    In each request, a HMAC signature will be created using SHA256-hashing, and encrypted with your ``signature_token``.
-    This HMAC signature is encode together with the ``public_key``.
-    After this encryption, the xtoken is set into the headers under the ``X-Auth-Token`` key.
+    In each request, an HMAC signature will be created using SHA256-hashing, and encrypted with your ``signature_token``.
+    This HMAC signature is encoded together with the ``public_key``.
+    After this encryption, the token is set into the headers under the ``X-Auth-Token`` key.
 
     Args:
       public_key (str):
@@ -122,7 +122,7 @@ class MopinionClient(AbstractClient):
         self.session.mount(settings.BASE_URL, adapter=adapter)
         self.signature_token = self._get_signature_token(self.credentials)
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.session.close()
 
     def _get_signature_token(self, credentials: Credentials) -> str:
@@ -160,7 +160,7 @@ class MopinionClient(AbstractClient):
     def is_available(self, verbose: bool = False) -> Union[dict, bool]:
         """Test the API's availability.
 
-        It return a boolean ``True``/``False`` in case the API is available or not.
+        It returns a boolean ``True``/``False`` in case the API is available or not.
         In case we need extra information about the state of the API, we can provide a
         flag ``verbose=True``.
 
@@ -190,12 +190,12 @@ class MopinionClient(AbstractClient):
 
         Wrapper on top of ``requests.Session.request`` method adding token encryption
         on headers.
-        Everytime we call `request` five steps are applied:
+        Every time we call `request` five steps are applied:
           1. Validation of arguments.
-          2. Token creation - token depends on `endpoint` argument and `signature_token`.
+          2. Token creation - token depends on the `endpoint` argument and `signature_token`.
           3. Preparation of parameter dictionary. Add token to headers.
-          4. Make request.
-          5. Return response.
+          4. Make a request.
+          5. Return a response.
 
         Args:
           endpoint (str): API endpoint.
@@ -313,10 +313,10 @@ class MopinionClient(AbstractClient):
           >>> response = client.resource(resource_name=client.RESOURCE_ACCOUNT)  # same as above
           >>> assert response.json()["_meta"]["code"] == 200
 
-        When working with the API there is a limit of elements retrieved. The ``limit`` parameters defaults to *10*.
+        When working with the API there is a limit of elements retrieved. The ``limit`` parameters default to *10*.
         You can increase the limit, or you can request resources using the flag ``generator=True``.
         This returns a `Generator <https://wiki.python.org/moin/Generators>`_ which traverses these pages for you
-        and yields each result in the current page before retrieving the next page.
+        and yields each result on the current page before retrieving the next page.
 
         Examples:
           >>> from mopinion import MopinionClient
