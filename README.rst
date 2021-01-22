@@ -36,14 +36,11 @@ Example
 
     >>> from mopinion import MopinionClient
     >>> client = MopinionClient(public_key=YOUR_PUBLIC_KEY, private_key=YOUR_PRIVATE_KEY)
-    >>> client.is_available()
-    True
+    >>> assert client.is_available()
     >>> response = client.resource("account")
-    >>> response.json()
-    {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
-    >>> client.resource("deployments")
-    >>> response.json()
-    {'0': {'key': 'defusvnns6mkl2vd3wc0wgcjh159uh3j', 'name': 'Web Feedback Deployment'}, '_meta':..
+    >>> assert response.json()["_meta"]["code"] == 200
+    >>> response = client.resource("deployments")
+    >>> assert response.json()["_meta"]["code"] == 200
 
 Documentation
 ~~~~~~~~~~~~~~~
