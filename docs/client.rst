@@ -17,6 +17,6 @@ with the steps to get a ``private_key`` and a ``public_key``.
 MopinionClient Specifications
 ------------------------------
 
-.. automodule:: mopinion_client
+.. automodule:: mopinion
    :members: MopinionClient
    :exclude-members: _get_signature_token, _get_iterator, get_token

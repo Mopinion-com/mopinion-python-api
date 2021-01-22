@@ -2,6 +2,12 @@ Changelog
 ========================================================
 
 
+0.0.5 (2021-01-22)
+-------------------
+
+- Several fixes in documentation.
+
+
 0.0.4 (2021-01-22)
 -------------------
 
@@ -31,6 +37,10 @@ Changelog
 -------------------
 
 - Initial project structure.
+
 - Client implementation.
+
 - Test suite.
+
 - Request examples.
+

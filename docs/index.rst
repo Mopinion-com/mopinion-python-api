@@ -21,8 +21,6 @@ Mediacorp Ltd, and many more.
 
 Please visit the website for more information about the product: https://mopinion.com
 
-Contents
---------
 
 .. toctree::
    :maxdepth: 2

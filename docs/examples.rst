@@ -43,7 +43,7 @@ To see the availability of the API you can call ``is_available()``.
     >>> assert r["code"] == 200 and r["response"] == "pong" and r["version"] == "2.0.0"
 
 
-Examples with ``mopinion_client.MopinionClient.resource``
+Examples with ``mopinion.MopinionClient.resource``
 -----------------------------------------------------------
 
 This set of examples use the method ``resource`` from the ``MopinionClient``.
@@ -261,7 +261,7 @@ Add a new report to the account.
     >>> assert response.json()["_meta"]["code"] == 201
 
 
-Examples with ``mopinion_client.MopinionClient.request``
+Examples with ``mopinion.MopinionClient.request``
 ---------------------------------------------------------
 
 This set of examples use the method ``request`` from the ``MopinionClient``.
