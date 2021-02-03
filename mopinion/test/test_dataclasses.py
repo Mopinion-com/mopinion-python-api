@@ -1,6 +1,5 @@
 import unittest
 
-from mopinion import settings
 from mopinion.dataclasses import ApiRequestArguments
 from mopinion.dataclasses import EndPoint
 from mopinion.dataclasses import ResourceUri
@@ -20,12 +19,12 @@ class ArgumentValidationTest(unittest.TestCase):
             endpoint=EndPoint(path="/reports"),
             version="2.0.0",
             verbosity="full",
-            method="DELETE",
+            method="GET",
             content_negotiation="application/x-yaml",
         )
         self.assertEqual(arguments.version, "2.0.0")
         self.assertEqual(arguments.verbosity, "full")
-        self.assertEqual(arguments.method.lower(), "delete")
+        self.assertEqual(arguments.method.lower(), "get")
         self.assertEqual(arguments.content_negotiation, "application/x-yaml")
         self.assertEqual(arguments.endpoint.path, "/reports")
 

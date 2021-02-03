@@ -44,8 +44,8 @@ class EndPoint(Argument):
             r"/datasets/\d+$",
             r"/datasets/\d+/fields$",
             r"/reports/\d+/fields$",
-            r"/datasets/\d+/feedback/\w+$",
-            r"/reports/\d+/feedback/\w+$",
+            r"/datasets/\d+/feedback$",
+            r"/reports/\d+/feedback$",
             r"/reports/\d+$",
             r"/reports$",
         ]

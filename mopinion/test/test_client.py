@@ -118,7 +118,7 @@ class APITest(unittest.TestCase):
         ]
         client = MopinionClient(self.public_key, self.private_key)
         response = client.request(
-            method="DELETE",
+            method="GET",
             endpoint="/reports",
             version="2.0.0",
             verbosity=client.VERBOSITY_FULL,
@@ -135,7 +135,7 @@ class APITest(unittest.TestCase):
                     headers={"Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="},
                 ),
                 call(
-                    method="DELETE",
+                    method="GET",
                     url="https://api.mopinion.com/reports",
                     headers={
                         "X-Auth-Token": b"UFVCTElDX0tFWTpjNDVmMGQ0ZGI3MTE2MjZ"
@@ -224,13 +224,15 @@ class APITest(unittest.TestCase):
             "/deployments",
             "/deployments/string",
             "/deployments/my_string",
-            "/deployments/76pg3seur7occo1hogv88eltdtmxoxxl81vj" "/reports",
+            "/deployments/76pg3seur7occo1hogv88eltdtmxoxxl81vj",
+            "/reports",
             "/reports/1",
             "/reports/19475758",
             "/datasets",
             "/datasets/1/fields",
-            "/datasets/119475758/feedback/gv88eltdtmxoxxl8_7jjtu89",
-            "/datasets/119475758/feedback/76pg3seur7occo1hogv88eltdtmxoxxl81vj",
+            "/datasets/123/feedback",
+            "/datasets/119475758/feedback",
+            "/datasets/119475758/feedback",
         ]
         for path in paths:
             mocked_response.return_value = MockedResponse({"token": "token"})
@@ -249,7 +251,6 @@ class APITest(unittest.TestCase):
             resource_name=client.RESOURCE_REPORTS,
             resource_id=1,
             sub_resource_name=client.SUBRESOURCE_FEEDBACK,
-            sub_resource_id="string_id",
             version="2.0.0",
             verbosity=client.VERBOSITY_FULL,
             query_params={"key": "value"},
@@ -273,7 +274,6 @@ class APITest(unittest.TestCase):
             resource_name=client.RESOURCE_REPORTS,
             resource_id=1,
             sub_resource_name=client.SUBRESOURCE_FEEDBACK,
-            sub_resource_id="string_id",
             version="2.0.0",
             verbosity=client.VERBOSITY_FULL,
             query_params={"key": "value"},
@@ -329,7 +329,7 @@ class APITest(unittest.TestCase):
                 MopinionClient.RESOURCE_DATASETS,
                 1,
                 MopinionClient.SUBRESOURCE_FEEDBACK,
-                "string_id",
+                None,
             ),
         ]
         for resources in paths_resources:
