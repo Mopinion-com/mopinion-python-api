@@ -5,11 +5,9 @@ Changelog
 0.0.6 (2021-02-11)
 -------------------
 
-- Several fixes in documentation.
+- Fixes in documentation.
 
-- Add pre-commit configuration to project.
-
-- Reduced methods available to `GET`.
+- Added pre-commit configuration to project.
 
 - Added new endpoint for `/deployments/<str_id>`.
 
