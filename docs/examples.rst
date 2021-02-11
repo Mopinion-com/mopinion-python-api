@@ -48,11 +48,6 @@ Examples with ``mopinion.MopinionClient.resource``
 
 This set of examples use the method ``resource`` from the ``MopinionClient``.
 
-.. note::
-    In case that deletion is available for a specific resource there is an option of simulating
-    the request, adding a query parameter ``dry-run`` to the request URL.
-    The response will return the resources that would be affected by the request.
-
 Resource Account
 ~~~~~~~~~~~~~~~~
 
@@ -64,7 +59,7 @@ Get your account.
 
     >>> response = client.resource(resource_name=client.RESOURCE_ACCOUNT)
     >>> assert response.json()["_meta"]["code"] == 200
-    >>> print(response.json())
+    >>> response.json()
     {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
 
 Get your account in YAML format.
@@ -98,27 +93,12 @@ Getting deployments.
     >>> response.json()
     {'0': {'key': 'defusvnns6mkl2vd3wc0wgcjh159uh3j', 'name': 'Web Feedback Deployment'}, '_meta':...
 
-Add a new deployment to your account.
+Getting a specific deployment.
 
 .. code:: python
 
-    >>> body = {"key": "key", "name": "My Test Deployment"}
-    >>> response = client.resource("deployments", method="POST", body=body)
-    >>> assert response.json()["_meta"]["code"] == 201
-    >>> response.json()
-    {'key': 'key', 'name': 'My Test Deployment', '_meta': {'co...
-
-Deleting a deployment.
-
-.. code:: python
-
-    >>> response = client.resource(client.RESOURCE_DEPLOYMENTS, "abt34", method="DELETE")
+    >>> response = client.resource("deployments", "my_deployment")
     >>> assert response.json()["_meta"]["code"] == 200
-    >>> response.json()
-    {'executed': True, 'resources_affected': {'deployments': ['mydeploymentk...
-    >>> response = client.resource(client.RESOURCE_DEPLOYMENTS, "abt34", method="DELETE", query_params={"dry-run": True})
-    >>> assert not response.json()["executed"]
-    {'executed': False, 'resources_affected': {'deployments': ['mydeploymentk...
 
 Resource Datasets
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -131,36 +111,6 @@ Getting a dataset.
 
     >>> response = client.resource(resource_name=client.RESOURCE_DATASETS, resource_id=1234)
     >>> assert response.json()["_meta"]["code"] == 200
-
-
-Updating a dataset.
-
-.. code:: python
-
-    >>> body = {"name": "My updated name", "description": "My updated description"}
-    >>> response = client.resource("datasets", resource_id=1234, method="PUT", body=body)
-    >>> assert response.json()["_meta"]["code"] == 200
-
-
-Deleting a dataset.
-
-.. code:: python
-
-    >>> response = client.resource("datasets", resource_id=1234, method="DELETE")
-    >>> assert response.json()["_meta"]["code"] == 200
-    >>> assert response.json()["executed"]
-    >>> response = client.resource("datasets", resource_id=1234, method="DELETE", query_params={"dry-run": True})
-    >>> assert not response.json()["executed"]
-
-
-Add a new dataset to a report.
-
-.. code:: python
-
-    >>> body = {"name": "Web care performance", "report_id": "854", "description": "Historic data import"}
-    >>> response = client.resource("datasets", method="POST", body=body)
-    >>> assert response.json()["_meta"]["code"] == 201
-
 
 Get fields for a dataset.
 
@@ -232,44 +182,10 @@ Get some basic info on a report.
     >>> assert response.json()["_meta"]["code"] == 200
 
 
-Update an existing report.
-
-.. code:: python
-
-    >>> body = {"name": "Customer Support", "description": "Support related", "language": "en_US"}
-    >>> response = client.resource("reports", resource_id=1234, method="PUT", body=body)
-    >>> assert response.json()["_meta"]["code"] == 200
-
-
-And deleting a report.
-
-.. code:: python
-
-    >>> response = client.resource("reports", resource_id=1234, method="DELETE")
-    >>> assert response.json()["_meta"]["code"] == 200
-    >>> assert response.json()["executed"]
-    >>> response = client.resource("reports", resource_id=1234, method="DELETE", query_params={"dry-run": True})
-    >>> assert not response.json()["executed"]
-
-
-Add a new report to the account.
-
-.. code:: python
-
-    >>> body = {"name": "Customer Support", "description": "Support related", "language": "en_US"}
-    >>> response = client.resource("reports", method="POST", body=body)
-    >>> assert response.json()["_meta"]["code"] == 201
-
-
 Examples with ``mopinion.MopinionClient.request``
----------------------------------------------------------
+-------------------------------------------------
 
 This set of examples use the method ``request`` from the ``MopinionClient``.
-
-.. note::
-    In case that deletion is available for a specific resource there is an option of simulating
-    the request, adding a query parameter ``dry-run`` to the request URL.
-    The response will return the resources that would be affected by the request.
 
 Resource Account
 ~~~~~~~~~~~~~~~~
@@ -315,24 +231,12 @@ Getting deployments.
     >>> assert response.json()["_meta"]["code"] == 200
     >>> response.json()
 
-Add a new deployment to your account.
+Getting a specific deployment.
 
 .. code:: python
 
-    >>> body = {"key": "key", "name": "My Test Deployment"}
-    >>> response = client.request("/deployments", method="POST", body=body)
-    >>> assert response.json()["_meta"]["code"] == 201
-    >>> response.json()
-
-Deleting a deployment.
-
-.. code:: python
-
-    >>> response = client.request("/deployments/abt34", method="DELETE")
+    >>> response = client.request("/deployments/my_deployment")
     >>> assert response.json()["_meta"]["code"] == 200
-    >>> assert response.json()["executed"]
-    >>> response = client.request("/deployments/abt34", method="DELETE", query_params={"dry-run": True})
-    >>> assert not response.json()["executed"]
 
 Resource Datasets
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -345,36 +249,6 @@ Getting a dataset.
 
     >>> response = client.request("/datasets/1234")
     >>> assert response.json()["_meta"]["code"] == 200
-
-
-Updating a dataset.
-
-.. code:: python
-
-    >>> body = {"name": "My updated name", "description": "My updated description"}
-    >>> response = client.request("/datasets/1234", method="PUT", body=body)
-    >>> assert response.json()["_meta"]["code"] == 200
-
-
-Deleting a dataset.
-
-.. code:: python
-
-    >>> response = client.request("/datasets/1234", method="DELETE")
-    >>> assert response.json()["_meta"]["code"] == 200
-    >>> assert response.json()["executed"]
-    >>> response = client.request("/datasets/1234", method="DELETE", query_params={"dry-run": True})
-    >>> assert not response.json()["executed"]
-
-
-Add a new dataset to a report.
-
-.. code:: python
-
-    >>> body = {"name": "Web care performance", "report_id": "854", "description": "Historic data import"}
-    >>> response = client.request("/datasets", method="POST", body=body)
-    >>> assert response.json()["_meta"]["code"] == 201
-
 
 Get fields for a dataset.
 
@@ -422,15 +296,15 @@ Get feedback from a dataset.
 .. code:: python
 
     >>> params = {"limit": 50, "filter[ces]": "3"}
-    >>> response = client.request("datasets/1234/feedback/abt34", query_params=params)
+    >>> response = client.request("datasets/1234/feedback", query_params=params)
     >>> assert response.json()["_meta"]["code"] == 200
 
-Get feedback for a report.
+Get feedback from a report.
 
 .. code:: python
 
     >>> params = {"page": 1}
-    >>> response = client.request("reports/1234/feedback/abt34", query_params=params)
+    >>> response = client.request("reports/1234/feedback", query_params=params)
     >>> assert response.json()["_meta"]["code"] == 200
 
 Resource Reports
@@ -444,35 +318,6 @@ Get some basic info on a report.
 
     >>> response = client.request("/reports/1234")
     >>> assert response.json()["_meta"]["code"] == 200
-
-
-Update an existing report.
-
-.. code:: python
-
-    >>> body = {"name": "Customer Support", "description": "Support related", "language": "en_US"}
-    >>> response = client.request("/reports/1234", method="PUT", body=body)
-    >>> assert response.json()["_meta"]["code"] == 200
-
-
-And deleting a dataset.
-
-.. code:: python
-
-    >>> response = client.resource("reports/1234", method="DELETE")
-    >>> assert response.json()["_meta"]["code"] == 200
-    >>> assert response.json()["executed"]
-    >>> response = client.resource("reports/1234", method="DELETE", query_params={"dry-run": True})
-    >>> assert not response.json()["executed"]
-
-
-Add a new report to the account.
-
-.. code:: python
-
-    >>> body = {"name": "Customer Support", "description": "Support related", "language": "en_US"}
-    >>> response = client.resource("/reports", method="POST", body=body)
-    >>> assert response.json()["_meta"]["code"] == 201
 
 
 Examples with the iterator

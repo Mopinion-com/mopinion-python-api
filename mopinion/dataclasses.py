@@ -1,8 +1,10 @@
-import re
-
-from typing import Optional, Union
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 from mopinion import settings
+from typing import Optional
+from typing import Union
+
+import re
 
 
 __all__ = [
@@ -57,10 +59,9 @@ class EndPoint(Argument):
 @dataclass(frozen=True)
 class ApiRequestArguments(Argument):
     endpoint: EndPoint
-    version: str
     content_negotiation: str
     verbosity: str
-    method: str
+    version: str = None
 
     def __post_init__(self):
         # verbosity levels
@@ -70,19 +71,13 @@ class ApiRequestArguments(Argument):
                 f"'{', '.join(settings.VERBOSITY_lEVELS)}'"
             )
 
-        if self.method.lower() not in settings.ALLOWED_METHODS:
-            raise ValueError(
-                f"'{self.method}' is not a valid choice. Please consider one of: "
-                f"'{', '.join(settings.ALLOWED_METHODS)}'"
-            )
-
         if self.content_negotiation not in settings.CONTENT_NEGOTIATIONS:
             raise ValueError(
                 f"'{self.content_negotiation}' is not a valid content negotiation. "
                 f"Please consider one of: '{', '.join(settings.CONTENT_NEGOTIATIONS)}'"
             )
 
-        if self.version not in settings.VERSIONS:
+        if self.version and self.version not in settings.VERSIONS:
             raise ValueError(
                 f"'{self.version}' is not a valid version. Please consider one of: "
                 f"'{''.join(settings.VERSIONS)}'"

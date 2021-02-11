@@ -1,5 +1,7 @@
 from setuptools import setup
+
 import os
+
 
 version = "0.0.6"
 
@@ -7,7 +9,7 @@ long_description = "\n\n".join([open("README.rst").read(), open("CHANGES.rst").r
 
 install_requires = [
     "requests",
-    "dataclasses; python_version <= '3.7'",
+    "dataclasses; python_version == '3.6'",
 ]
 
 # emulate "--no-deps" on the readthedocs build (there is no way to specify this

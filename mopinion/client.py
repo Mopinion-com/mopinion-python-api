@@ -3,23 +3,24 @@ API Client library for the Mopinion Data API.
 For more information, see: https://developer.mopinion.com/api/
 """
 
-from collections.abc import Iterator
 from base64 import b64encode
-from typing import Union, Optional
-from requests.models import Response
-from requests.adapters import HTTPAdapter
+from collections.abc import Iterator
 from mopinion import settings
+from mopinion.dataclasses import ApiRequestArguments
 from mopinion.dataclasses import Credentials
 from mopinion.dataclasses import EndPoint
-from mopinion.dataclasses import ApiRequestArguments
 from mopinion.dataclasses import ResourceUri
 from mopinion.dataclasses import ResourceVerbosity
+from requests.adapters import HTTPAdapter
+from requests.models import Response
+from typing import Optional
+from typing import Union
 
-import requests
+import abc
 import hashlib
 import hmac
-import abc
 import json
+import requests
 
 
 __all__ = ["MopinionClient"]
@@ -38,7 +39,6 @@ class AbstractClient(abc.ABC):
     def request(
         self,
         endpoint: str,
-        method: str,
         version: str,
         verbosity: str,
         content_negotiation: str,
@@ -54,7 +54,6 @@ class AbstractClient(abc.ABC):
         resource_id: Union[str, int],
         sub_resource_name: str,
         sub_resource_id: Union[str, int],
-        method: str,
         version: str,
         content_negotiation: str,
         verbosity: str,
@@ -109,14 +108,18 @@ class MopinionClient(AbstractClient):
     CONTENT_JSON = "application/json"
     CONTENT_YAML = "application/x-yaml"
 
-    def __init__(self, public_key: str, private_key: str, max_retries: int = 3) -> None:
+    def __init__(
+        self, public_key: str, private_key: str, max_retries: int = 3
+    ) -> None:
         """
         Constructor
         :param public_key:
         :param private_key:
         :param max_retries: int
         """
-        self.credentials = Credentials(public_key=public_key, private_key=private_key)
+        self.credentials = Credentials(
+            public_key=public_key, private_key=private_key
+        )
         adapter = HTTPAdapter(max_retries=max_retries)
         self.session = requests.Session()
         self.session.mount(settings.BASE_URL, adapter=adapter)
@@ -153,7 +156,9 @@ class MopinionClient(AbstractClient):
         ).hexdigest()
         # create token
         xtoken = b64encode(
-            f"{self.credentials.public_key}:{uri_and_body_hmac_sha256}".encode("utf-8")
+            f"{self.credentials.public_key}:{uri_and_body_hmac_sha256}".encode(
+                "utf-8"
+            )
         )
         return xtoken
 
@@ -179,8 +184,7 @@ class MopinionClient(AbstractClient):
     def request(
         self,
         endpoint: str,
-        method: str = "GET",
-        version: str = settings.LATEST_VERSION,
+        version: str = None,
         verbosity: str = VERBOSITY_NORMAL,
         content_negotiation: str = CONTENT_JSON,
         body: dict = None,
@@ -199,7 +203,6 @@ class MopinionClient(AbstractClient):
 
         Args:
           endpoint (str): API endpoint.
-          method (str): HTTP Method.
           version (str): API Version.
           verbosity (str): `normal`, `quiet` or `full`.
           content_negotiation (str): `application/json` or `application/x-yaml`.
@@ -216,17 +219,10 @@ class MopinionClient(AbstractClient):
           >>> assert response.json()["_meta"]["code"] == 200
           >>> response = client.request(endpoint="/deployments")
           >>> assert response.json()["_meta"]["code"] == 200
-          >>> body = {"key": "key", "name": "My Test Deployment"},
-          >>> response = client.request(endpoint="/deployments", method="POST", body=body)
-          >>> assert response.json()["_meta"]["code"] == 201
-          >>> endpoint = "/deployments/abt34")
-          >>> response = client.request(endpoint, method="DELETE")
-          >>> assert response.json()["_meta"]["code"] == 200
         """
 
         # validate arguments
         arguments = ApiRequestArguments(
-            method=method,
             version=version,
             verbosity=verbosity,
             endpoint=EndPoint(path=endpoint),
@@ -240,11 +236,13 @@ class MopinionClient(AbstractClient):
         url = f"{settings.BASE_URL}{arguments.endpoint.path}"
         headers = {
             "X-Auth-Token": xtoken,
-            "version": arguments.version,
             "verbosity": arguments.verbosity,
             "Accept": arguments.content_negotiation,
         }
-        params = {"method": arguments.method, "url": url, "headers": headers}
+        if arguments.version:
+            headers["version"] = arguments.version
+
+        params = {"method": "GET", "url": url, "headers": headers}
         if body:
             params["json"] = body  # add content type 'Application-json'
         if query_params:
@@ -261,8 +259,7 @@ class MopinionClient(AbstractClient):
         resource_id: Union[str, int] = None,
         sub_resource_name: str = None,
         sub_resource_id: Union[str, int] = None,
-        method: str = "GET",
-        version: str = settings.LATEST_VERSION,
+        version: str = None,
         verbosity: str = VERBOSITY_NORMAL,
         content_negotiation: str = CONTENT_JSON,
         query_params: dict = None,
@@ -280,7 +277,6 @@ class MopinionClient(AbstractClient):
           resource_id (str/int):
           sub_resource_name (str):
           sub_resource_id (str):
-          method (str): HTTP Method.
           version (str): API Version.
           verbosity (str): `normal`, `quiet` or `full`.
           content_negotiation (str): `application/json` or `application/x-yaml`.
@@ -334,11 +330,6 @@ class MopinionClient(AbstractClient):
           >>> assert response.json()["_meta"]["code"] == 200
           >>> response = client.resource("deployments")
           >>> assert response.json()["_meta"]["code"] == 200
-          >>> body={"key": "mydeploymentkey3", "name": "My Test Deployment"},
-          >>> response = client.resource("deployments", method="POST", body=body)
-          >>> assert response.json()["_meta"]["code"] == 201
-          >>> response = client.resource("deployments", resource_id="abt34", method="DELETE")
-          >>> assert response.json()["_meta"]["code"] == 200
         """
 
         # build uri from arguments
@@ -350,11 +341,12 @@ class MopinionClient(AbstractClient):
         )
         # validate verbosity for Protocol Implementation iterator
         # never allow quiet for iterator==True
-        resource_verbosity = ResourceVerbosity(iterator=iterator, verbosity=verbosity)
+        resource_verbosity = ResourceVerbosity(
+            iterator=iterator, verbosity=verbosity
+        )
 
         # prepare parameters
         params = {
-            "method": method,
             "verbosity": resource_verbosity.verbosity,
             "version": version,
             "body": body,

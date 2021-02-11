@@ -1,15 +1,20 @@
-import unittest
-import types
-from mock import patch, call
-from requests import Session
-from requests.exceptions import RequestException
+from mock import call
+from mock import patch
 from mopinion import MopinionClient
 from mopinion.dataclasses import EndPoint
+from requests import Session
+from requests.exceptions import RequestException
+
+import types
+import unittest
 
 
 class MockedResponse:
     def __init__(
-        self, json_data: dict, status_code: int = 200, raise_error: bool = False
+        self,
+        json_data: dict,
+        status_code: int = 200,
+        raise_error: bool = False,
     ):
         self.json_data = json_data
         self.status_code = status_code
@@ -93,7 +98,9 @@ class APITest(unittest.TestCase):
                 call(
                     method="GET",
                     url="https://api.mopinion.com/token",
-                    headers={"Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="},
+                    headers={
+                        "Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="
+                    },
                 ),
                 call(
                     method="GET",
@@ -102,7 +109,6 @@ class APITest(unittest.TestCase):
                         "X-Auth-Token": b"UFVCTElDX0tFWTpiMWIzY2Q0YWI2NGJmYjJhN"
                         b"mRhMDM2NDgyN2UwOGQyNmE1NjI0YzlhNzNjMG"
                         b"RjOWIwNTQ5ZmQ3NDQxNDAxMGNj",
-                        "version": "2.0.0",
                         "verbosity": "normal",
                         "Accept": "application/json",
                     },
@@ -118,7 +124,6 @@ class APITest(unittest.TestCase):
         ]
         client = MopinionClient(self.public_key, self.private_key)
         response = client.request(
-            method="GET",
             endpoint="/reports",
             version="2.0.0",
             verbosity=client.VERBOSITY_FULL,
@@ -132,7 +137,9 @@ class APITest(unittest.TestCase):
                 call(
                     method="GET",
                     url="https://api.mopinion.com/token",
-                    headers={"Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="},
+                    headers={
+                        "Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="
+                    },
                 ),
                 call(
                     method="GET",
@@ -170,8 +177,12 @@ class APITest(unittest.TestCase):
     def test_api_request_availability(self, mocked_response):
         mocked_response.side_effect = [
             MockedResponse({"token": "token"}),
-            MockedResponse({"code": 200, "response": "pong", "version": "1.18.14"}),
-            MockedResponse({"code": 200, "response": "pong", "version": "1.18.14"}),
+            MockedResponse(
+                {"code": 200, "response": "pong", "version": "1.18.14"}
+            ),
+            MockedResponse(
+                {"code": 200, "response": "pong", "version": "1.18.14"}
+            ),
         ]
         client = MopinionClient(self.public_key, self.private_key)
         is_available = client.is_available()
