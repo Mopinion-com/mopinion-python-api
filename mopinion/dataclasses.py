@@ -90,7 +90,6 @@ class ResourceUri(Argument):
     resource_name: str
     resource_id: Optional[Union[str, int]]
     sub_resource_name: Optional[str]
-    sub_resource_id: Optional[Union[str, int]]
 
     def __post_init__(self):
         from mopinion.client import MopinionClient
@@ -124,8 +123,6 @@ class ResourceUri(Argument):
             endpoint += f"/{self.resource_id}"
             if self.sub_resource_name:
                 endpoint += f"/{self.sub_resource_name}"
-                if self.sub_resource_id:
-                    endpoint += f"/{self.sub_resource_id}"
         self.endpoint = endpoint
 
 

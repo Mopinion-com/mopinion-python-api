@@ -89,7 +89,6 @@ class ArgumentValidationTest(unittest.TestCase):
             resource_name=client.RESOURCE_ACCOUNT,
             resource_id=None,
             sub_resource_name=None,
-            sub_resource_id=None,
         )
         self.assertEqual(uri.endpoint, "/account")
 
@@ -98,7 +97,6 @@ class ArgumentValidationTest(unittest.TestCase):
             resource_name=client.RESOURCE_DEPLOYMENTS,
             resource_id="string",
             sub_resource_name=None,
-            sub_resource_id=None,
         )
         self.assertEqual(uri.endpoint, "/deployments/string")
 
@@ -107,7 +105,6 @@ class ArgumentValidationTest(unittest.TestCase):
             resource_name=client.RESOURCE_DATASETS,
             resource_id=1,
             sub_resource_name=client.SUBRESOURCE_FIELDS,
-            sub_resource_id=None,
         )
         self.assertEqual(uri.endpoint, "/datasets/1/fields")
 
@@ -116,9 +113,8 @@ class ArgumentValidationTest(unittest.TestCase):
             resource_name=client.RESOURCE_REPORTS,
             resource_id=1,
             sub_resource_name=client.SUBRESOURCE_FEEDBACK,
-            sub_resource_id="string",
         )
-        self.assertEqual(uri.endpoint, "/reports/1/feedback/string")
+        self.assertEqual(uri.endpoint, "/reports/1/feedback")
 
     def test_wrong_uri(self):
         with self.assertRaises(ValueError):
@@ -126,7 +122,6 @@ class ArgumentValidationTest(unittest.TestCase):
                 resource_name="buzz",
                 resource_id=1,
                 sub_resource_name=client.SUBRESOURCE_FEEDBACK,
-                sub_resource_id="string_id",
             )
 
     def test_wrong_uri_2(self):
@@ -135,7 +130,6 @@ class ArgumentValidationTest(unittest.TestCase):
                 resource_name=client.RESOURCE_REPORTS,
                 resource_id=1,
                 sub_resource_name="buzz",
-                sub_resource_id="string_id",
             )
 
 

@@ -53,7 +53,6 @@ class AbstractClient(abc.ABC):
         resource_name: str,
         resource_id: Union[str, int],
         sub_resource_name: str,
-        sub_resource_id: Union[str, int],
         version: str,
         content_negotiation: str,
         verbosity: str,
@@ -258,7 +257,6 @@ class MopinionClient(AbstractClient):
         resource_name: str,
         resource_id: Union[str, int] = None,
         sub_resource_name: str = None,
-        sub_resource_id: Union[str, int] = None,
         version: str = None,
         verbosity: str = VERBOSITY_NORMAL,
         content_negotiation: str = CONTENT_JSON,
@@ -274,9 +272,8 @@ class MopinionClient(AbstractClient):
 
         Args:
           resource_name (str):
-          resource_id (str/int):
-          sub_resource_name (str):
-          sub_resource_id (str):
+          resource_id (str/int): Optional.
+          sub_resource_name (str): Optional.
           version (str): API Version. Optional. Defaults to the latest.
           verbosity (str): `normal`, `quiet` or `full`. Defaults to `normal`.
           content_negotiation (str): `application/json` or `application/x-yaml`. Defaults to `application/json`.
@@ -291,7 +288,6 @@ class MopinionClient(AbstractClient):
           -  resource_name (str) Required
           -  resource_id (int/str) Optional
           -  subresource_name (str) Optional
-          -  subresource_id (str) Optional
 
         Resources and sub-resources options:
           -  The ``resource_name`` options are: "account", "deployments", "datasets", "reports".
@@ -337,7 +333,6 @@ class MopinionClient(AbstractClient):
             resource_name=resource_name,
             resource_id=resource_id,
             sub_resource_name=sub_resource_name,
-            sub_resource_id=sub_resource_id,
         )
         # validate verbosity for Protocol Implementation iterator
         # never allow quiet for iterator==True

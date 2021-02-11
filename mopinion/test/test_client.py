@@ -297,19 +297,17 @@ class APITest(unittest.TestCase):
     def test_request_wrong_resources(self, mocked_response):
         client = MopinionClient(self.public_key, self.private_key)
         weird_path_resources = [
-            (MopinionClient.SUBRESOURCE_FIELDS, None, None, None),
-            (MopinionClient.SUBRESOURCE_FEEDBACK, None, None, None),
+            (MopinionClient.SUBRESOURCE_FIELDS, None, None),
+            (MopinionClient.SUBRESOURCE_FEEDBACK, None, None),
             (
                 MopinionClient.RESOURCE_DATASETS,
                 1,
                 MopinionClient.RESOURCE_DEPLOYMENTS,
-                None,
             ),
             (
                 MopinionClient.RESOURCE_DATASETS,
                 1,
                 MopinionClient.RESOURCE_REPORTS,
-                "string_id",
             ),
         ]
         for weird_path in weird_path_resources:
@@ -318,29 +316,26 @@ class APITest(unittest.TestCase):
                     resource_name=weird_path[0],
                     resource_id=weird_path[1],
                     sub_resource_name=weird_path[2],
-                    sub_resource_id=weird_path[3],
                 )
 
     @patch("requests.sessions.Session.request")
     def test_request_right_resources(self, mocked_response):
         paths_resources = [
-            (MopinionClient.RESOURCE_ACCOUNT, None, None, None),
-            (MopinionClient.RESOURCE_DEPLOYMENTS, None, None, None),
-            (MopinionClient.RESOURCE_DEPLOYMENTS, "string_id", None, None),
-            (MopinionClient.RESOURCE_REPORTS, None, None, None),
-            (MopinionClient.RESOURCE_REPORTS, 1, None, None),
-            (MopinionClient.RESOURCE_DATASETS, None, None, None),
+            (MopinionClient.RESOURCE_ACCOUNT, None, None),
+            (MopinionClient.RESOURCE_DEPLOYMENTS, None, None),
+            (MopinionClient.RESOURCE_DEPLOYMENTS, "string_id", None),
+            (MopinionClient.RESOURCE_REPORTS, None, None),
+            (MopinionClient.RESOURCE_REPORTS, 1, None),
+            (MopinionClient.RESOURCE_DATASETS, None, None),
             (
                 MopinionClient.RESOURCE_DATASETS,
                 1,
                 MopinionClient.SUBRESOURCE_FIELDS,
-                None,
             ),
             (
                 MopinionClient.RESOURCE_DATASETS,
                 1,
                 MopinionClient.SUBRESOURCE_FEEDBACK,
-                None,
             ),
         ]
         for resources in paths_resources:
@@ -350,7 +345,6 @@ class APITest(unittest.TestCase):
                 resource_name=resources[0],
                 resource_id=resources[1],
                 sub_resource_name=resources[2],
-                sub_resource_id=resources[3],
             )
 
 

@@ -296,7 +296,7 @@ Get feedback from a dataset.
 .. code:: python
 
     >>> params = {"limit": 50, "filter[ces]": "3"}
-    >>> response = client.request("datasets/1234/feedback", query_params=params)
+    >>> response = client.request("/datasets/1234/feedback", query_params=params)
     >>> assert response.json()["_meta"]["code"] == 200
 
 Get feedback from a report.
@@ -304,7 +304,7 @@ Get feedback from a report.
 .. code:: python
 
     >>> params = {"page": 1}
-    >>> response = client.request("reports/1234/feedback", query_params=params)
+    >>> response = client.request("/reports/1234/feedback", query_params=params)
     >>> assert response.json()["_meta"]["code"] == 200
 
 Resource Reports
