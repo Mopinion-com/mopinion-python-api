@@ -1,11 +1,10 @@
-import unittest
-
-from mopinion import settings
+from mopinion.client import MopinionClient as client
 from mopinion.dataclasses import ApiRequestArguments
 from mopinion.dataclasses import EndPoint
 from mopinion.dataclasses import ResourceUri
 from mopinion.dataclasses import ResourceVerbosity
-from mopinion.client import MopinionClient as client
+
+import unittest
 
 
 class ArgumentValidationTest(unittest.TestCase):
@@ -20,12 +19,10 @@ class ArgumentValidationTest(unittest.TestCase):
             endpoint=EndPoint(path="/reports"),
             version="2.0.0",
             verbosity="full",
-            method="DELETE",
             content_negotiation="application/x-yaml",
         )
         self.assertEqual(arguments.version, "2.0.0")
         self.assertEqual(arguments.verbosity, "full")
-        self.assertEqual(arguments.method.lower(), "delete")
         self.assertEqual(arguments.content_negotiation, "application/x-yaml")
         self.assertEqual(arguments.endpoint.path, "/reports")
 
@@ -34,7 +31,6 @@ class ArgumentValidationTest(unittest.TestCase):
             ApiRequestArguments(
                 endpoint=EndPoint(path="/account"),
                 version="3.1.0",  # to high, maybe in the future...
-                method="GET",
                 content_negotiation="application/json",
                 verbosity="normal",
             )
@@ -44,18 +40,16 @@ class ArgumentValidationTest(unittest.TestCase):
             ApiRequestArguments(
                 endpoint=EndPoint(path="/account"),
                 verbosity="buzz",  # does not exists
-                method="GET",
                 content_negotiation="application/json",
                 version="2.0.0",
             )
 
-    def test_method_wrong(self):
+    def test_version_higher_wrong(self):
         with self.assertRaises(ValueError):
             ApiRequestArguments(
                 endpoint=EndPoint(path="/account"),
-                method="PATCH",  # patch it is not allowed
                 content_negotiation="application/json",
-                version="2.0.0",
+                version="2.0.4",
                 verbosity="normal",
             )
 
@@ -66,7 +60,6 @@ class ArgumentValidationTest(unittest.TestCase):
                 content_negotiation="application/weird",
                 version="2.0.0",
                 verbosity="normal",
-                method="GET",
             )
 
     def test_endpoint_wrong_start(self):
@@ -76,12 +69,16 @@ class ArgumentValidationTest(unittest.TestCase):
                 content_negotiation="application/json",
                 version="2.0.0",
                 verbosity="normal",
-                method="GET",
             )
 
     def test_endpoint_wrong_uri(self):
         with self.assertRaises(ValueError):
-            ApiRequestArguments(endpoint=EndPoint(path="/buzz"))
+            ApiRequestArguments(
+                endpoint=EndPoint(path="/buzz"),
+                content_negotiation="application-json",
+                verbosity="normal",
+                version="2.0.0",
+            )
 
     def test_resource_verbosity_wrong(self):
         with self.assertRaises(ValueError):
@@ -92,7 +89,6 @@ class ArgumentValidationTest(unittest.TestCase):
             resource_name=client.RESOURCE_ACCOUNT,
             resource_id=None,
             sub_resource_name=None,
-            sub_resource_id=None,
         )
         self.assertEqual(uri.endpoint, "/account")
 
@@ -101,7 +97,6 @@ class ArgumentValidationTest(unittest.TestCase):
             resource_name=client.RESOURCE_DEPLOYMENTS,
             resource_id="string",
             sub_resource_name=None,
-            sub_resource_id=None,
         )
         self.assertEqual(uri.endpoint, "/deployments/string")
 
@@ -110,7 +105,6 @@ class ArgumentValidationTest(unittest.TestCase):
             resource_name=client.RESOURCE_DATASETS,
             resource_id=1,
             sub_resource_name=client.SUBRESOURCE_FIELDS,
-            sub_resource_id=None,
         )
         self.assertEqual(uri.endpoint, "/datasets/1/fields")
 
@@ -119,9 +113,8 @@ class ArgumentValidationTest(unittest.TestCase):
             resource_name=client.RESOURCE_REPORTS,
             resource_id=1,
             sub_resource_name=client.SUBRESOURCE_FEEDBACK,
-            sub_resource_id="string",
         )
-        self.assertEqual(uri.endpoint, "/reports/1/feedback/string")
+        self.assertEqual(uri.endpoint, "/reports/1/feedback")
 
     def test_wrong_uri(self):
         with self.assertRaises(ValueError):
@@ -129,7 +122,6 @@ class ArgumentValidationTest(unittest.TestCase):
                 resource_name="buzz",
                 resource_id=1,
                 sub_resource_name=client.SUBRESOURCE_FEEDBACK,
-                sub_resource_id="string_id",
             )
 
     def test_wrong_uri_2(self):
@@ -138,7 +130,6 @@ class ArgumentValidationTest(unittest.TestCase):
                 resource_name=client.RESOURCE_REPORTS,
                 resource_id=1,
                 sub_resource_name="buzz",
-                sub_resource_id="string_id",
             )
 
 

@@ -1,15 +1,20 @@
-import unittest
-import types
-from mock import patch, call
-from requests import Session
-from requests.exceptions import RequestException
+from mock import call
+from mock import patch
 from mopinion import MopinionClient
 from mopinion.dataclasses import EndPoint
+from requests import Session
+from requests.exceptions import RequestException
+
+import types
+import unittest
 
 
 class MockedResponse:
     def __init__(
-        self, json_data: dict, status_code: int = 200, raise_error: bool = False
+        self,
+        json_data: dict,
+        status_code: int = 200,
+        raise_error: bool = False,
     ):
         self.json_data = json_data
         self.status_code = status_code
@@ -93,7 +98,9 @@ class APITest(unittest.TestCase):
                 call(
                     method="GET",
                     url="https://api.mopinion.com/token",
-                    headers={"Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="},
+                    headers={
+                        "Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="
+                    },
                 ),
                 call(
                     method="GET",
@@ -102,7 +109,6 @@ class APITest(unittest.TestCase):
                         "X-Auth-Token": b"UFVCTElDX0tFWTpiMWIzY2Q0YWI2NGJmYjJhN"
                         b"mRhMDM2NDgyN2UwOGQyNmE1NjI0YzlhNzNjMG"
                         b"RjOWIwNTQ5ZmQ3NDQxNDAxMGNj",
-                        "version": "2.0.0",
                         "verbosity": "normal",
                         "Accept": "application/json",
                     },
@@ -118,7 +124,6 @@ class APITest(unittest.TestCase):
         ]
         client = MopinionClient(self.public_key, self.private_key)
         response = client.request(
-            method="DELETE",
             endpoint="/reports",
             version="2.0.0",
             verbosity=client.VERBOSITY_FULL,
@@ -132,10 +137,12 @@ class APITest(unittest.TestCase):
                 call(
                     method="GET",
                     url="https://api.mopinion.com/token",
-                    headers={"Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="},
+                    headers={
+                        "Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="
+                    },
                 ),
                 call(
-                    method="DELETE",
+                    method="GET",
                     url="https://api.mopinion.com/reports",
                     headers={
                         "X-Auth-Token": b"UFVCTElDX0tFWTpjNDVmMGQ0ZGI3MTE2MjZ"
@@ -170,8 +177,12 @@ class APITest(unittest.TestCase):
     def test_api_request_availability(self, mocked_response):
         mocked_response.side_effect = [
             MockedResponse({"token": "token"}),
-            MockedResponse({"code": 200, "response": "pong", "version": "1.18.14"}),
-            MockedResponse({"code": 200, "response": "pong", "version": "1.18.14"}),
+            MockedResponse(
+                {"code": 200, "response": "pong", "version": "1.18.14"}
+            ),
+            MockedResponse(
+                {"code": 200, "response": "pong", "version": "1.18.14"}
+            ),
         ]
         client = MopinionClient(self.public_key, self.private_key)
         is_available = client.is_available()
@@ -224,13 +235,15 @@ class APITest(unittest.TestCase):
             "/deployments",
             "/deployments/string",
             "/deployments/my_string",
-            "/deployments/76pg3seur7occo1hogv88eltdtmxoxxl81vj" "/reports",
+            "/deployments/76pg3seur7occo1hogv88eltdtmxoxxl81vj",
+            "/reports",
             "/reports/1",
             "/reports/19475758",
             "/datasets",
             "/datasets/1/fields",
-            "/datasets/119475758/feedback/gv88eltdtmxoxxl8_7jjtu89",
-            "/datasets/119475758/feedback/76pg3seur7occo1hogv88eltdtmxoxxl81vj",
+            "/datasets/123/feedback",
+            "/datasets/119475758/feedback",
+            "/datasets/119475758/feedback",
         ]
         for path in paths:
             mocked_response.return_value = MockedResponse({"token": "token"})
@@ -249,7 +262,6 @@ class APITest(unittest.TestCase):
             resource_name=client.RESOURCE_REPORTS,
             resource_id=1,
             sub_resource_name=client.SUBRESOURCE_FEEDBACK,
-            sub_resource_id="string_id",
             version="2.0.0",
             verbosity=client.VERBOSITY_FULL,
             query_params={"key": "value"},
@@ -273,7 +285,6 @@ class APITest(unittest.TestCase):
             resource_name=client.RESOURCE_REPORTS,
             resource_id=1,
             sub_resource_name=client.SUBRESOURCE_FEEDBACK,
-            sub_resource_id="string_id",
             version="2.0.0",
             verbosity=client.VERBOSITY_FULL,
             query_params={"key": "value"},
@@ -286,19 +297,17 @@ class APITest(unittest.TestCase):
     def test_request_wrong_resources(self, mocked_response):
         client = MopinionClient(self.public_key, self.private_key)
         weird_path_resources = [
-            (MopinionClient.SUBRESOURCE_FIELDS, None, None, None),
-            (MopinionClient.SUBRESOURCE_FEEDBACK, None, None, None),
+            (MopinionClient.SUBRESOURCE_FIELDS, None, None),
+            (MopinionClient.SUBRESOURCE_FEEDBACK, None, None),
             (
                 MopinionClient.RESOURCE_DATASETS,
                 1,
                 MopinionClient.RESOURCE_DEPLOYMENTS,
-                None,
             ),
             (
                 MopinionClient.RESOURCE_DATASETS,
                 1,
                 MopinionClient.RESOURCE_REPORTS,
-                "string_id",
             ),
         ]
         for weird_path in weird_path_resources:
@@ -307,29 +316,26 @@ class APITest(unittest.TestCase):
                     resource_name=weird_path[0],
                     resource_id=weird_path[1],
                     sub_resource_name=weird_path[2],
-                    sub_resource_id=weird_path[3],
                 )
 
     @patch("requests.sessions.Session.request")
     def test_request_right_resources(self, mocked_response):
         paths_resources = [
-            (MopinionClient.RESOURCE_ACCOUNT, None, None, None),
-            (MopinionClient.RESOURCE_DEPLOYMENTS, None, None, None),
-            (MopinionClient.RESOURCE_DEPLOYMENTS, "string_id", None, None),
-            (MopinionClient.RESOURCE_REPORTS, None, None, None),
-            (MopinionClient.RESOURCE_REPORTS, 1, None, None),
-            (MopinionClient.RESOURCE_DATASETS, None, None, None),
+            (MopinionClient.RESOURCE_ACCOUNT, None, None),
+            (MopinionClient.RESOURCE_DEPLOYMENTS, None, None),
+            (MopinionClient.RESOURCE_DEPLOYMENTS, "string_id", None),
+            (MopinionClient.RESOURCE_REPORTS, None, None),
+            (MopinionClient.RESOURCE_REPORTS, 1, None),
+            (MopinionClient.RESOURCE_DATASETS, None, None),
             (
                 MopinionClient.RESOURCE_DATASETS,
                 1,
                 MopinionClient.SUBRESOURCE_FIELDS,
-                None,
             ),
             (
                 MopinionClient.RESOURCE_DATASETS,
                 1,
                 MopinionClient.SUBRESOURCE_FEEDBACK,
-                "string_id",
             ),
         ]
         for resources in paths_resources:
@@ -339,7 +345,6 @@ class APITest(unittest.TestCase):
                 resource_name=resources[0],
                 resource_id=resources[1],
                 sub_resource_name=resources[2],
-                sub_resource_id=resources[3],
             )
 
 

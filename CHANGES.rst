@@ -2,6 +2,16 @@ Changelog
 ========================================================
 
 
+0.0.6 (2021-02-11)
+-------------------
+
+- Fixes in documentation.
+
+- Added pre-commit configuration to project.
+
+- Added new endpoint for `/deployments/<str_id>`.
+
+
 0.0.5 (2021-01-22)
 -------------------
 
