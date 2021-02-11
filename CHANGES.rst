@@ -2,6 +2,14 @@ Changelog
 ========================================================
 
 
+0.0.7 (XXXX-XX-XX)
+-------------------
+
+- Fixes in documentation.
+
+- Increased compatibility to Python>=3.6.
+
+
 0.0.6 (2021-02-11)
 -------------------
 
