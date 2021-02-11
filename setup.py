@@ -9,7 +9,7 @@ long_description = "\n\n".join([open("README.rst").read(), open("CHANGES.rst").r
 
 install_requires = [
     "requests",
-    "dataclasses; python_version == '3.6'",
+    "dataclasses == 0.8; python_version == '3.6'",
 ]
 
 # emulate "--no-deps" on the readthedocs build (there is no way to specify this
