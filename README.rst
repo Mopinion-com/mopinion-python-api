@@ -27,7 +27,7 @@ It comes with an easy, beautiful, and elegant way of interacting with our API.
 Installation
 -------------
 
-Install using ``pip``...::
+Install using ``pip``::
 
     pip install mopinion
 
