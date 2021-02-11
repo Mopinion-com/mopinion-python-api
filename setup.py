@@ -18,7 +18,10 @@ if os.environ.get("READTHEDOCS") == "True":
     install_requires = []
 
 
-tests_require = ["pytest"]
+tests_require = [
+    "pytest",
+    "dataclasses; python_version == '3.6'"
+]
 
 setup(
     name="mopinion",
