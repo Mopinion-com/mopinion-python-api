@@ -19,6 +19,7 @@ if os.environ.get("READTHEDOCS") == "True":
 
 
 tests_require = [
+    "requests",
     "pytest",
     "mock",
     "dataclasses; python_version < '3.7.0'",
