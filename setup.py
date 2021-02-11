@@ -20,7 +20,7 @@ if os.environ.get("READTHEDOCS") == "True":
 
 tests_require = [
     "pytest",
-    "dataclasses; python_version == '3.6'"
+    "dataclasses == 0.8; python_version == '3.6'",
 ]
 
 setup(
