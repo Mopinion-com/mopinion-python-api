@@ -9,7 +9,7 @@ long_description = "\n\n".join([open("README.rst").read(), open("CHANGES.rst").r
 
 install_requires = [
     "requests",
-    "dataclasses == 0.8; python_version == '3.6'",
+    "dataclasses; python_version < '3.7.0'",
 ]
 
 # emulate "--no-deps" on the readthedocs build (there is no way to specify this
@@ -20,7 +20,8 @@ if os.environ.get("READTHEDOCS") == "True":
 
 tests_require = [
     "pytest",
-    "dataclasses == 0.8; python_version == '3.6'",
+    "mock",
+    "dataclasses; python_version < '3.7.0'",
 ]
 
 setup(
