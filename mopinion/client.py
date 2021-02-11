@@ -203,9 +203,9 @@ class MopinionClient(AbstractClient):
 
         Args:
           endpoint (str): API endpoint.
-          version (str): API Version.
-          verbosity (str): `normal`, `quiet` or `full`.
-          content_negotiation (str): `application/json` or `application/x-yaml`.
+          version (str): API Version. Optional. Defaults to the latest.
+          verbosity (str): `normal`, `quiet` or `full`. Defaults to `normal`.
+          content_negotiation (str): `application/json` or `application/x-yaml`. Defaults to `application/json`.
           body (dict): Optional.
           query_params (dict): Optional.
 
@@ -277,9 +277,9 @@ class MopinionClient(AbstractClient):
           resource_id (str/int):
           sub_resource_name (str):
           sub_resource_id (str):
-          version (str): API Version.
-          verbosity (str): `normal`, `quiet` or `full`.
-          content_negotiation (str): `application/json` or `application/x-yaml`.
+          version (str): API Version. Optional. Defaults to the latest.
+          verbosity (str): `normal`, `quiet` or `full`. Defaults to `normal`.
+          content_negotiation (str): `application/json` or `application/x-yaml`. Defaults to `application/json`.
           body (dict): Optional.
           query_params (dict): Optional.
           iterator (bool): If sets to `True` an iterator will be returned.

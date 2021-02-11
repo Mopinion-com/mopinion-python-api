@@ -19,7 +19,7 @@ and act across all digital touchpoints (web, mobile, and email). Join some of th
 digital teams from companies such as T-mobile, eBay, TSB Bank, Walmart, Hotels.com, Decathlon, Ahold,
 Mediacorp Ltd, and many more.
 
-Please visit the website for more information about the product: https://mopinion.com
+Please visit the website for more information about the product at `mopinion.com <https://mopinion.com/>`_
 
 
 .. toctree::
