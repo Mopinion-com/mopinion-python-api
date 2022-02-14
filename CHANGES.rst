@@ -5,9 +5,11 @@ Changelog
 0.0.7 (XXXX-XX-XX)
 -------------------
 
+- Complete release workflow
+
 - Fixes in documentation.
 
-- Increased compatibility to Python>=3.6.
+- Increased compatibility from Python 3.6 to 3.10.
 
 
 0.0.6 (2021-02-11)
@@ -61,4 +63,3 @@ Changelog
 - Test suite.
 
 - Request examples.
-
