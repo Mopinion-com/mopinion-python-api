@@ -124,7 +124,7 @@ class MopinionClient(AbstractClient):
         self.session.mount(settings.BASE_URL, adapter=adapter)
         self.signature_token = self._get_signature_token(self.credentials)
 
-    def __del__(self) -> None:
+    def close(self) -> None:
         self.session.close()
 
     def __enter__(self):

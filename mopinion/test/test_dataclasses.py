@@ -84,7 +84,7 @@ class ArgumentValidationTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             ResourceVerbosity(verbosity="quiet", iterator=True)
 
-    def test_resource_uri(self):
+    def test_resource_uri_account(self):
         uri = ResourceUri(
             resource_name=client.RESOURCE_ACCOUNT,
             resource_id=None,
@@ -92,7 +92,7 @@ class ArgumentValidationTest(unittest.TestCase):
         )
         self.assertEqual(uri.endpoint, "/account")
 
-    def test_resource_uri_2(self):
+    def test_resource_uri_deployments(self):
         uri = ResourceUri(
             resource_name=client.RESOURCE_DEPLOYMENTS,
             resource_id="string",
@@ -100,7 +100,7 @@ class ArgumentValidationTest(unittest.TestCase):
         )
         self.assertEqual(uri.endpoint, "/deployments/string")
 
-    def test_resource_uri_3(self):
+    def test_resource_uri_datasets(self):
         uri = ResourceUri(
             resource_name=client.RESOURCE_DATASETS,
             resource_id=1,
@@ -108,7 +108,7 @@ class ArgumentValidationTest(unittest.TestCase):
         )
         self.assertEqual(uri.endpoint, "/datasets/1/fields")
 
-    def test_resource_uri_4(self):
+    def test_resource_uri_reports(self):
         uri = ResourceUri(
             resource_name=client.RESOURCE_REPORTS,
             resource_id=1,
@@ -116,7 +116,7 @@ class ArgumentValidationTest(unittest.TestCase):
         )
         self.assertEqual(uri.endpoint, "/reports/1/feedback")
 
-    def test_wrong_uri(self):
+    def test_wrong_uri_feedback_wrong(self):
         with self.assertRaises(ValueError):
             ResourceUri(
                 resource_name="buzz",
@@ -124,7 +124,7 @@ class ArgumentValidationTest(unittest.TestCase):
                 sub_resource_name=client.SUBRESOURCE_FEEDBACK,
             )
 
-    def test_wrong_uri_2(self):
+    def test_wrong_uri_report_wrong(self):
         with self.assertRaises(ValueError):
             ResourceUri(
                 resource_name=client.RESOURCE_REPORTS,

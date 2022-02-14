@@ -44,7 +44,11 @@ Example
     >>> assert response.json()["_meta"]["code"] == 200
     >>> response = client.resource("deployments")
     >>> assert response.json()["_meta"]["code"] == 200
-
+    >>> client.close()
+    >>>
+    >>> with MopinionClient(public_key=YOUR_PUBLIC_KEY, private_key=YOUR_PRIVATE_KEY) as client:
+    ...     response = client.resource("account")
+    ...     assert response.json()["_meta"]["code"] == 200
 
 Documentation
 ---------------
