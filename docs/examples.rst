@@ -43,6 +43,16 @@ To see the availability of the API you can call ``is_available()``.
     >>> assert r["code"] == 200 and r["response"] == "pong" and r["version"] == "2.0.0"
 
 
+We can use it as a context Manager as well.
+
+    >>> with MopinionClient(public_key=PUBLIC_KEY, private_key=PRIVATE_KEY) as client:
+    ...     SIGNATURE_TOKEN == client.signature_token  # client requests the signature token
+    ...     assert client.is_available()
+    ...     r = client.is_available(verbose=True)
+    ...     assert r["code"] == 200 and r["response"] == "pong" and r["version"] == "2.0.0"
+
+
+
 Examples with ``mopinion.MopinionClient.resource``
 -----------------------------------------------------------
 

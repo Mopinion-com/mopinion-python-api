@@ -127,6 +127,12 @@ class MopinionClient(AbstractClient):
     def __del__(self) -> None:
         self.session.close()
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.session.__exit__(exc_type, exc_val, exc_tb)
+
     def _get_signature_token(self, credentials: Credentials) -> str:
         # The authorization method is public_key:private_key encoded as b64 string
         auth_method = f"{credentials.public_key}:{credentials.private_key}"
@@ -218,6 +224,12 @@ class MopinionClient(AbstractClient):
           >>> assert response.json()["_meta"]["code"] == 200
           >>> response = client.request(endpoint="/deployments")
           >>> assert response.json()["_meta"]["code"] == 200
+          >>>
+          >>> with MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY) as client:
+          ...     response = client.request("/account")
+          ...     assert response.json()["_meta"]["code"] == 200
+          ...     response = client.request(endpoint="/deployments")
+          ...     assert response.json()["_meta"]["code"] == 200
         """
 
         # validate arguments
@@ -304,6 +316,12 @@ class MopinionClient(AbstractClient):
           >>> assert response.json()["_meta"]["code"] == 200
           >>> response = client.resource(resource_name=client.RESOURCE_ACCOUNT)  # same as above
           >>> assert response.json()["_meta"]["code"] == 200
+          >>>
+          >>> with MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY) as client:
+          ...     response = client.resource("account")
+          ...     assert response.json()["_meta"]["code"] == 200
+          ...     response = client.resource(resource_name=client.RESOURCE_ACCOUNT)
+          ...     assert response.json()["_meta"]["code"] == 200
 
         When working with the API there is a limit of elements retrieved. The ``limit`` parameters default to *10*.
         You can increase the limit, or you can request resources using the flag ``generator=True``.

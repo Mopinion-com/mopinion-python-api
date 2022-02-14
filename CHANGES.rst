@@ -5,9 +5,9 @@ Changelog
 0.0.7 (XXXX-XX-XX)
 -------------------
 
-- Complete release workflow
-
 - Fixes in documentation.
+
+- Implement `__enter__()` and `__exit__()` methods.
 
 - Increased compatibility from Python 3.6 to 3.10.
 

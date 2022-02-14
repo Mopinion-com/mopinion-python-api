@@ -65,10 +65,10 @@ class ApiRequestArguments(Argument):
 
     def __post_init__(self):
         # verbosity levels
-        if self.verbosity.lower() not in settings.VERBOSITY_lEVELS:
+        if self.verbosity.lower() not in settings.VERBOSITY_LEVELS:
             raise ValueError(
                 f"'{self.verbosity}' is not a valid verbosity level. Please consider one of: "
-                f"'{', '.join(settings.VERBOSITY_lEVELS)}'"
+                f"'{', '.join(settings.VERBOSITY_LEVELS)}'"
             )
 
         if self.content_negotiation not in settings.CONTENT_NEGOTIATIONS:
@@ -135,9 +135,9 @@ class ResourceVerbosity(Argument):
         # if we want to iterate we need metadata, verbosity higher or equal than normal
         if (
             self.iterator
-            and self.verbosity.lower() not in settings.ITERATE_VERBOSITY_lEVELS
+            and self.verbosity.lower() not in settings.ITERATE_VERBOSITY_LEVELS
         ):
             raise ValueError(
                 f"'{self.verbosity}' is not a valid verbosity level. Please "
-                f"consider one of: '{', '.join(settings.ITERATE_VERBOSITY_lEVELS)}'"
+                f"consider one of: '{', '.join(settings.ITERATE_VERBOSITY_LEVELS)}'"
             )
