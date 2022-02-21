@@ -74,14 +74,9 @@ class APITest(unittest.TestCase):
         xtoken = client.build_token(endpoint=endpoint)
         self.assertEqual(
             xtoken,
-            b"UFVCTElDX0tFWTplMzJkYTE0M2MzMWNjMGE0NWU1MGIwOGMwOWVmMDRjMWVhZmYwZTU5MTExOGMzMjViOGQxMzc1OGY3NDQ3ODZl",
-        )
-        self.assertIsInstance(xtoken, bytes)
-        xtoken = client.build_token(endpoint=endpoint)
-        self.assertEqual(
-            xtoken,
             b"UFVCTElDX0tFWTo0ZWVkZGYzNzljNDIyNDU3ZmVhOThmYzc0NGNkYTkwMGVhYmM3NmViNjM4ZjU1OTRkNGJmYmJiMGIwMWYzM2Nh",
         )
+        self.assertIsInstance(xtoken, bytes)
 
     @patch("requests.sessions.Session.request")
     def test_api_request_default_args(self, mocked_response):
@@ -106,9 +101,7 @@ class APITest(unittest.TestCase):
                     method="GET",
                     url="https://api.mopinion.com/account",
                     headers={
-                        "X-Auth-Token": b"UFVCTElDX0tFWTpiMWIzY2Q0YWI2NGJmYjJhN"
-                        b"mRhMDM2NDgyN2UwOGQyNmE1NjI0YzlhNzNjMG"
-                        b"RjOWIwNTQ5ZmQ3NDQxNDAxMGNj",
+                        "X-Auth-Token": b"UFVCTElDX0tFWTpiMWIzY2Q0YWI2NGJmYjJhNmRhMDM2NDgyN2UwOGQyNmE1NjI0YzlhNzNjMGRjOWIwNTQ5ZmQ3NDQxNDAxMGNj",
                         "verbosity": "normal",
                         "Accept": "application/json",
                     },
@@ -144,9 +137,7 @@ class APITest(unittest.TestCase):
                     method="GET",
                     url="https://api.mopinion.com/reports",
                     headers={
-                        "X-Auth-Token": b"UFVCTElDX0tFWTpjNDVmMGQ0ZGI3MTE2MjZ"
-                        b"mYTRkYTk5ZDgzMGI2NzQ2NzRkZWZlNmVkNDY"
-                        b"3N2U5ZTMxN2FiYzU0OTYxYTJhNjVh",
+                        "X-Auth-Token": b"UFVCTElDX0tFWTo2ZWJkZThkNWYzN2FhM2MxYzRmMDAwNTgzOTI0YmUyOTFkNDY1YTE0ZmU2MTc4MTExMWUxYTBlNDI5ZDA3ZGUw",
                         "version": "2.0.0",
                         "verbosity": "full",
                         "Accept": "application/json",
@@ -374,14 +365,9 @@ class APITest(unittest.TestCase):
             xtoken = client.build_token(endpoint=endpoint)
             self.assertEqual(
                 xtoken,
-                b"UFVCTElDX0tFWTplMzJkYTE0M2MzMWNjMGE0NWU1MGIwOGMwOWVmMDRjMWVhZmYwZTU5MTExOGMzMjViOGQxMzc1OGY3NDQ3ODZl",
-            )
-            self.assertIsInstance(xtoken, bytes)
-            xtoken = client.build_token(endpoint=endpoint)
-            self.assertEqual(
-                xtoken,
                 b"UFVCTElDX0tFWTo0ZWVkZGYzNzljNDIyNDU3ZmVhOThmYzc0NGNkYTkwMGVhYmM3NmViNjM4ZjU1OTRkNGJmYmJiMGIwMWYzM2Nh",
             )
+            self.assertIsInstance(xtoken, bytes)
 
     @patch("requests.sessions.Session.request")
     def test_api_request_default_args_with_cm(self, mocked_response):
@@ -445,14 +431,11 @@ class APITest(unittest.TestCase):
                         method="GET",
                         url="https://api.mopinion.com/reports",
                         headers={
-                            "X-Auth-Token": b"UFVCTElDX0tFWTpjNDVmMGQ0ZGI3MTE2MjZ"
-                            b"mYTRkYTk5ZDgzMGI2NzQ2NzRkZWZlNmVkNDY"
-                            b"3N2U5ZTMxN2FiYzU0OTYxYTJhNjVh",
+                            "X-Auth-Token": b"UFVCTElDX0tFWTo2ZWJkZThkNWYzN2FhM2MxYzRmMDAwNTgzOTI0YmUyOTFkNDY1YTE0ZmU2MTc4MTExMWUxYTBlNDI5ZDA3ZGUw",
                             "version": "2.0.0",
                             "verbosity": "full",
                             "Accept": "application/json",
                         },
-                        json={"key": "value"},
                         params={"key": "value"},
                     ),
                 ]
