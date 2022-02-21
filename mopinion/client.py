@@ -81,8 +81,11 @@ class MopinionClient(AbstractClient):
     Args:
       public_key (str):
       private_key (str):
+      verbosity (str): Defaults to normal.
+      version (str): If no version provided, default to latest.
+      content_negotiation (str): Defaults to application/json.
       max_retries (int): Defaults to 3.
-
+      backoff_factor (int): Defaults to 1.
     """
 
     literal_verbosity = Literal["full", "quiet", "normal"]
@@ -105,13 +108,13 @@ class MopinionClient(AbstractClient):
         Constructor
 
         Args:
-            public_key: str
-            private_key: str
-            max_retries: Defaults to 3.
-            backoff_factor: Default to 1 sec.
-            verbosity: "full", "quiet", "normal".
-            version: "1.18.14", "2.0.0", "2.1.0", "2.2.0". Default to latest.
-            content_negotiation: "application/json", "application/x-yaml".
+          public_key (str):
+          private_key (str):
+          verbosity (str): Defaults to normal.
+          version (str): If no version provided, default to latest.
+          content_negotiation (str): Defaults to application/json.
+          max_retries (int): Defaults to 3.
+          backoff_factor (int): Defaults to 1.
         """
         self.credentials = Credentials(
             public_key=public_key, private_key=private_key
@@ -379,11 +382,41 @@ class MopinionClient(AbstractClient):
 
     # GET methods
     def get_account(self, **kwargs):
+        """
+        Get your account.
+
+        Args:
+            kwargs:
+              - version (str): API Version. Optional. Defaults to the latest.
+              - verbosity (str): `normal`, `quiet` or `full`. Defaults to `normal`.
+              - content_negotiation (str): `application/json` or `application/x-yaml`. Defaults to `application/json`.
+              - query_params (dict): Optional. See documentation.
+              - iterator (bool): If sets to `True` an iterator will be returned.
+
+        Returns:
+            response (requests.models.Response).
+        """
+
         kwargs["resource"] = "account"
         response = self.resource(**kwargs)
         return response
 
     def get_deployments(self, deployment_id: str, **kwargs):
+        """
+        Get deployments.
+
+        Args:
+            deployment_id (str). Optional.
+            kwargs:
+              - version (str): API Version. Optional. Defaults to the latest.
+              - verbosity (str): `normal`, `quiet` or `full`. Defaults to `normal`.
+              - content_negotiation (str): `application/json` or `application/x-yaml`. Defaults to `application/json`.
+              - query_params (dict): Optional. See documentation.
+              - iterator (bool): If sets to `True` an iterator will be returned.
+
+        Returns:
+            response (requests.models.Response).
+        """
         kwargs["resource"] = "deployments"
         if deployment_id:
             kwargs["resource_id"] = deployment_id
@@ -391,6 +424,21 @@ class MopinionClient(AbstractClient):
         return response
 
     def get_datasets(self, dataset_id: int = None, **kwargs):
+        """
+        Get datasets.
+
+        Args:
+            dataset_id (int). Optional.
+            kwargs:
+              - version (str): API Version. Optional. Defaults to the latest.
+              - verbosity (str): `normal`, `quiet` or `full`. Defaults to `normal`.
+              - content_negotiation (str): `application/json` or `application/x-yaml`. Defaults to `application/json`.
+              - query_params (dict): Optional. See documentation.
+              - iterator (bool): If sets to `True` an iterator will be returned.
+
+        Returns:
+            response (requests.models.Response).
+        """
         kwargs["resource"] = "datasets"
         if dataset_id:
             kwargs["resource_id"] = dataset_id
@@ -398,6 +446,21 @@ class MopinionClient(AbstractClient):
         return response
 
     def get_datasets_fields(self, dataset_id: int, **kwargs):
+        """
+        Get dataset fields.
+
+        Args:
+            dataset_id (int).
+            kwargs:
+              - version (str): API Version. Optional. Defaults to the latest.
+              - verbosity (str): `normal`, `quiet` or `full`. Defaults to `normal`.
+              - content_negotiation (str): `application/json` or `application/x-yaml`. Defaults to `application/json`.
+              - query_params (dict): Optional. See documentation.
+              - iterator (bool): If sets to `True` an iterator will be returned.
+
+        Returns:
+            response (requests.models.Response).
+        """
         kwargs["resource"] = "datasets"
         kwargs["resource_id"] = dataset_id
         kwargs["subresource"] = "fields"
@@ -405,6 +468,21 @@ class MopinionClient(AbstractClient):
         return response
 
     def get_datasets_feedback(self, dataset_id: int, **kwargs):
+        """
+        Get dataset feedback.
+
+        Args:
+            dataset_id (int).
+            kwargs:
+              - version (str): API Version. Optional. Defaults to the latest.
+              - verbosity (str): `normal`, `quiet` or `full`. Defaults to `normal`.
+              - content_negotiation (str): `application/json` or `application/x-yaml`. Defaults to `application/json`.
+              - query_params (dict): Optional. See documentation.
+              - iterator (bool): If sets to `True` an iterator will be returned.
+
+        Returns:
+            response (requests.models.Response).
+        """
         kwargs["resource"] = "datasets"
         kwargs["resource_id"] = dataset_id
         kwargs["subresource"] = "feedback"
@@ -412,6 +490,21 @@ class MopinionClient(AbstractClient):
         return response
 
     def get_reports(self, report_id: int = None, **kwargs):
+        """
+        Get reports.
+
+        Args:
+            report_id (int): Optional.
+            kwargs:
+              - version (str): API Version. Optional. Defaults to the latest.
+              - verbosity (str): `normal`, `quiet` or `full`. Defaults to `normal`.
+              - content_negotiation (str): `application/json` or `application/x-yaml`. Defaults to `application/json`.
+              - query_params (dict): Optional. See documentation.
+              - iterator (bool): If sets to `True` an iterator will be returned.
+
+        Returns:
+            response (requests.models.Response).
+        """
         kwargs["resource"] = "reports"
         if report_id:
             kwargs["resource_id"] = report_id
@@ -419,6 +512,21 @@ class MopinionClient(AbstractClient):
         return response
 
     def get_reports_fields(self, report_id: int, **kwargs):
+        """
+        Get reports fields.
+
+        Args:
+            report_id (int).
+            kwargs:
+              - version (str): API Version. Optional. Defaults to the latest.
+              - verbosity (str): `normal`, `quiet` or `full`. Defaults to `normal`.
+              - content_negotiation (str): `application/json` or `application/x-yaml`. Defaults to `application/json`.
+              - query_params (dict): Optional. See documentation.
+              - iterator (bool): If sets to `True` an iterator will be returned.
+
+        Returns:
+            response (requests.models.Response).
+        """
         kwargs["resource"] = "reports"
         kwargs["resource_id"] = report_id
         kwargs["subresource"] = "fields"
@@ -426,6 +534,21 @@ class MopinionClient(AbstractClient):
         return response
 
     def get_reports_feedback(self, report_id: int, **kwargs):
+        """
+        Get reports feedback.
+
+        Args:
+            report_id (int).
+            kwargs:
+              - version (str): API Version. Optional. Defaults to the latest.
+              - verbosity (str): `normal`, `quiet` or `full`. Defaults to `normal`.
+              - content_negotiation (str): `application/json` or `application/x-yaml`. Defaults to `application/json`.
+              - query_params (dict): Optional. See documentation.
+              - iterator (bool): If sets to `True` an iterator will be returned.
+
+        Returns:
+            response (requests.models.Response).
+        """
         kwargs["resource"] = "reports"
         kwargs["resource_id"] = report_id
         kwargs["subresource"] = "feedback"
