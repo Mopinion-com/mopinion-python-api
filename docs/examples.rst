@@ -67,7 +67,7 @@ Get your account.
 
 .. code:: python
 
-    >>> response = client.resource(resource_name=client.RESOURCE_ACCOUNT)
+    >>> response = client.resource(resource_name="account")
     >>> assert response.json()["_meta"]["code"] == 200
     >>> response.json()
     {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
@@ -77,7 +77,7 @@ Get your account in YAML format.
 .. code:: python
 
     >>> import yaml
-    >>> response = client.resource("account", content_negotiation=client.CONTENT_YAML)
+    >>> response = client.resource("account", content_negotiation="application/x-yaml")
     >>> r = yaml.safe_load(response.text)
     >>> assert r["_meta"]["code"] == 200
 
@@ -85,7 +85,7 @@ When requesting with ``verbosity='quiet'`` no ``_meta`` info is returned.
 
 .. code:: python
 
-    >>> response = client.resource("account", verbosity=client.VERBOSITY_QUIET)
+    >>> response = client.resource("account", verbosity="quiet")
     >>> assert "_meta" not in response.json()
 
 
@@ -98,7 +98,7 @@ Getting deployments.
 
 .. code:: python
 
-    >>> response = client.resource(resource_name=client.RESOURCE_DEPLOYMENTS)
+    >>> response = client.resource(resource_name="deployments")
     >>> assert response.json()["_meta"]["code"] == 200
     >>> response.json()
     {'0': {'key': 'defusvnns6mkl2vd3wc0wgcjh159uh3j', 'name': 'Web Feedback Deployment'}, '_meta':...
@@ -107,7 +107,7 @@ Getting a specific deployment.
 
 .. code:: python
 
-    >>> response = client.resource("deployments", "my_deployment")
+    >>> response = client.resource("deployments", "my_deployment_id")
     >>> assert response.json()["_meta"]["code"] == 200
 
 Resource Datasets
@@ -119,7 +119,7 @@ Getting a dataset.
 
 .. code:: python
 
-    >>> response = client.resource(resource_name=client.RESOURCE_DATASETS, resource_id=1234)
+    >>> response = client.resource(resource_name="datasets", resource_id=1234)
     >>> assert response.json()["_meta"]["code"] == 200
 
 Get fields for a dataset.
@@ -168,7 +168,7 @@ Get feedback from a dataset.
 .. code:: python
 
     >>> params = {"page": 1}
-    >>> response = client.resource("datasets", 1234, "feedback", "abt34", query_params=params)
+    >>> response = client.resource("datasets", 1234, "feedback", query_params=params)
     >>> assert response.json()["_meta"]["code"] == 200
 
 Get feedback for a report.
@@ -176,7 +176,7 @@ Get feedback for a report.
 .. code:: python
 
     >>> params = {"limit": 50, "filter[ces]": "3"}
-    >>> response = client.resource("reports", 1234, "feedback", "abt34", query_params=params)
+    >>> response = client.resource("reports", 1234, "feedback", query_params=params)
     >>> assert response.json()["_meta"]["code"] == 200
 
 Resource Reports
@@ -216,7 +216,7 @@ Get your account in YAML format.
 .. code:: python
 
     >>> import yaml
-    >>> response = client.request("/account", content_negotiation=client.CONTENT_YAML)
+    >>> response = client.request("/account", content_negotiation="application/x-yaml")
     >>> r = yaml.safe_load(response.text)
     >>> assert r["_meta"]["code"] == 200
 
@@ -224,7 +224,7 @@ When requesting with ``verbosity='quiet'`` no ``_meta`` info is returned.
 
 .. code:: python
 
-    >>> response = client.request("/account", verbosity=client.VERBOSITY_QUIET)
+    >>> response = client.request("/account", verbosity="quiet")
     >>> assert "_meta" not in response.json()
 
 

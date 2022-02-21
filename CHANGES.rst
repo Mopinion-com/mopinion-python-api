@@ -2,12 +2,17 @@ Changelog
 ========================================================
 
 
-0.0.7 (XXXX-XX-XX)
+0.0.7 (2022-02-21)
 -------------------
 
 - Fixes in documentation.
 
 - Implement `__enter__()` and `__exit__()` methods.
+
+- Added methods: `get_account`, `get_deployments`,
+  `get_datasets`, `get_datasets_fields`,
+  `get_datasets_feedback`, `get_reports`,
+  `get_reports_fields`, `get_reports_feedback`.
 
 - Increased compatibility from Python 3.6 to 3.10.
 

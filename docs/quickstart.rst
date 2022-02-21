@@ -35,12 +35,16 @@ Request your account.
 
    >>> response = client.resource("account")
    >>> assert response.json()["_meta"]["code"] == 200
+   >>> response = client.get_account()
+   >>> assert response.json()["_meta"]["code"] == 200
 
 Or request deployments.
 
 .. code:: python
 
    >>> response = client.resource("deployments")
+   >>> assert response.json()["_meta"]["code"] == 200
+   >>> response = client.get_deployments()
    >>> assert response.json()["_meta"]["code"] == 200
 
 If you need further examples about requesting resources please go to :doc:`client` or :doc:`examples`.
