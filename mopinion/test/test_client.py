@@ -427,7 +427,7 @@ class APITest(unittest.TestCase):
             response = client.request(
                 endpoint="/reports",
                 version="2.0.0",
-                verbosity=client.VERBOSITY_FULL,
+                verbosity="full",
                 query_params={"key": "value"},
             )
             self.assertEqual(response.json()["_meta"]["code"], 200)
