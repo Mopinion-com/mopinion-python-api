@@ -97,16 +97,21 @@ class MopinionClient(AbstractClient):
         private_key: str,
         max_retries: int = 3,
         backoff_factor: int = 1,
-        verbosity: literal_verbosity = None,
+        verbosity: literal_verbosity = "normal",
         version: literal_version = None,
         content_negotiation: literal_content_negotiation = "application/json",
     ) -> None:
         """
         Constructor
-        :param public_key:
-        :param private_key:
-        :param max_retries: int
-        :param backoff_factor: int
+
+        Args:
+            public_key: str
+            private_key: str
+            max_retries: Defaults to 3.
+            backoff_factor: Default to 1 sec.
+            verbosity: "full", "quiet", "normal".
+            version: "1.18.14", "2.0.0", "2.1.0", "2.2.0". Default to latest.
+            content_negotiation: "application/json", "application/x-yaml".
         """
         self.credentials = Credentials(
             public_key=public_key, private_key=private_key
@@ -181,8 +186,8 @@ class MopinionClient(AbstractClient):
         self,
         endpoint: str,
         query_params: dict = None,
-        verbosity: literal_verbosity = None,
         version: literal_version = None,
+        verbosity: literal_verbosity = "normal",
         content_negotiation: literal_content_negotiation = "application/json",
     ) -> Response:
         """Generic method to send requests to our API.
@@ -242,12 +247,14 @@ class MopinionClient(AbstractClient):
             "verbosity": verbosity or self.verbosity,
             "Accept": content_negotiation or self.content_negotiation,
         }
+
         # if no version provided, then default to the latest
-        if version or self.version:
+        if version := version or self.version:
             headers["version"] = version
+
         # build params dict, set method, url and headers
         params = {"method": "GET", "url": url, "headers": headers}
-        if query_params:
+        if query_params := query_params:
             params["params"] = query_params
 
         # request
@@ -261,8 +268,8 @@ class MopinionClient(AbstractClient):
         resource_id: Union[str, int] = None,
         sub_resource_name: str = None,
         query_params: dict = None,
-        verbosity: literal_verbosity = None,
         version: literal_version = None,
+        verbosity: literal_verbosity = "normal",
         content_negotiation: literal_content_negotiation = "application/json",
         iterator: bool = False,
     ) -> Union[Response, Iterator]:
@@ -345,25 +352,25 @@ class MopinionClient(AbstractClient):
         # validate verbosity for Protocol Implementation iterator
         # never allow quiet for iterator==True
         resource_verbosity = ResourceVerbosity(
-            iterator=iterator, verbosity=verbosity or self.verbosity
+            verbosity=verbosity,
+            iterator=iterator,
         )
 
         # prepare parameters
         params = {
             "verbosity": resource_verbosity.verbosity,
-            "version": version or self.version,
+            "version": version,
             "query_params": query_params,
-            "content_negotiation": content_negotiation
-            or self.content_negotiation,
+            "content_negotiation": content_negotiation,
         }
 
         if iterator:
-            return self._get_iterator(resource_uri, **params)
+            return self._get_iterator(resource_uri.endpoint, **params)
         else:
             return self.request(endpoint=resource_uri.endpoint, **params)
 
-    def _get_iterator(self, resource_uri: ResourceUri, **params):
-        next_uri = resource_uri.endpoint
+    def _get_iterator(self, endpoint: str, **params):
+        next_uri = endpoint
         # yield messages till next (uri) == False
         while next_uri:
             response = self.request(endpoint=next_uri, **params)
@@ -371,83 +378,56 @@ class MopinionClient(AbstractClient):
             next_uri = response.json()["_meta"]["next"]
 
     # GET methods
-    def get_account(self):
-        response = self.resource(resource_name="account")
+    def get_account(self, **kwargs):
+        kwargs["resource"] = "account"
+        response = self.resource(**kwargs)
         return response
 
-    def get_deployments(
-        self,
-        deployment_id: str,
-        query_params: dict = None,
-        verbosity: literal_verbosity = None,
-        version: literal_version = None,
-        content_negotiation: literal_content_negotiation = "application/json",
-        iterator: bool = False,
-    ):
-        pass
+    def get_deployments(self, deployment_id: str, **kwargs):
+        kwargs["resource"] = "deployments"
+        if deployment_id:
+            kwargs["resource_id"] = deployment_id
+        response = self.resource(**kwargs)
+        return response
 
-    def get_datasets(
-        self,
-        dataset_id: int = None,
-        query_params: dict = None,
-        verbosity: literal_verbosity = None,
-        version: literal_version = None,
-        content_negotiation: literal_content_negotiation = "application/json",
-        iterator: bool = False,
-    ):
-        pass
+    def get_datasets(self, dataset_id: int = None, **kwargs):
+        kwargs["resource"] = "datasets"
+        if dataset_id:
+            kwargs["resource_id"] = dataset_id
+        response = self.resource(**kwargs)
+        return response
 
-    def get_dataset_fields(
-        self,
-        dataset_id: int = None,
-        query_params: dict = None,
-        verbosity: literal_verbosity = None,
-        version: literal_version = None,
-        content_negotiation: literal_content_negotiation = "application/json",
-        iterator: bool = False,
-    ):
-        pass
+    def get_datasets_fields(self, dataset_id: int, **kwargs):
+        kwargs["resource"] = "datasets"
+        kwargs["resource_id"] = dataset_id
+        kwargs["subresource"] = "fields"
+        response = self.resource(**kwargs)
+        return response
 
-    def get_dataset_feedbacks(
-        self,
-        dataset_id: int = None,
-        query_params: dict = None,
-        verbosity: literal_verbosity = None,
-        version: literal_version = None,
-        content_negotiation: literal_content_negotiation = "application/json",
-        iterator: bool = False,
-    ):
-        pass
+    def get_datasets_feedback(self, dataset_id: int, **kwargs):
+        kwargs["resource"] = "datasets"
+        kwargs["resource_id"] = dataset_id
+        kwargs["subresource"] = "feedback"
+        response = self.resource(**kwargs)
+        return response
 
-    def get_reports(
-        self,
-        report_id: int = None,
-        query_params: dict = None,
-        verbosity: literal_verbosity = None,
-        version: literal_version = None,
-        content_negotiation: literal_content_negotiation = "application/json",
-        iterator: bool = False,
-    ):
-        pass
+    def get_reports(self, report_id: int = None, **kwargs):
+        kwargs["resource"] = "reports"
+        if report_id:
+            kwargs["resource_id"] = report_id
+        response = self.resource(**kwargs)
+        return response
 
-    def get_report_fields(
-        self,
-        report_id: int = None,
-        query_params: dict = None,
-        verbosity: literal_verbosity = None,
-        version: literal_version = None,
-        content_negotiation: literal_content_negotiation = "application/json",
-        iterator: bool = False,
-    ):
-        pass
+    def get_reports_fields(self, report_id: int, **kwargs):
+        kwargs["resource"] = "reports"
+        kwargs["resource_id"] = report_id
+        kwargs["subresource"] = "fields"
+        response = self.resource(**kwargs)
+        return response
 
-    def get_report_feedbacks(
-        self,
-        report_id: int = None,
-        query_params: dict = None,
-        verbosity: literal_verbosity = None,
-        version: literal_version = None,
-        content_negotiation: literal_content_negotiation = "application/json",
-        iterator: bool = False,
-    ):
-        pass
+    def get_reports_feedback(self, report_id: int, **kwargs):
+        kwargs["resource"] = "reports"
+        kwargs["resource_id"] = report_id
+        kwargs["subresource"] = "feedback"
+        response = self.resource(**kwargs)
+        return response

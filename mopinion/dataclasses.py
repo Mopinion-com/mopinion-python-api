@@ -66,32 +66,6 @@ class ResourceUri(Argument):
     sub_resource_name: Optional[str]
 
     def __post_init__(self):
-        from mopinion.client import MopinionClient
-
-        allowed_resources = [
-            MopinionClient.RESOURCE_ACCOUNT,
-            MopinionClient.RESOURCE_DEPLOYMENTS,
-            MopinionClient.RESOURCE_DATASETS,
-            MopinionClient.RESOURCE_REPORTS,
-        ]
-        allowed_subresources = [
-            MopinionClient.SUBRESOURCE_FEEDBACK,
-            MopinionClient.SUBRESOURCE_FIELDS,
-        ]
-
-        if self.resource_name and self.resource_name not in allowed_resources:
-            raise ValueError(
-                f"Resource name {self.resource_name} must be one of {allowed_resources}"
-            )
-
-        if (
-            self.sub_resource_name
-            and self.sub_resource_name not in allowed_subresources
-        ):
-            raise ValueError(
-                f"Subresource name {self.sub_resource_name} must be one of {allowed_subresources}"
-            )
-
         endpoint = f"/{self.resource_name}"
         if self.resource_id:
             endpoint += f"/{self.resource_id}"

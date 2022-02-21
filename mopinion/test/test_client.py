@@ -71,13 +71,13 @@ class APITest(unittest.TestCase):
         endpoint = EndPoint(path="/account")
         mocked_response.return_value = MockedResponse({"token": "token"})
         client = MopinionClient(self.public_key, self.private_key)
-        xtoken = client.build_token(endpoint=endpoint, body={"key": "value"})
+        xtoken = client.build_token(endpoint=endpoint)
         self.assertEqual(
             xtoken,
             b"UFVCTElDX0tFWTplMzJkYTE0M2MzMWNjMGE0NWU1MGIwOGMwOWVmMDRjMWVhZmYwZTU5MTExOGMzMjViOGQxMzc1OGY3NDQ3ODZl",
         )
         self.assertIsInstance(xtoken, bytes)
-        xtoken = client.build_token(endpoint=endpoint, body=None)
+        xtoken = client.build_token(endpoint=endpoint)
         self.assertEqual(
             xtoken,
             b"UFVCTElDX0tFWTo0ZWVkZGYzNzljNDIyNDU3ZmVhOThmYzc0NGNkYTkwMGVhYmM3NmViNjM4ZjU1OTRkNGJmYmJiMGIwMWYzM2Nh",
@@ -126,9 +126,8 @@ class APITest(unittest.TestCase):
         response = client.request(
             endpoint="/reports",
             version="2.0.0",
-            verbosity=client.VERBOSITY_FULL,
+            verbosity="full",
             query_params={"key": "value"},
-            body={"key": "value"},
         )
         self.assertEqual(response.json()["_meta"]["code"], 200)
         self.assertEqual(2, mocked_response.call_count)
@@ -152,7 +151,6 @@ class APITest(unittest.TestCase):
                         "verbosity": "full",
                         "Accept": "application/json",
                     },
-                    json={"key": "value"},
                     params={"key": "value"},
                 ),
             ]
@@ -168,7 +166,7 @@ class APITest(unittest.TestCase):
         response = client.request(
             endpoint="/reports",
             query_params={"key": "value"},
-            content_negotiation=client.CONTENT_YAML,
+            content_negotiation="application/x-yaml",
         )
         self.assertEqual(response.json()["_meta"]["code"], 200)
         self.assertEqual(2, mocked_response.call_count)
@@ -259,11 +257,11 @@ class APITest(unittest.TestCase):
         ]
         client = MopinionClient(self.public_key, self.private_key)
         generator = client.resource(
-            resource_name=client.RESOURCE_REPORTS,
+            resource_name="reports",
             resource_id=1,
-            sub_resource_name=client.SUBRESOURCE_FEEDBACK,
+            sub_resource_name="feedback",
             version="2.0.0",
-            verbosity=client.VERBOSITY_FULL,
+            verbosity="full",
             query_params={"key": "value"},
             iterator=True,
         )
@@ -286,11 +284,11 @@ class APITest(unittest.TestCase):
         ]
         client = MopinionClient(self.public_key, self.private_key)
         result = client.resource(
-            resource_name=client.RESOURCE_REPORTS,
+            resource_name="reports",
             resource_id=1,
-            sub_resource_name=client.SUBRESOURCE_FEEDBACK,
+            sub_resource_name="feedback",
             version="2.0.0",
-            verbosity=client.VERBOSITY_FULL,
+            verbosity="full",
             query_params={"key": "value"},
             iterator=False,
         )
@@ -300,11 +298,11 @@ class APITest(unittest.TestCase):
         mopinion_client = MopinionClient(self.public_key, self.private_key)
         with mopinion_client as client:
             result = client.resource(
-                resource_name=client.RESOURCE_REPORTS,
+                resource_name="reports",
                 resource_id=1,
-                sub_resource_name=client.SUBRESOURCE_FEEDBACK,
+                sub_resource_name="feedback",
                 version="2.0.0",
-                verbosity=client.VERBOSITY_FULL,
+                verbosity="full",
                 query_params={"key": "value"},
                 iterator=False,
             )
@@ -314,18 +312,10 @@ class APITest(unittest.TestCase):
     def test_request_wrong_resources(self, mocked_response):
         client = MopinionClient(self.public_key, self.private_key)
         weird_path_resources = [
-            (MopinionClient.SUBRESOURCE_FIELDS, None, None),
-            (MopinionClient.SUBRESOURCE_FEEDBACK, None, None),
-            (
-                MopinionClient.RESOURCE_DATASETS,
-                1,
-                MopinionClient.RESOURCE_DEPLOYMENTS,
-            ),
-            (
-                MopinionClient.RESOURCE_DATASETS,
-                1,
-                MopinionClient.RESOURCE_REPORTS,
-            ),
+            ("fields", None, None),
+            ("feedback", None, None),
+            ("datasets", 1, "deployments"),
+            ("datasets", 1, "reports"),
         ]
         for weird_path in weird_path_resources:
             with self.assertRaises(ValueError):
@@ -338,22 +328,14 @@ class APITest(unittest.TestCase):
     @patch("requests.sessions.Session.request")
     def test_request_right_resources(self, mocked_response):
         paths_resources = [
-            (MopinionClient.RESOURCE_ACCOUNT, None, None),
-            (MopinionClient.RESOURCE_DEPLOYMENTS, None, None),
-            (MopinionClient.RESOURCE_DEPLOYMENTS, "string_id", None),
-            (MopinionClient.RESOURCE_REPORTS, None, None),
-            (MopinionClient.RESOURCE_REPORTS, 1, None),
-            (MopinionClient.RESOURCE_DATASETS, None, None),
-            (
-                MopinionClient.RESOURCE_DATASETS,
-                1,
-                MopinionClient.SUBRESOURCE_FIELDS,
-            ),
-            (
-                MopinionClient.RESOURCE_DATASETS,
-                1,
-                MopinionClient.SUBRESOURCE_FEEDBACK,
-            ),
+            ("account", None, None),
+            ("deployments", None, None),
+            ("deployments", "string_id", None),
+            ("reports", None, None),
+            ("reports", 1, None),
+            ("datasets", None, None),
+            ("datasets", 1, "fields"),
+            ("datasets", 1, "feedback"),
         ]
         for resources in paths_resources:
             mocked_response.return_value = MockedResponse({"token": "token"})
@@ -389,15 +371,13 @@ class APITest(unittest.TestCase):
         mocked_response.return_value = MockedResponse({"token": "token"})
 
         with MopinionClient(self.public_key, self.private_key) as client:
-            xtoken = client.build_token(
-                endpoint=endpoint, body={"key": "value"}
-            )
+            xtoken = client.build_token(endpoint=endpoint)
             self.assertEqual(
                 xtoken,
                 b"UFVCTElDX0tFWTplMzJkYTE0M2MzMWNjMGE0NWU1MGIwOGMwOWVmMDRjMWVhZmYwZTU5MTExOGMzMjViOGQxMzc1OGY3NDQ3ODZl",
             )
             self.assertIsInstance(xtoken, bytes)
-            xtoken = client.build_token(endpoint=endpoint, body=None)
+            xtoken = client.build_token(endpoint=endpoint)
             self.assertEqual(
                 xtoken,
                 b"UFVCTElDX0tFWTo0ZWVkZGYzNzljNDIyNDU3ZmVhOThmYzc0NGNkYTkwMGVhYmM3NmViNjM4ZjU1OTRkNGJmYmJiMGIwMWYzM2Nh",
@@ -449,7 +429,6 @@ class APITest(unittest.TestCase):
                 version="2.0.0",
                 verbosity=client.VERBOSITY_FULL,
                 query_params={"key": "value"},
-                body={"key": "value"},
             )
             self.assertEqual(response.json()["_meta"]["code"], 200)
             self.assertEqual(2, mocked_response.call_count)
