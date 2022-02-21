@@ -71,13 +71,13 @@ class APITest(unittest.TestCase):
         endpoint = EndPoint(path="/account")
         mocked_response.return_value = MockedResponse({"token": "token"})
         client = MopinionClient(self.public_key, self.private_key)
-        xtoken = client.get_token(endpoint=endpoint, body={"key": "value"})
+        xtoken = client.build_token(endpoint=endpoint, body={"key": "value"})
         self.assertEqual(
             xtoken,
             b"UFVCTElDX0tFWTplMzJkYTE0M2MzMWNjMGE0NWU1MGIwOGMwOWVmMDRjMWVhZmYwZTU5MTExOGMzMjViOGQxMzc1OGY3NDQ3ODZl",
         )
         self.assertIsInstance(xtoken, bytes)
-        xtoken = client.get_token(endpoint=endpoint, body=None)
+        xtoken = client.build_token(endpoint=endpoint, body=None)
         self.assertEqual(
             xtoken,
             b"UFVCTElDX0tFWTo0ZWVkZGYzNzljNDIyNDU3ZmVhOThmYzc0NGNkYTkwMGVhYmM3NmViNjM4ZjU1OTRkNGJmYmJiMGIwMWYzM2Nh",
@@ -277,6 +277,10 @@ class APITest(unittest.TestCase):
     @patch("requests.sessions.Session.request")
     def test_api_resource_request_calls(self, mocked_response):
         mocked_response.side_effect = [
+            # first call
+            MockedResponse({"token": "token"}, 200, raise_error=False),
+            MockedResponse({"_meta": {"message": "Hello World"}}, 200, False),
+            # second call
             MockedResponse({"token": "token"}, 200, raise_error=False),
             MockedResponse({"_meta": {"message": "Hello World"}}, 200, False),
         ]
@@ -292,6 +296,19 @@ class APITest(unittest.TestCase):
         )
         self.assertEqual(result.json()["_meta"]["message"], "Hello World")
         self.assertEqual(2, mocked_response.call_count)
+
+        mopinion_client = MopinionClient(self.public_key, self.private_key)
+        with mopinion_client as client:
+            result = client.resource(
+                resource_name=client.RESOURCE_REPORTS,
+                resource_id=1,
+                sub_resource_name=client.SUBRESOURCE_FEEDBACK,
+                version="2.0.0",
+                verbosity=client.VERBOSITY_FULL,
+                query_params={"key": "value"},
+                iterator=False,
+            )
+        self.assertEqual(result.json()["_meta"]["message"], "Hello World")
 
     @patch("requests.sessions.Session.request")
     def test_request_wrong_resources(self, mocked_response):
@@ -372,13 +389,15 @@ class APITest(unittest.TestCase):
         mocked_response.return_value = MockedResponse({"token": "token"})
 
         with MopinionClient(self.public_key, self.private_key) as client:
-            xtoken = client.get_token(endpoint=endpoint, body={"key": "value"})
+            xtoken = client.build_token(
+                endpoint=endpoint, body={"key": "value"}
+            )
             self.assertEqual(
                 xtoken,
                 b"UFVCTElDX0tFWTplMzJkYTE0M2MzMWNjMGE0NWU1MGIwOGMwOWVmMDRjMWVhZmYwZTU5MTExOGMzMjViOGQxMzc1OGY3NDQ3ODZl",
             )
             self.assertIsInstance(xtoken, bytes)
-            xtoken = client.get_token(endpoint=endpoint, body=None)
+            xtoken = client.build_token(endpoint=endpoint, body=None)
             self.assertEqual(
                 xtoken,
                 b"UFVCTElDX0tFWTo0ZWVkZGYzNzljNDIyNDU3ZmVhOThmYzc0NGNkYTkwMGVhYmM3NmViNjM4ZjU1OTRkNGJmYmJiMGIwMWYzM2Nh",

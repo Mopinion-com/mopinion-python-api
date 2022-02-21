@@ -6,20 +6,19 @@ For more information, see: https://developer.mopinion.com/api/
 from base64 import b64encode
 from collections.abc import Iterator
 from mopinion import settings
-from mopinion.dataclasses import ApiRequestArguments
 from mopinion.dataclasses import Credentials
 from mopinion.dataclasses import EndPoint
 from mopinion.dataclasses import ResourceUri
 from mopinion.dataclasses import ResourceVerbosity
 from requests.adapters import HTTPAdapter
+from requests.adapters import Retry
 from requests.models import Response
-from typing import Optional
+from typing import Literal
 from typing import Union
 
 import abc
 import hashlib
 import hmac
-import json
 import requests
 
 
@@ -32,18 +31,17 @@ class AbstractClient(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_token(self, endpoint: EndPoint, body: Optional[dict]) -> bytes:
+    def build_token(self, endpoint: EndPoint) -> bytes:
         raise NotImplementedError
 
     @abc.abstractmethod
     def request(
         self,
         endpoint: str,
-        version: str,
-        verbosity: str,
-        content_negotiation: str,
-        body: dict,
         query_params: dict,
+        verbosity: str,
+        version: str,
+        content_negotiation: str,
     ) -> Response:
         raise NotImplementedError
 
@@ -53,11 +51,10 @@ class AbstractClient(abc.ABC):
         resource_name: str,
         resource_id: Union[str, int],
         sub_resource_name: str,
+        query_params: dict,
+        verbosity: str,
         version: str,
         content_negotiation: str,
-        verbosity: str,
-        query_params: dict,
-        body: dict,
         iterator: bool,
     ) -> Union[Response, Iterator]:
         raise NotImplementedError
@@ -88,41 +85,40 @@ class MopinionClient(AbstractClient):
 
     """
 
-    # Resource Constants
-    RESOURCE_ACCOUNT = "account"
-    RESOURCE_DEPLOYMENTS = "deployments"
-    RESOURCE_DATASETS = "datasets"
-    RESOURCE_REPORTS = "reports"
-
-    # Sub-Resource Constants
-    SUBRESOURCE_FIELDS = "fields"
-    SUBRESOURCE_FEEDBACK = "feedback"
-
-    # Verbosity
-    VERBOSITY_QUIET = "quiet"
-    VERBOSITY_NORMAL = "normal"
-    VERBOSITY_FULL = "full"
-
-    # Content Negotiation
-    CONTENT_JSON = "application/json"
-    CONTENT_YAML = "application/x-yaml"
+    literal_verbosity = Literal["full", "quiet", "normal"]
+    literal_version = Literal["1.18.14", "2.0.0", "2.1.0", "2.2.0"]
+    literal_content_negotiation = Literal[
+        "application/json", "application/x-yaml"
+    ]
 
     def __init__(
-        self, public_key: str, private_key: str, max_retries: int = 3
+        self,
+        public_key: str,
+        private_key: str,
+        max_retries: int = 3,
+        backoff_factor: int = 1,
+        verbosity: literal_verbosity = None,
+        version: literal_version = None,
+        content_negotiation: literal_content_negotiation = "application/json",
     ) -> None:
         """
         Constructor
         :param public_key:
         :param private_key:
         :param max_retries: int
+        :param backoff_factor: int
         """
         self.credentials = Credentials(
             public_key=public_key, private_key=private_key
         )
-        adapter = HTTPAdapter(max_retries=max_retries)
         self.session = requests.Session()
+        retries = Retry(total=max_retries, backoff_factor=backoff_factor)
+        adapter = HTTPAdapter(max_retries=retries)
         self.session.mount(settings.BASE_URL, adapter=adapter)
         self.signature_token = self._get_signature_token(self.credentials)
+        self.content_negotiation = content_negotiation
+        self.verbosity = verbosity
+        self.version = version
 
     def close(self) -> None:
         self.session.close()
@@ -148,23 +144,18 @@ class MopinionClient(AbstractClient):
         response.raise_for_status()
         return response.json()["token"]
 
-    def get_token(self, endpoint: EndPoint, body: Optional[dict]) -> bytes:
+    def build_token(self, endpoint: EndPoint) -> bytes:
         """Get token"""
         uri_and_body = f"{endpoint.path}|"
-        if body:
-            uri_and_body += json.dumps(body)
-
         uri_and_body_hmac_sha256 = hmac.new(
             self.signature_token.encode("utf-8"),
             msg=uri_and_body.encode("utf-8"),
             digestmod=hashlib.sha256,
         ).hexdigest()
+
         # create token
-        xtoken = b64encode(
-            f"{self.credentials.public_key}:{uri_and_body_hmac_sha256}".encode(
-                "utf-8"
-            )
-        )
+        string = f"{self.credentials.public_key}:{uri_and_body_hmac_sha256}"
+        xtoken = b64encode(string.encode("utf-8"))
         return xtoken
 
     def is_available(self, verbose: bool = False) -> Union[dict, bool]:
@@ -189,11 +180,10 @@ class MopinionClient(AbstractClient):
     def request(
         self,
         endpoint: str,
-        version: str = None,
-        verbosity: str = VERBOSITY_NORMAL,
-        content_negotiation: str = CONTENT_JSON,
-        body: dict = None,
         query_params: dict = None,
+        verbosity: literal_verbosity = None,
+        version: literal_version = None,
+        content_negotiation: literal_content_negotiation = "application/json",
     ) -> Response:
         """Generic method to send requests to our API.
 
@@ -230,32 +220,33 @@ class MopinionClient(AbstractClient):
           ...     assert response.json()["_meta"]["code"] == 200
           ...     response = client.request(endpoint="/deployments")
           ...     assert response.json()["_meta"]["code"] == 200
+          >>>
+          >>> mopinion_client = MopinionClient(public_key=PUBLICKEY, private_key=PRIVATEKEY)
+          >>> with mopinion_client as client:
+          ...     response = client.request("/account")
+          ...     assert response.json()["_meta"]["code"] == 200
+          ...     response = client.request(endpoint="/deployments")
+          ...     assert response.json()["_meta"]["code"] == 200
         """
 
-        # validate arguments
-        arguments = ApiRequestArguments(
-            version=version,
-            verbosity=verbosity,
-            endpoint=EndPoint(path=endpoint),
-            content_negotiation=content_negotiation,
-        )
+        # validate endpoint
+        endpoint = EndPoint(path=endpoint)
 
         # create token - token depends on endpoint
-        xtoken = self.get_token(endpoint=arguments.endpoint, body=body)
+        xtoken = self.build_token(endpoint=endpoint)
 
-        # prepare params dict (url, method, headers, body, query_params)
-        url = f"{settings.BASE_URL}{arguments.endpoint.path}"
+        # prepare params dict (url, method, headers, query_params)
+        url = f"{settings.BASE_URL}{endpoint.path}"
         headers = {
             "X-Auth-Token": xtoken,
-            "verbosity": arguments.verbosity,
-            "Accept": arguments.content_negotiation,
+            "verbosity": verbosity or self.verbosity,
+            "Accept": content_negotiation or self.content_negotiation,
         }
-        if arguments.version:
-            headers["version"] = arguments.version
-
+        # if no version provided, then default to the latest
+        if version or self.version:
+            headers["version"] = version
+        # build params dict, set method, url and headers
         params = {"method": "GET", "url": url, "headers": headers}
-        if body:
-            params["json"] = body  # add content type 'Application-json'
         if query_params:
             params["params"] = query_params
 
@@ -269,11 +260,10 @@ class MopinionClient(AbstractClient):
         resource_name: str,
         resource_id: Union[str, int] = None,
         sub_resource_name: str = None,
-        version: str = None,
-        verbosity: str = VERBOSITY_NORMAL,
-        content_negotiation: str = CONTENT_JSON,
         query_params: dict = None,
-        body: dict = None,
+        verbosity: literal_verbosity = None,
+        version: literal_version = None,
+        content_negotiation: literal_content_negotiation = "application/json",
         iterator: bool = False,
     ) -> Union[Response, Iterator]:
         """Method to send requests to our API.
@@ -355,27 +345,109 @@ class MopinionClient(AbstractClient):
         # validate verbosity for Protocol Implementation iterator
         # never allow quiet for iterator==True
         resource_verbosity = ResourceVerbosity(
-            iterator=iterator, verbosity=verbosity
+            iterator=iterator, verbosity=verbosity or self.verbosity
         )
 
         # prepare parameters
         params = {
             "verbosity": resource_verbosity.verbosity,
-            "version": version,
-            "body": body,
+            "version": version or self.version,
             "query_params": query_params,
-            "content_negotiation": content_negotiation,
+            "content_negotiation": content_negotiation
+            or self.content_negotiation,
         }
 
         if iterator:
-            return self._get_iterator(resource_uri, params)
+            return self._get_iterator(resource_uri, **params)
         else:
             return self.request(endpoint=resource_uri.endpoint, **params)
 
-    def _get_iterator(self, resource_uri: ResourceUri, params: dict):
+    def _get_iterator(self, resource_uri: ResourceUri, **params):
         next_uri = resource_uri.endpoint
         # yield messages till next (uri) == False
         while next_uri:
             response = self.request(endpoint=next_uri, **params)
             yield response
             next_uri = response.json()["_meta"]["next"]
+
+    # GET methods
+    def get_account(self):
+        response = self.resource(resource_name="account")
+        return response
+
+    def get_deployments(
+        self,
+        deployment_id: str,
+        query_params: dict = None,
+        verbosity: literal_verbosity = None,
+        version: literal_version = None,
+        content_negotiation: literal_content_negotiation = "application/json",
+        iterator: bool = False,
+    ):
+        pass
+
+    def get_datasets(
+        self,
+        dataset_id: int = None,
+        query_params: dict = None,
+        verbosity: literal_verbosity = None,
+        version: literal_version = None,
+        content_negotiation: literal_content_negotiation = "application/json",
+        iterator: bool = False,
+    ):
+        pass
+
+    def get_dataset_fields(
+        self,
+        dataset_id: int = None,
+        query_params: dict = None,
+        verbosity: literal_verbosity = None,
+        version: literal_version = None,
+        content_negotiation: literal_content_negotiation = "application/json",
+        iterator: bool = False,
+    ):
+        pass
+
+    def get_dataset_feedbacks(
+        self,
+        dataset_id: int = None,
+        query_params: dict = None,
+        verbosity: literal_verbosity = None,
+        version: literal_version = None,
+        content_negotiation: literal_content_negotiation = "application/json",
+        iterator: bool = False,
+    ):
+        pass
+
+    def get_reports(
+        self,
+        report_id: int = None,
+        query_params: dict = None,
+        verbosity: literal_verbosity = None,
+        version: literal_version = None,
+        content_negotiation: literal_content_negotiation = "application/json",
+        iterator: bool = False,
+    ):
+        pass
+
+    def get_report_fields(
+        self,
+        report_id: int = None,
+        query_params: dict = None,
+        verbosity: literal_verbosity = None,
+        version: literal_version = None,
+        content_negotiation: literal_content_negotiation = "application/json",
+        iterator: bool = False,
+    ):
+        pass
+
+    def get_report_feedbacks(
+        self,
+        report_id: int = None,
+        query_params: dict = None,
+        verbosity: literal_verbosity = None,
+        version: literal_version = None,
+        content_negotiation: literal_content_negotiation = "application/json",
+        iterator: bool = False,
+    ):
+        pass
