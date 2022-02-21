@@ -252,12 +252,13 @@ class MopinionClient(AbstractClient):
         }
 
         # if no version provided, then default to the latest
-        if version := version or self.version:
+        version = version or self.version
+        if version:
             headers["version"] = version
 
         # build params dict, set method, url and headers
         params = {"method": "GET", "url": url, "headers": headers}
-        if query_params := query_params:
+        if query_params:
             params["params"] = query_params
 
         # request
