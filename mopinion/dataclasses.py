@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from dataclasses import field
-from mopinion import settings
 from typing import Optional
 from typing import Union
 
@@ -81,11 +80,8 @@ class ResourceVerbosity(Argument):
 
     def __post_init__(self):
         # if we want to iterate we need metadata, verbosity higher or equal than normal
-        if (
-            self.iterator
-            and self.verbosity.lower() not in settings.ITERATE_VERBOSITY_LEVELS
-        ):
+        if self.iterator and self.verbosity.lower() not in ["normal", "full"]:
             raise ValueError(
                 f"'{self.verbosity}' is not a valid verbosity level. Please "
-                f"consider one of: '{', '.join(settings.ITERATE_VERBOSITY_LEVELS)}'"
+                f"consider one of: '{', '.join(['normal', 'full'])}'"
             )
