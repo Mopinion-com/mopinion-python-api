@@ -330,6 +330,143 @@ Get some basic info on a report.
     >>> assert response.json()["_meta"]["code"] == 200
 
 
+Examples with GET methods
+--------------------------------
+
+Resource Account
+~~~~~~~~~~~~~~~~
+
+API Docs for `Account <https://developer.mopinion.com/api/#tag/account>`_.
+
+Get your account.
+
+.. code:: python
+
+    >>> response = client.get_account()
+    >>> assert response.json()["_meta"]["code"] == 200
+    >>> response.json()
+    {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
+
+Get your account in YAML format.
+
+.. code:: python
+
+    >>> import yaml
+    >>> response = client.get_account(content_negotiation="application/x-yaml")
+    >>> r = yaml.safe_load(response.text)
+    >>> assert r["_meta"]["code"] == 200
+
+When requesting with ``verbosity='quiet'`` no ``_meta`` info is returned.
+
+.. code:: python
+
+    >>> response = client.get_account(verbosity="quiet")
+    >>> assert "_meta" not in response.json()
+
+
+Resource Deployments
+~~~~~~~~~~~~~~~~~~~~~~
+
+API Docs for `Deployments <https://developer.mopinion.com/api/#tag/deployments>`_.
+
+Getting deployments.
+
+.. code:: python
+
+    >>> response = client.get_deployments()
+    >>> assert response.json()["_meta"]["code"] == 200
+    >>> response.json()
+    {'0': {'key': 'defusvnns6mkl2vd3wc0wgcjh159uh3j', 'name': 'Web Feedback Deployment'}, '_meta':...
+
+Getting a specific deployment.
+
+.. code:: python
+
+    >>> response = client.get_deployments(deployment_id="my_deployment_id")
+    >>> assert response.json()["_meta"]["code"] == 200
+
+Resource Datasets
+~~~~~~~~~~~~~~~~~~~~~~
+
+API Docs for `Datasets <https://developer.mopinion.com/api/#tag/datasets>`_.
+
+Getting a dataset.
+
+.. code:: python
+
+    >>> response = client.get_datasets()
+    >>> assert response.json()["_meta"]["code"] == 200
+
+Getting specific dataset.
+
+.. code:: python
+
+    >>> response = client.get_datasets(dataset_id=1234)
+    >>> assert response.json()["_meta"]["code"] == 200
+
+
+Resource Fields
+~~~~~~~~~~~~~~~~~~~~~~
+
+API Docs for `Fields <https://developer.mopinion.com/api/#tag/fields>`_.
+
+Get fields for a dataset.
+
+.. code:: python
+
+    >>> response = client.get_datasets_fields(dataset_id=1234)
+    >>> assert response.json()["_meta"]["code"] == 200
+
+Get fields for a report.
+
+.. code:: python
+
+    >>> response = client.get_reports_fields(report_id=1234)
+    >>> assert response.json()["_meta"]["code"] == 200
+
+Resource Feedback
+~~~~~~~~~~~~~~~~~
+
+API Docs for `Feedback <https://developer.mopinion.com/api/#tag/feedback>`_.
+
+.. note::
+    There are three query parameters available for this resource.
+
+    - `limit` (int <= 100) Maximum number of results in response/
+
+    - `page` (int) Return result page.
+
+    - `filter` (string) Filter feedback results. Click `here <https://developer.mopinion.com/api/#section/Requests-and-Responses/Filters>`_ for more info about filters.
+
+Get feedback from a dataset.
+
+.. code:: python
+
+    >>> params = {"page": 1}
+    >>> response = client.get_datasets_feedback(dataset_id=1234, query_params=params)
+    >>> assert response.json()["_meta"]["code"] == 200
+
+Get feedback for a report.
+
+.. code:: python
+
+    >>> params = {"limit": 50, "filter[ces]": "3"}
+    >>> response = client.get_reports_feedback(report_id=1234, query_params=params)
+    >>> assert response.json()["_meta"]["code"] == 200
+
+Resource Reports
+~~~~~~~~~~~~~~~~
+
+API Docs for `Reports <https://developer.mopinion.com/api/#tag/reports>`_.
+
+Get some basic info on a report.
+
+.. code:: python
+
+    >>> response = client.get_reports()
+    >>> assert response.json()["_meta"]["code"] == 200
+
+
 Examples with the iterator
 ----------------------------
 
