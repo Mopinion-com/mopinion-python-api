@@ -36,22 +36,22 @@ class EndPoint(Argument):
 
         # endpoint must be one of these
         regexps = [
-            r"/token$",
-            r"/ping$",
-            r"/account$",
+            r"^/token$",
+            r"^/ping$",
+            r"^/account$",
             # deployments
-            r"/deployments$",
-            r"/deployments/\w+$",
+            r"^/deployments$",
+            r"^/deployments/\w+$",
             # datasets
-            r"/datasets$",
-            r"/datasets/\d+$",
-            r"/datasets/\d+/fields$",
-            r"/datasets/\d+/feedback$",
+            r"^/datasets$",
+            r"^/datasets/\d+$",
+            r"^/datasets/\d+/fields$",
+            r"^/datasets/\d+/feedback$",
             # reports
-            r"/reports$",
-            r"/reports/\d+$",
-            r"/reports/\d+/fields$",
-            r"/reports/\d+/feedback$",
+            r"^/reports$",
+            r"^/reports/\d+$",
+            r"^/reports/\d+/fields$",
+            r"^/reports/\d+/feedback$",
         ]
         regexp = re.compile("|".join(regexps), re.IGNORECASE)
         if not regexp.search(self.path):

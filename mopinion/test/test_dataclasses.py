@@ -31,6 +31,8 @@ class ArgumentValidationTest(unittest.TestCase):
             sub_resource_name=None,
         )
         self.assertEqual(uri.endpoint, "/account")
+        path = EndPoint(path=uri.endpoint).path
+        self.assertEqual(path, "/account")
 
     def test_resource_uri_deployments(self):
         uri = ResourceUri(
@@ -39,6 +41,8 @@ class ArgumentValidationTest(unittest.TestCase):
             sub_resource_name=None,
         )
         self.assertEqual(uri.endpoint, "/deployments/string")
+        path = EndPoint(path=uri.endpoint).path
+        self.assertEqual(path, "/deployments/string")
 
     def test_resource_uri_datasets(self):
         uri = ResourceUri(
@@ -47,6 +51,8 @@ class ArgumentValidationTest(unittest.TestCase):
             sub_resource_name="fields",
         )
         self.assertEqual(uri.endpoint, "/datasets/1/fields")
+        path = EndPoint(path=uri.endpoint).path
+        self.assertEqual(path, "/datasets/1/fields")
 
     def test_resource_uri_reports(self):
         uri = ResourceUri(
@@ -55,22 +61,16 @@ class ArgumentValidationTest(unittest.TestCase):
             sub_resource_name="feedback",
         )
         self.assertEqual(uri.endpoint, "/reports/1/feedback")
+        path = EndPoint(path=uri.endpoint).path
+        self.assertEqual(path, "/reports/1/feedback")
 
     def test_wrong_uri_feedback_wrong(self):
         with self.assertRaises(ValueError):
-            ResourceUri(
-                resource_name="buzz",
-                resource_id=1,
-                sub_resource_name="feedback",
-            )
+            EndPoint(path="/buzz/1/feedback")
 
     def test_wrong_uri_report_wrong(self):
         with self.assertRaises(ValueError):
-            ResourceUri(
-                resource_name="reports",
-                resource_id=1,
-                sub_resource_name="buzz",
-            )
+            EndPoint(path="/reports/1/buzz")
 
 
 if __name__ == "__main__":
