@@ -401,7 +401,7 @@ class MopinionClient(AbstractClient):
         response = self.resource(**kwargs)
         return response
 
-    def get_deployments(self, deployment_id: str = None, **kwargs):
+    def get_deployments(self, deployment_id: str, **kwargs):
         """
         Get deployments.
 
@@ -418,8 +418,7 @@ class MopinionClient(AbstractClient):
             response (requests.models.Response).
         """
         kwargs["resource_name"] = "deployments"
-        if deployment_id:
-            kwargs["resource_id"] = deployment_id
+        kwargs["resource_id"] = deployment_id
         response = self.resource(**kwargs)
         return response
 
@@ -440,8 +439,7 @@ class MopinionClient(AbstractClient):
             response (requests.models.Response).
         """
         kwargs["resource_name"] = "datasets"
-        if dataset_id:
-            kwargs["resource_id"] = dataset_id
+        kwargs["resource_id"] = dataset_id
         response = self.resource(**kwargs)
         return response
 
@@ -463,7 +461,7 @@ class MopinionClient(AbstractClient):
         """
         kwargs["resource_name"] = "datasets"
         kwargs["resource_id"] = dataset_id
-        kwargs["subresource"] = "fields"
+        kwargs["sub_resource_name"] = "fields"
         response = self.resource(**kwargs)
         return response
 
@@ -485,7 +483,7 @@ class MopinionClient(AbstractClient):
         """
         kwargs["resource_name"] = "datasets"
         kwargs["resource_id"] = dataset_id
-        kwargs["subresource"] = "feedback"
+        kwargs["sub_resource_name"] = "feedback"
         response = self.resource(**kwargs)
         return response
 
@@ -506,8 +504,7 @@ class MopinionClient(AbstractClient):
             response (requests.models.Response).
         """
         kwargs["resource_name"] = "reports"
-        if report_id:
-            kwargs["resource_id"] = report_id
+        kwargs["resource_id"] = report_id
         response = self.resource(**kwargs)
         return response
 
@@ -529,7 +526,7 @@ class MopinionClient(AbstractClient):
         """
         kwargs["resource_name"] = "reports"
         kwargs["resource_id"] = report_id
-        kwargs["subresource"] = "fields"
+        kwargs["sub_resource_name"] = "fields"
         response = self.resource(**kwargs)
         return response
 
@@ -551,6 +548,6 @@ class MopinionClient(AbstractClient):
         """
         kwargs["resource_name"] = "reports"
         kwargs["resource_id"] = report_id
-        kwargs["subresource"] = "feedback"
+        kwargs["sub_resource_name"] = "feedback"
         response = self.resource(**kwargs)
         return response
