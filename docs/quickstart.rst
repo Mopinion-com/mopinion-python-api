@@ -34,6 +34,23 @@ Request your account.
 .. code:: python
 
    >>> response = client.resource("account")
+         >>> assert response.json()["_meta"]["code"] == 200
+         >>> response = client.get_account()
+         >>> assert response.json()["_meta"]["code"] == 200
+
+      Or request deployments.
+      >>> assert response.json()["_meta"]["code"] == 200
+      >>> response = client.get_account()
+      >>> assert response.json()["_meta"]["code"] == 200
+
+   Or request deployments.
+      >>> assert response.json()["_meta"]["code"] == 200
+      >>> response = client.get_accounts()
+      >>> assert response.json()["_meta"]["code"] == 200
+
+   Or request deployments.
+   >>> assert response.json()["_meta"]["code"] == 200
+   >>> response = client.get_account()
    >>> assert response.json()["_meta"]["code"] == 200
 
 Or request deployments.
@@ -41,6 +58,8 @@ Or request deployments.
 .. code:: python
 
    >>> response = client.resource("deployments")
+   >>> assert response.json()["_meta"]["code"] == 200
+   >>> response = client.get_deployments()
    >>> assert response.json()["_meta"]["code"] == 200
 
 If you need further examples about requesting resources please go to :doc:`client` or :doc:`examples`.

@@ -27,7 +27,7 @@ It comes with an easy, beautiful, and elegant way of interacting with our API.
 Installation
 -------------
 
-Install using ``pip``...::
+Install using ``pip``::
 
     pip install mopinion
 
@@ -38,13 +38,35 @@ Example
 .. code:: python
 
     >>> from mopinion import MopinionClient
-    >>> client = MopinionClient(public_key=YOUR_PUBLIC_KEY, private_key=YOUR_PRIVATE_KEY)
+    >>> client = MopinionClient(public_key=PUBLIC_KEY, private_key=PRIVATE_KEY)
     >>> assert client.is_available()
     >>> response = client.resource("account")
     >>> assert response.json()["_meta"]["code"] == 200
     >>> response = client.resource("deployments")
     >>> assert response.json()["_meta"]["code"] == 200
-
+    >>>
+    >>> response = client.get_account()
+    >>> assert response.json()["_meta"]["code"] == 200
+    >>> response = client.get_deployments()
+    >>> assert response.json()["_meta"]["code"] == 200
+    >>> response = client.get_reports(report_id=1)
+    >>> assert response.json()["_meta"]["code"] == 200
+    >>> response = client.get_reports_fields(report_id=1)
+    >>> assert response.json()["_meta"]["code"] == 200
+    >>> response = client.get_reports_feedback(report_id=1)
+    >>> assert response.json()["_meta"]["code"] == 200
+    >>> response = client.get_datasets(dataset_id=1)
+    >>> assert response.json()["_meta"]["code"] == 200
+    >>> response = client.get_datasets_feedback(dataset_id=1)
+    >>> assert response.json()["_meta"]["code"] == 200
+    >>> response = client.get_datasets_fields(dataset_id=1)
+    >>> assert response.json()["_meta"]["code"] == 200
+    >>>
+    >>> client.close()
+    >>>
+    >>> with MopinionClient(public_key=YOUR_PUBLIC_KEY, private_key=YOUR_PRIVATE_KEY) as client:
+    ...     response = client.get_account()
+    ...     assert response.json()["_meta"]["code"] == 200
 
 Documentation
 ---------------
