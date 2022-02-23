@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from dataclasses import field
+from mopinion import settings
 from typing import Optional
 from typing import Union
 
@@ -55,6 +56,34 @@ class EndPoint(Argument):
         regexp = re.compile("|".join(regexps), re.IGNORECASE)
         if not regexp.search(self.path):
             raise ValueError(f"Resource '{self.path}' is not supported.")
+
+
+@dataclass(frozen=True)
+class RequestArguments(Argument):
+    endpoint: EndPoint
+    content_negotiation: str
+    verbosity: str
+    version: str = None
+
+    def __post_init__(self):
+        # verbosity levels
+        if self.verbosity.lower() not in settings.VERBOSITY_LEVELS:
+            raise ValueError(
+                f"'{self.verbosity}' is not a valid verbosity level. Please consider one of: "
+                f"'{', '.join(settings.VERBOSITY_LEVELS)}'"
+            )
+
+        if self.content_negotiation not in settings.CONTENT_NEGOTIATIONS:
+            raise ValueError(
+                f"'{self.content_negotiation}' is not a valid content negotiation. "
+                f"Please consider one of: '{', '.join(settings.CONTENT_NEGOTIATIONS)}'"
+            )
+
+        if self.version and self.version not in settings.VERSIONS:
+            raise ValueError(
+                f"'{self.version}' is not a valid version. Please consider one of: "
+                f"'{''.join(settings.VERSIONS)}'"
+            )
 
 
 @dataclass

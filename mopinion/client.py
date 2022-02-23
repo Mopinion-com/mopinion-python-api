@@ -8,6 +8,7 @@ from collections.abc import Iterator
 from mopinion import settings
 from mopinion.dataclasses import Credentials
 from mopinion.dataclasses import EndPoint
+from mopinion.dataclasses import RequestArguments
 from mopinion.dataclasses import ResourceUri
 from mopinion.dataclasses import ResourceVerbosity
 from requests.adapters import HTTPAdapter
@@ -100,9 +101,9 @@ class MopinionClient(AbstractClient):
         private_key: str,
         max_retries: int = 3,
         backoff_factor: int = 1,
-        verbosity: literal_verbosity = "normal",
-        version: literal_version = None,
-        content_negotiation: literal_content_negotiation = "application/json",
+        version: str = None,
+        verbosity: str = "normal",
+        content_negotiation: str = "application/json",
     ) -> None:
         """
         Constructor
@@ -189,9 +190,9 @@ class MopinionClient(AbstractClient):
         self,
         endpoint: str,
         query_params: dict = None,
-        version: literal_version = None,
-        verbosity: literal_verbosity = "normal",
-        content_negotiation: literal_content_negotiation = "application/json",
+        version: str = None,
+        verbosity: str = "normal",
+        content_negotiation: str = "application/json",
     ) -> Response:
         """Generic method to send requests to our API.
 
@@ -237,22 +238,27 @@ class MopinionClient(AbstractClient):
           ...     assert response.json()["_meta"]["code"] == 200
         """
 
-        # validate endpoint
-        endpoint = EndPoint(path=endpoint)
+        # validate inputs
+        args = RequestArguments(
+            endpoint=EndPoint(path=endpoint),
+            version=version,
+            verbosity=verbosity,
+            content_negotiation=content_negotiation,
+        )
 
         # create token - token depends on endpoint
-        xtoken = self.build_token(endpoint=endpoint)
+        xtoken = self.build_token(endpoint=args.endpoint)
 
         # prepare params dict (url, method, headers, query_params)
-        url = f"{settings.BASE_URL}{endpoint.path}"
+        url = f"{settings.BASE_URL}{args.endpoint.path}"
         headers = {
             "X-Auth-Token": xtoken,
-            "verbosity": verbosity or self.verbosity,
-            "Accept": content_negotiation or self.content_negotiation,
+            "verbosity": args.verbosity or self.verbosity,
+            "Accept": args.content_negotiation or self.content_negotiation,
         }
 
         # if no version provided, then default to the latest
-        version = version or self.version
+        version = args.version or self.version
         if version:
             headers["version"] = version
 
@@ -272,9 +278,9 @@ class MopinionClient(AbstractClient):
         resource_id: Union[str, int] = None,
         sub_resource_name: str = None,
         query_params: dict = None,
-        version: literal_version = None,
-        verbosity: literal_verbosity = "normal",
-        content_negotiation: literal_content_negotiation = "application/json",
+        version: str = None,
+        verbosity: str = "normal",
+        content_negotiation: str = "application/json",
         iterator: bool = False,
     ) -> Union[Response, Iterator]:
         """Method to send requests to our API.

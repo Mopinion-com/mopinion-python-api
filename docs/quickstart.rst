@@ -34,6 +34,21 @@ Request your account.
 .. code:: python
 
    >>> response = client.resource("account")
+         >>> assert response.json()["_meta"]["code"] == 200
+         >>> response = client.get_account()
+         >>> assert response.json()["_meta"]["code"] == 200
+
+      Or request deployments.
+      >>> assert response.json()["_meta"]["code"] == 200
+      >>> response = client.get_account()
+      >>> assert response.json()["_meta"]["code"] == 200
+
+   Or request deployments.
+      >>> assert response.json()["_meta"]["code"] == 200
+      >>> response = client.get_accounts()
+      >>> assert response.json()["_meta"]["code"] == 200
+
+   Or request deployments.
    >>> assert response.json()["_meta"]["code"] == 200
    >>> response = client.get_account()
    >>> assert response.json()["_meta"]["code"] == 200

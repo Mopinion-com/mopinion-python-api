@@ -343,6 +343,21 @@ Get your account.
 .. code:: python
 
     >>> response = client.get_account()
+            >>> assert response.json()["_meta"]["code"] == 200
+            >>> response.json()
+            {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
+
+        Get your account in YAML format.
+        >>> assert response.json()["_meta"]["code"] == 200
+        >>> response.json()
+        {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
+
+    Get your account in YAML format.
+        >>> assert response.json()["_meta"]["code"] == 200
+        >>> response.json()
+        {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
+
+    Get your account in YAML format.
     >>> assert response.json()["_meta"]["code"] == 200
     >>> response.json()
     {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
@@ -352,6 +367,21 @@ Get your account in YAML format.
 .. code:: python
 
     >>> import yaml
+            >>> response = client.get_account(content_negotiation="application/x-yaml")
+            >>> r = yaml.safe_load(response.text)
+            >>> assert r["_meta"]["code"] == 200
+
+        When requesting with
+        >>> response = client.get_account(content_negotiation="application/x-yaml")
+        >>> r = yaml.safe_load(response.text)
+        >>> assert r["_meta"]["code"] == 200
+
+    When requesting with
+        >>> response = client.get_accounts(content_negotiation="application/x-yaml")
+        >>> r = yaml.safe_load(response.text)
+        >>> assert r["_meta"]["code"] == 200
+
+    When requesting with
     >>> response = client.get_account(content_negotiation="application/x-yaml")
     >>> r = yaml.safe_load(response.text)
     >>> assert r["_meta"]["code"] == 200
@@ -361,6 +391,9 @@ When requesting with ``verbosity='quiet'`` no ``_meta`` info is returned.
 .. code:: python
 
     >>> response = client.get_account(verbosity="quiet")
+            >>> assert "_meta" not in response.json()
+        >>> assert "_meta" not in response.json()
+        >>> assert "_meta" not in response.json()
     >>> assert "_meta" not in response.json()
 
 
