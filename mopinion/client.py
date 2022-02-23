@@ -401,7 +401,7 @@ class MopinionClient(AbstractClient):
         response = self.resource(**kwargs)
         return response
 
-    def get_deployments(self, deployment_id: str, **kwargs):
+    def get_deployments(self, deployment_id: str = None, **kwargs):
         """
         Get deployments.
 
