@@ -41,26 +41,20 @@ Example
     >>> client = MopinionClient(public_key=PUBLIC_KEY, private_key=PRIVATE_KEY)
     >>> assert client.is_available()
     >>> response = client.resource("account")
-    >>> assert response.json()["_meta"]["code"] == 200
     >>> response = client.resource("deployments")
-    >>> assert response.json()["_meta"]["code"] == 200
     >>>
     >>> response = client.get_account()
-    >>> assert response.json()["_meta"]["code"] == 200
+    >>>
     >>> response = client.get_deployments()
-    >>> assert response.json()["_meta"]["code"] == 200
-    >>> response = client.get_reports(report_id=1)
-    >>> assert response.json()["_meta"]["code"] == 200
-    >>> response = client.get_reports_fields(report_id=1)
-    >>> assert response.json()["_meta"]["code"] == 200
-    >>> response = client.get_reports_feedback(report_id=1)
-    >>> assert response.json()["_meta"]["code"] == 200
-    >>> response = client.get_datasets(dataset_id=1)
-    >>> assert response.json()["_meta"]["code"] == 200
-    >>> response = client.get_datasets_feedback(dataset_id=1)
-    >>> assert response.json()["_meta"]["code"] == 200
-    >>> response = client.get_datasets_fields(dataset_id=1)
-    >>> assert response.json()["_meta"]["code"] == 200
+    >>> response = client.get_deployments("abc")
+    >>>
+    >>> response = client.get_reports(report_id=123)
+    >>> response = client.get_reports_fields(report_id=123)
+    >>> response = client.get_reports_feedback(report_id=123)
+    >>>
+    >>> response = client.get_datasets(dataset_id=123)
+    >>> response = client.get_datasets_feedback(dataset_id=123)
+    >>> response = client.get_datasets_fields(dataset_id=123)
     >>>
     >>> client.close()
     >>>

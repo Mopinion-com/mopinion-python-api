@@ -46,7 +46,6 @@ To see the availability of the API you can call ``is_available()``.
 We can use it as a context Manager as well.
 
     >>> with MopinionClient(public_key=PUBLIC_KEY, private_key=PRIVATE_KEY) as client:
-    ...     SIGNATURE_TOKEN == client.signature_token  # client requests the signature token
     ...     assert client.is_available()
     ...     r = client.is_available(verbose=True)
     ...     assert r["code"] == 200 and r["response"] == "pong" and r["version"] == "2.0.0"
@@ -239,7 +238,6 @@ Getting deployments.
 
     >>> response = client.request("/deployments")
     >>> assert response.json()["_meta"]["code"] == 200
-    >>> response.json()
 
 Getting a specific deployment.
 
@@ -343,21 +341,6 @@ Get your account.
 .. code:: python
 
     >>> response = client.get_account()
-            >>> assert response.json()["_meta"]["code"] == 200
-            >>> response.json()
-            {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
-
-        Get your account in YAML format.
-        >>> assert response.json()["_meta"]["code"] == 200
-        >>> response.json()
-        {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
-
-    Get your account in YAML format.
-        >>> assert response.json()["_meta"]["code"] == 200
-        >>> response.json()
-        {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
-
-    Get your account in YAML format.
     >>> assert response.json()["_meta"]["code"] == 200
     >>> response.json()
     {'name': 'Mopinion', 'package': 'Growth', 'enddate': '2021-02-13 00:00:00', 'number_users': 10, ...
@@ -367,21 +350,6 @@ Get your account in YAML format.
 .. code:: python
 
     >>> import yaml
-            >>> response = client.get_account(content_negotiation="application/x-yaml")
-            >>> r = yaml.safe_load(response.text)
-            >>> assert r["_meta"]["code"] == 200
-
-        When requesting with
-        >>> response = client.get_account(content_negotiation="application/x-yaml")
-        >>> r = yaml.safe_load(response.text)
-        >>> assert r["_meta"]["code"] == 200
-
-    When requesting with
-        >>> response = client.get_accounts(content_negotiation="application/x-yaml")
-        >>> r = yaml.safe_load(response.text)
-        >>> assert r["_meta"]["code"] == 200
-
-    When requesting with
     >>> response = client.get_account(content_negotiation="application/x-yaml")
     >>> r = yaml.safe_load(response.text)
     >>> assert r["_meta"]["code"] == 200
@@ -391,9 +359,6 @@ When requesting with ``verbosity='quiet'`` no ``_meta`` info is returned.
 .. code:: python
 
     >>> response = client.get_account(verbosity="quiet")
-            >>> assert "_meta" not in response.json()
-        >>> assert "_meta" not in response.json()
-        >>> assert "_meta" not in response.json()
     >>> assert "_meta" not in response.json()
 
 
