@@ -14,7 +14,6 @@ from mopinion.dataclasses import ResourceVerbosity
 from requests.adapters import HTTPAdapter
 from requests.adapters import Retry
 from requests.models import Response
-from typing import Literal
 from typing import Union
 
 import abc
@@ -88,12 +87,6 @@ class MopinionClient(AbstractClient):
       max_retries (int): Defaults to 3.
       backoff_factor (int): Defaults to 1.
     """
-
-    literal_verbosity = Literal["full", "quiet", "normal"]
-    literal_version = Literal["1.18.14", "2.0.0", "2.1.0", "2.2.0"]
-    literal_content_negotiation = Literal[
-        "application/json", "application/x-yaml"
-    ]
 
     def __init__(
         self,
