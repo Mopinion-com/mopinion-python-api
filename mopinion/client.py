@@ -423,7 +423,7 @@ class MopinionClient(AbstractClient):
         response = self.resource(**kwargs)
         return response
 
-    def get_datasets(self, dataset_id: int = None, **kwargs):
+    def get_datasets(self, dataset_id: int, **kwargs):
         """
         Get datasets.
 
@@ -489,7 +489,7 @@ class MopinionClient(AbstractClient):
         response = self.resource(**kwargs)
         return response
 
-    def get_reports(self, report_id: int = None, **kwargs):
+    def get_reports(self, report_id: int, **kwargs):
         """
         Get reports.
 

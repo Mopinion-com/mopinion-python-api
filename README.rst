@@ -49,15 +49,11 @@ Example
     >>> assert response.json()["_meta"]["code"] == 200
     >>> response = client.get_deployments()
     >>> assert response.json()["_meta"]["code"] == 200
-    >>> response = client.get_reports()
-    >>> assert response.json()["_meta"]["code"] == 200
     >>> response = client.get_reports(report_id=1)
     >>> assert response.json()["_meta"]["code"] == 200
     >>> response = client.get_reports_fields(report_id=1)
     >>> assert response.json()["_meta"]["code"] == 200
     >>> response = client.get_reports_feedback(report_id=1)
-    >>> assert response.json()["_meta"]["code"] == 200
-    >>> response = client.get_datasets()
     >>> assert response.json()["_meta"]["code"] == 200
     >>> response = client.get_datasets(dataset_id=1)
     >>> assert response.json()["_meta"]["code"] == 200

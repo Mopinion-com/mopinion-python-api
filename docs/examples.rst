@@ -423,13 +423,6 @@ Resource Datasets
 
 API Docs for `Datasets <https://developer.mopinion.com/api/#tag/datasets>`_.
 
-Getting a dataset.
-
-.. code:: python
-
-    >>> response = client.get_datasets()
-    >>> assert response.json()["_meta"]["code"] == 200
-
 Getting specific dataset.
 
 .. code:: python
@@ -496,7 +489,7 @@ Get some basic info on a report.
 
 .. code:: python
 
-    >>> response = client.get_reports()
+    >>> response = client.get_reports(report_id=1)
     >>> assert response.json()["_meta"]["code"] == 200
 
 
