@@ -38,7 +38,7 @@ Example
 .. code:: python
 
     >>> from mopinion import MopinionClient
-    >>> client = MopinionClient(public_key=YOUR_PUBLIC_KEY, private_key=YOUR_PRIVATE_KEY)
+    >>> client = MopinionClient(public_key=PUBLIC_KEY, private_key=PRIVATE_KEY)
     >>> assert client.is_available()
     >>> response = client.resource("account")
     >>> assert response.json()["_meta"]["code"] == 200
