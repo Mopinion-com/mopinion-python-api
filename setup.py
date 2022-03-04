@@ -3,7 +3,7 @@ from setuptools import setup
 import os
 
 
-version = "0.0.7"
+version = "1.0.0"
 
 long_description = "\n\n".join([open("README.rst").read(), open("CHANGES.rst").read()])
 
