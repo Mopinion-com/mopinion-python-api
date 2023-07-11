@@ -2,14 +2,14 @@ Mopinion API - Python Client
 ==========================================
 
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
-    :target: https://github.com/mopinion/mopinion-python-api/blob/master/LICENSE
+    :target: https://github.com/Mopinion-com/mopinion-python-api/blob/master/LICENSE
     :alt: License-MIT
 
 .. image:: https://readthedocs.org/projects/mopinion-python-api/badge/?version=latest
     :target: https://mopinion-python-api.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. image:: https://github.com/mopinion/mopinion-python-api/workflows/Test%20Suite/badge.svg/
+.. image:: https://github.com/Mopinion-com/mopinion-python-api/workflows/Test%20Suite/badge.svg/
     :alt: GitHub Actions
 
 .. image:: https://badge.fury.io/py/mopinion.svg/
