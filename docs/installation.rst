@@ -45,7 +45,7 @@ These instructions assume that ``git``, ``python3``, ``pip``, and
 
 Clone the mopinion-python-api repository::
 
-    $ git clone https://github.com/mopinion/mopinion-python-api
+    $ git clone https://github.com/Mopinion-com/mopinion-python-api
 
 Create and activate a virtualenv::
 
