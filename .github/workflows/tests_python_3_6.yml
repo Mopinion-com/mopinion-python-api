@@ -1,6 +1,6 @@
-# Run test for master and release branches
+# Run test for master and release branches, on older versions and platforms
 
-name: Test Suite
+name: Test Suite (legacy)
 on:
   push:
     branches:
@@ -20,8 +20,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
-        python-version: ['3.7', '3.8', '3.9', '3.10']
+        os: [ubuntu-20.04, windows-latest, macOS-latest]
+        python-version: ['3.6']
 
     steps:
       - uses: actions/checkout@v2
@@ -38,13 +38,3 @@ jobs:
       - name: Test with pytest
         run: |
           pytest
-
-#  # to be done: https://github.com/marketplace/actions/coveralls-python#coveragepy-configuration
-#  coveralls_finish:
-#    needs: test
-#    runs-on: ubuntu-latest
-#    steps:
-#    - name: Coveralls Finished
-#      uses: AndreMiras/coveralls-python-action@develop
-#      with:
-#        parallel-finished: true
