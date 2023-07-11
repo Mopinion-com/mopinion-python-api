@@ -110,9 +110,7 @@ class MopinionClient(AbstractClient):
           max_retries (int): Defaults to 3.
           backoff_factor (int): Defaults to 1.
         """
-        self.credentials = Credentials(
-            public_key=public_key, private_key=private_key
-        )
+        self.credentials = Credentials(public_key=public_key, private_key=private_key)
         self.session = requests.Session()
         retries = Retry(total=max_retries, backoff_factor=backoff_factor)
         adapter = HTTPAdapter(max_retries=retries)
