@@ -93,9 +93,7 @@ class APITest(unittest.TestCase):
                 call(
                     method="GET",
                     url="https://api.mopinion.com/token",
-                    headers={
-                        "Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="
-                    },
+                    headers={"Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="},
                 ),
                 call(
                     method="GET",
@@ -129,9 +127,7 @@ class APITest(unittest.TestCase):
                 call(
                     method="GET",
                     url="https://api.mopinion.com/token",
-                    headers={
-                        "Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="
-                    },
+                    headers={"Authorization": "Basic UFVCTElDX0tFWTpQUklWQVRFX0tFWQ=="},
                 ),
                 call(
                     method="GET",
@@ -166,12 +162,8 @@ class APITest(unittest.TestCase):
     def test_api_request_availability(self, mocked_response):
         mocked_response.side_effect = [
             MockedResponse({"token": "token"}),
-            MockedResponse(
-                {"code": 200, "response": "pong", "version": "1.18.14"}
-            ),
-            MockedResponse(
-                {"code": 200, "response": "pong", "version": "1.18.14"}
-            ),
+            MockedResponse({"code": 200, "response": "pong", "version": "1.18.14"}),
+            MockedResponse({"code": 200, "response": "pong", "version": "1.18.14"}),
         ]
         client = MopinionClient(self.public_key, self.private_key)
         is_available = client.is_available()
