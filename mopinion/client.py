@@ -2,7 +2,7 @@
 API Client library for the Mopinion Data API.
 For more information, see: https://developer.mopinion.com/api/
 """
-
+import urllib.parse
 from base64 import b64encode
 from collections.abc import Iterator
 from mopinion import settings
@@ -371,12 +371,15 @@ class MopinionClient(AbstractClient):
             return self.request(endpoint=resource_uri.endpoint, **params)
 
     def _get_iterator(self, endpoint: str, **params):
-        next_uri = endpoint
-        # yield messages till next (uri) == False
-        while next_uri:
-            response = self.request(endpoint=next_uri, **params)
+        while True:
+            response = self.request(endpoint=endpoint, **params)
             yield response
-            next_uri = response.json()["_meta"]["next"]
+
+            if not response.json()["_meta"]["has_more"]:
+                break
+
+            next_uri = urllib.parse.urlparse(response.json()["_meta"]["next"])
+            params["query_params"] = dict(urllib.parse.parse_qsl(next_uri.query))
 
     # GET methods
     def get_account(self, **kwargs):
