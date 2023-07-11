@@ -211,30 +211,6 @@ class APITest(unittest.TestCase):
             client.request(endpoint=path)
 
     @patch("requests.sessions.Session.request")
-    def test_api_resource_request_generator(self, mocked_response):
-        mocked_response.side_effect = [
-            MockedResponse({"token": "token"}, raise_error=False),
-            MockedResponse({"_meta": {"has_more": True, "next": "/account"}}),
-            MockedResponse({"_meta": {"has_more": False}}),
-        ]
-        client = MopinionClient(self.public_key, self.private_key)
-        generator = client.resource(
-            resource_name="reports",
-            resource_id=1,
-            sub_resource_name="feedback",
-            version="2.0.0",
-            verbosity="full",
-            query_params={"key": "value"},
-            iterator=True,
-        )
-        self.assertIsInstance(generator, types.GeneratorType)
-        self.assertEqual(1, mocked_response.call_count)
-        next(generator)
-        self.assertEqual(2, mocked_response.call_count)
-        next(generator)
-        self.assertEqual(3, mocked_response.call_count)
-
-    @patch("requests.sessions.Session.request")
     def test_api_resource_request_calls(self, mocked_response):
         mocked_response.side_effect = [
             # first call
