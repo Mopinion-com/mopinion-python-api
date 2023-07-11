@@ -10,8 +10,6 @@ Requirements
 Windows (pip)
 -------------
 
-The following recipe is still a work in progress:
-
 1. `Install Python>=3.6 (stable) <https://www.python.org/downloads/windows/>`_
 2. Start the command prompt
 3. Install mopinion::
@@ -41,7 +39,7 @@ Advanced: local setup for development (Ubuntu)
 ----------------------------------------------
 
 These instructions assume that ``git``, ``python3``, ``pip``, and
-``virtualenv`` are installed on your host machine.
+``pipenv`` are installed on your host machine.
 
 Clone the mopinion-python-api repository::
 
@@ -50,9 +48,9 @@ Clone the mopinion-python-api repository::
 Create and activate a virtualenv::
 
     $ cd mopinion-python-api
-    $ virtualenv --python=python3 .venv
-    $ source .venv/bin/activate
+    $ pipenv install --python=python3
+    $ pipenv shell
 
 Run the tests::
 
-    (.venv) $ pytest
+    (mopinion-python-api) $ pytest
