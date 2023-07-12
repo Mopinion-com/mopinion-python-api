@@ -2,6 +2,10 @@ Changelog
 ========================================================
 
 
+1.0.1 (2023-07-11)
+-------------------
+- Fix issue where query parameters are not properly set for iterable responses.
+
 1.0.0 (2022-03-04)
 -------------------
 
