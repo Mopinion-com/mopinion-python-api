@@ -3,7 +3,7 @@ from setuptools import setup
 import os
 
 
-version = "1.0.0"
+version = "1.0.1"
 
 long_description = "\n\n".join([open("README.rst").read(), open("CHANGES.rst").read()])
 
@@ -39,7 +39,7 @@ setup(
     keywords=["mopinion"],
     author="Mopinion",
     author_email="",
-    url="https://github.com/mopinion/mopinion-python-api",
+    url="https://github.com/Mopinion-com/mopinion-python-api",
     license="MIT License",
     packages=["mopinion"],
     include_package_data=True,
