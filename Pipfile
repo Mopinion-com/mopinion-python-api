@@ -7,7 +7,7 @@ name = "pypi"
 
 [dev-packages]
 pytest = "*"
-requests = ">=2.32.0"
+requests = ">=2.33.0"
 mock = "*"
 black = "*"
 urllib3 = ">=2.7.0"
