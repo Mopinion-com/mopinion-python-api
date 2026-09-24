@@ -11,7 +11,7 @@ requests = ">=2.32.0"
 mock = "*"
 dataclasses = "*"
 black = "*"
-urllib3 = ">=2.2.2"
+urllib3 = ">=2.7.0"
 
 [requires]
 python_version = "3"
