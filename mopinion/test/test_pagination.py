@@ -1,9 +1,9 @@
 import types
 import unittest
-
-from mock import patch
+from unittest.mock import patch
 
 from mopinion import MopinionClient
+
 from .mocks import MockedResponse
 
 

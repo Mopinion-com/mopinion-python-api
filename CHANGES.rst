@@ -2,6 +2,11 @@ Changelog
 ========================================================
 
 
+1.1.0 (2026-09-24)
+-------------------
+- Support Python 3.10 to 3.14; drop support for Python < 3.10.
+- Require requests>=2.33.0 for upstream security fixes.
+
 1.0.1 (2023-07-11)
 -------------------
 - Fix issue where query parameters are not properly set for iterable responses.

@@ -8,10 +8,12 @@ name = "pypi"
 [dev-packages]
 pytest = "*"
 requests = ">=2.33.0"
-mock = "*"
-dataclasses = "*"
 black = "*"
 urllib3 = ">=2.7.0"
+# pytest/black backports for 3.10; pipenv only locks for the running Python
+exceptiongroup = {version = "*", markers = "python_version < '3.11'"}
+tomli = {version = "*", markers = "python_version < '3.11'"}
+typing-extensions = {version = "*", markers = "python_version < '3.11'"}
 
 [requires]
 python_version = "3"

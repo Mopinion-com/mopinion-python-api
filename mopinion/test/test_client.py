@@ -1,13 +1,14 @@
 import types
 import unittest
+from unittest.mock import call
+from unittest.mock import patch
 
-from mock import call
-from mock import patch
 from requests import Session
 from requests.exceptions import RequestException
 
 from mopinion import MopinionClient
 from mopinion.dataclasses import EndPoint
+
 from .mocks import MockedResponse
 
 
