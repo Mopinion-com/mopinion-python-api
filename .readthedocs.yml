@@ -25,5 +25,6 @@ build:
 
 python:
   install:
-    - method: setuptools
+    - requirements: docs/requirements.txt
+    - method: pip
       path: .  # setup.py includes a hack that emulates --no-deps for RTD
