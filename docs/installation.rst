@@ -10,7 +10,7 @@ Requirements
 Windows (pip)
 -------------
 
-1. `Install Python>=3.6 (stable) <https://www.python.org/downloads/windows/>`_
+1. `Install Python>=3.10 (stable) <https://www.python.org/downloads/windows/>`_
 2. Start the command prompt
 3. Install mopinion::
 

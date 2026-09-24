@@ -9,7 +9,6 @@ name = "pypi"
 pytest = "*"
 requests = ">=2.32.0"
 mock = "*"
-dataclasses = "*"
 black = "*"
 urllib3 = ">=2.7.0"
 
